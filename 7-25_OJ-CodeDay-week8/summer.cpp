@@ -156,3 +156,57 @@
 //
 //    return 0;
 //}
+
+/*范围区分*/
+/* https://www.acwing.com/problem/content/description/4464/ */
+//#include <iostream>
+//#include <cstring>
+//#include <algorithm>
+//#include <set>
+//
+//using namespace std;
+//
+//int T, N, X, Y, t;
+//void priAndCnt(int N, int sum)
+//{
+//    int tmp = 0, cnt = 0, un = 0;;
+//    for (cnt = 1; cnt <= N; cnt++)
+//    {
+//        tmp += cnt;
+//        if (tmp >= sum)
+//        {
+//            un = tmp - sum;
+//            break;
+//        }
+//    }
+//    printf("%d\n", cnt - !!un);
+//    for (int i = 1; i <= cnt; i++)
+//        if (i != un) cout << i << ' ';
+//    cout << endl;
+//}
+//
+//int main()
+//{
+//    scanf("%d", &T);
+//    while (t < T)
+//    {
+//        scanf("%d %d %d", &N, &X, &Y);
+//
+//        int sum = (N * (N + 1) >> 1);
+//        if (sum % (X + Y))
+//        {
+//            printf("Case #%d: IMPOSSIBLE\n", ++t);
+//            continue;
+//        }
+//        printf("Case #%d: POSSIBLE\n", ++t);
+//        priAndCnt(N, X * (sum / (X + Y)));
+//
+//    }
+//
+//    return 0;
+//}
+////把1~N分成X+Y份, 若sum(1~N) % (X+Y) != 0, 则其一定无法平分
+////之后遍历1~N, 当遍历到cnt时, tmpSum >= sum, 此时 tmpSum - sum < cnt, 在[1, cnt-1]
+////又, 小于cnt的数我们都有,则只需减去这个sub即可
+////若tmpSum == sum, 个数即为cnt, 否则减1
+////数据N过大时, 可以用二分+(n*(1+n)/2), 求第一次大于sum的cnt值
