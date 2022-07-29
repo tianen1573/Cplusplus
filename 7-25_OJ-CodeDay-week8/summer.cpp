@@ -210,3 +210,47 @@
 ////又, 小于cnt的数我们都有,则只需减去这个sub即可
 ////若tmpSum == sum, 个数即为cnt, 否则减1
 ////数据N过大时, 可以用二分+(n*(1+n)/2), 求第一次大于sum的cnt值
+
+/*坠落的蚂蚁*/
+/* https://www.acwing.com/problem/content/description/3477/ */
+//#include <iostream>
+//#include <cstring>
+//#include <algorithm>
+//#include <vector>
+//using namespace std;
+//
+//#define x first
+//#define y second
+//
+//
+//vector<int> l, r;
+//vector<pair<int, int> > pd;
+//int A, N;
+//
+//int main()
+//{
+//    cin >> N;
+//    int a = 0, b = 0;
+//    while (N--)
+//    {
+//        cin >> a >> b;
+//        if (b == 0) A = a;
+//        else pd.push_back({ a, b });
+//    }
+//
+//    sort(pd.begin(), pd.end());//先排序, l,r就不需要排序了
+//    for (auto v : pd)
+//    {
+//        //交换速度,看作交换位置(多走一步)
+//        if (v.x < A && v.y == 1) l.push_back(v.x);//左边往左走的, 对A的速度不起作用
+//        else if (v.x > A && v.y == -1) r.push_back(v.x);//右边往右走的,同理
+//    }
+//
+//    if (l.size() == r.size()) cout << "Cannot fall!\n";//速度对冲之后为0, 静止
+//    //离得近的对冲后, A静止,则对冲后最近的蚂蚁走到端点的时间, 就是A一共经过的时间
+//    else if (l.size() > r.size()) cout << 100 - l[l.size() - r.size() - 1] << endl;
+//    else if (r.size() > l.size()) cout << r[l.size()] << endl;
+//
+//    return 0;
+//}
+////思路--作者：trudbot / https://www.acwing.com/solution/content/128478/
