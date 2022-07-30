@@ -254,3 +254,42 @@
 //    return 0;
 //}
 ////思路--作者：trudbot / https://www.acwing.com/solution/content/128478/
+
+/*破记录者*/
+/* https://www.acwing.com/problem/content/description/3310/ */
+//#include <iostream>
+//#include <cstring>
+//#include <algorithm>
+//
+//using namespace std;
+//
+//const int N = 2e5 + 10;
+//
+//int arr[N];
+//int n, T, t = 1;
+//
+//int main()
+//{
+//    scanf("%d", &T);
+//    while (t <= T)
+//    {
+//        int cnt = 0, Max = 0;
+//        cin >> n;
+//
+//        for (int i = 1; i <= n; i++)
+//            scanf("%d", &arr[i]);
+//        arr[n + 1] = 0;
+//        for (int i = 1; i <= n; i++)
+//        {
+//            if (arr[i] > Max)
+//            {
+//                Max = arr[i];
+//                if (arr[i] > arr[i + 1])
+//                    cnt++;
+//            }
+//        }
+//        printf("Case #%d: %d\n", t++, cnt);
+//    }
+//
+//    return 0;
+//}
