@@ -68,5 +68,6 @@
 
 1. OJ-Context-week6/Code-Week6
 
-    Day1/Bit-Linux/-OS
+    Day1/Bit-Linux/-OS√
 
+2. OJ-Day/Bit-Linux/OS
