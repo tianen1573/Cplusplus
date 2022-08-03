@@ -70,4 +70,6 @@
 
     Day1/Bit-Linux/-OS√
 
-2. OJ-Day/Bit-Linux/OS
+2. OJ-Day2/Bit-Linux/OS√
+
+3. OJ-Day3/Bit-Linux/OS√

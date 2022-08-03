@@ -52,3 +52,37 @@
 //    }
 //    return 0;
 //}
+
+/*½øÖÆ×ª»»*/
+/* https://www.acwing.com/problem/content/description/3455/ */
+//#include <iostream>
+//#include <cstring>
+//#include <algorithm>
+//
+//using namespace std;
+//
+//int sum = 0;
+//string num;
+//
+//int main()
+//{
+//    while (cin >> num)
+//    {
+//
+//        int pos = 2, val = 0, flag = 1;
+//        if (num[0] == '-')
+//        {
+//            flag = -1;
+//            pos = 3;
+//        }
+//        sum = 0;
+//        for (; pos < num.size(); pos++)
+//        {
+//            if (num[pos] >= 'a') val = num[pos] - 'a' + 10;
+//            else val = num[pos] - '0';
+//            sum = sum * 16 + val;
+//        }
+//        cout << sum * flag << endl;
+//    }
+//    return 0;
+//}
