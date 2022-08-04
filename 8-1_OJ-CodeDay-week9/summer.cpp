@@ -86,3 +86,60 @@
 //    }
 //    return 0;
 //}
+
+
+/*a+b*/
+/* https://www.acwing.com/problem/content/3599/ */
+//#include<string>
+//#include <vector>
+//#include <iostream>
+//#include <algorithm>
+//
+//using namespace std;
+//
+//string strA, strB;
+//
+//void sum()
+//{
+//    int carry = 0;
+//    int i = 0;
+//
+//    for (; i < strA.size() && i < strB.size(); i++)
+//    {
+//        int a = strA[i] - '0', b = strB[i] - '0';
+//        strA[i] = (a + b + carry) % 10 + '0';
+//        carry = (a + b + carry) / 10;
+//    }
+//
+//    while (i < strA.size())
+//    {
+//        int a = strA[i] - '0';
+//        strA[i] = (a + carry) % 10 + '0';
+//        carry = (a + carry) / 10;
+//        i++;
+//    }
+//    while (i < strB.size())
+//    {
+//        int b = strB[i] - '0';
+//        strA.push_back('0' + (b + carry) % 10);
+//        carry = (b + carry) / 10;
+//        i++;
+//    }
+//    if (carry == 1) strA.push_back('1');
+//
+//    return;
+//}
+//
+//int main()
+//{
+//    while (cin >> strA >> strB)
+//    {
+//        reverse(strA.begin(), strA.end());
+//        reverse(strB.begin(), strB.end());
+//        sum();
+//        reverse(strA.begin(), strA.end());
+//        cout << strA << endl;
+//    }
+//
+//    return 0;
+//}

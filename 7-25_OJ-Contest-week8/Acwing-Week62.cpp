@@ -113,7 +113,7 @@
 //}
 
 /*集合操作*/
-/*模拟--75*/
+/*模拟--75 -- 题目信息没读全*/
 //#include <iostream>
 //#include <cstring>
 //#include <algorithm>
@@ -181,4 +181,40 @@
 //    return 0;
 //}
 
-//
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+
+const int N = 5e5 + 10;
+
+int n, m;
+int w[N];
+
+int main()
+{
+    scanf("%d", &m);
+    double sum = 0, res = 0;
+    int inp, k = 0;
+    while (m--)
+    {
+        scanf("%d", &inp);
+        if (inp == 1)
+        {
+            scanf("%d", &w[++n]);
+            while (k + 1 <= n && w[k + 1] <= (sum + w[n]) / (k + 1))
+                sum += w[++k];
+            res = w[n] - (sum + w[n]) / (k + 1);
+        }
+        else
+        {
+            printf("%lf\n", res);
+        }
+    }
+
+    return 0;
+}
+//1. 当最大值一定时, 若有小于平均值的元素, 则添加该元素, 平均值变小, 可以添加; 否则平均值变大, 不能添加.
+//2. 又序列为不降序序列, 若第k+1个元素可添加, 则第k个也一定可以, 所以sum是连续的
+//3. 当前缀和sum不变时, 最大值越大, res越大, 则最大值一定是最后插入的元素值
+// 来源 yxc

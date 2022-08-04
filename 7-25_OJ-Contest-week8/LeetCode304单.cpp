@@ -3,7 +3,7 @@
 
 /* https://leetcode.cn/contest/weekly-contest-304/ */
 
-/*6132. 使数组中所有元素都等于零*/
+/*使数组中所有元素都等于零*/
 //class Solution {
 //public:
 //    int minimumOperations(vector<int>& nums) {
@@ -19,7 +19,7 @@
 //    }
 //};
 
-/*6133. 分组的最大数量*/
+/*分组的最大数量*/
 //class Solution {
 //public:
 //    int maximumGroups(vector<int>& grades) {
@@ -34,7 +34,7 @@
 //    }
 //};
 
-/*6134. 找到离给定两个节点最近的节点*/
+/*找到离给定两个节点最近的节点*/
 //class Solution {
 //public:
 //    int closestMeetingNode(vector<int>& edges, int node1, int node2)
@@ -71,5 +71,48 @@
 //                    pos = i;
 //                }
 //        return pos;
+//    }
+//};
+
+/*图中的最长环*/
+//class Solution {
+//public:
+//    vector<bool> st;//统计是否遍历过
+//    vector<int> p;//全局
+//    vector<int> in_stk;//统计元素是否在此次遍历中, 以深度为标识
+//    int ans = -1;
+//
+//    void dfs(int u, int dis)
+//    {
+//        st[u] = true;//标识遍历
+//        in_stk[u] = dis;//深度入栈
+//        int ne = p[u];//下一个节点
+//        if (~ne)//存在
+//        {
+//            if (!st[ne])//未遍历
+//            {
+//                dfs(ne, dis + 1);
+//            }
+//            else if (in_stk[ne])//遍历过, 且在此次遍历中
+//            {
+//                ans = max(ans, dis + 1 - in_stk[ne]);//dis+1是ne的深度, 减去第一次深度, 差为环长度
+//            }
+//        }
+//        in_stk[u] = 0;//遍历结束, 退栈
+//    }
+//
+//    int longestCycle(vector<int>& edges) {
+//        int n = edges.size();
+//        st = vector<bool>(n);
+//        in_stk = vector<int>(n);
+//        this->p = edges;
+//
+//        for (int i = 0; i < n; i++)
+//        {
+//            if (!st[i])
+//                dfs(i, 1);
+//        }
+//
+//        return ans;
 //    }
 //};
