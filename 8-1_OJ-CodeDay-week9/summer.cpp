@@ -87,7 +87,6 @@
 //    return 0;
 //}
 
-
 /*a+b*/
 /* https://www.acwing.com/problem/content/3599/ */
 //#include<string>
@@ -143,3 +142,36 @@
 //
 //    return 0;
 //}
+
+/*切木棍*/
+/* https://www.acwing.com/problem/content/description/3670/ */
+//#include <iostream>
+//#include <cstring>
+//#include <algorithm>
+//using namespace std;
+//
+//int n, cnt;
+//
+//int main()
+//{
+//    while (~scanf("%d", &n))
+//    {
+//        if (n % 2 == 1)
+//            cnt = 0;
+//        else
+//        {
+//            cnt = n / 2 - 1;
+//            if (n % 4 == 0)
+//                cnt--;
+//            cnt /= 2;
+//        }
+//
+//        printf("%d\n", cnt);
+//    }
+//
+//
+//    return 0;
+//}
+////1. n必须为偶数
+////2. 其中一对直角边长度和为 n / 2, 则分配给两个边有[1, n/2), 即 n / 2 - 1 中分法
+////3. 不能为正方形, 一个数对为一种, 和顺序无关.
