@@ -76,8 +76,10 @@
 
 3. OJ-Day3/Bit-Linux/OS√
 
-4. OJ-Day4/OS
+4. OJ-Day4/OS√
 
 5. OJ-Day5/休息√
 
 6. OJ-Acwing63/LeetCode84双
+
+7. OJ-Day6/LeetCode305单
