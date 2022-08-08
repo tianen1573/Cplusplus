@@ -58,6 +58,23 @@
 //};
 
 /*检查数组是否存在有效划分*/
+//class Solution {
+//public:
+//    bool validPartition(vector<int>& nums) {
+//        const int N = 1e5 + 11;
+//        int n = nums.size();
+//        bool f[N] = { 0 };
+//        f[0] = true;
+//
+//        for (int i = 1; i < n; i++)
+//            if ((f[i - 1] && nums[i] == nums[i - 1]) ||//条件1
+//                (i > 1 && f[i - 2] && nums[i] == nums[i - 1] && nums[i] == nums[i - 2]) ||//条件2
+//                (i > 1 && f[i - 2] && nums[i] == nums[i - 1] + 1 && nums[i] == nums[i - 2] + 2))//条件3
+//                f[i + 1] = true;
+//
+//        return f[n];
+//    }
+//};
 
 /*最长理想子序列*/
 //class Solution {

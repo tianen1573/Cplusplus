@@ -81,4 +81,25 @@
 //    }
 //};
 
-/* 将数组排序的最少替换次数 */
+/*将数组排序的最少替换次数--贪心*/
+//class Solution {
+//public:
+//    long long minimumReplacement(vector<int>& nums) {
+//        long long res = 0;
+//        int n = nums.size();
+//        int last = nums[n - 1];
+//        for (int i = n - 1; i >= 0; i--)
+//        {
+//            if (nums[i] <= last) last = nums[i];
+//            else
+//            {
+//                int k = (nums[i] + last - 1) / last;
+//                last = nums[i] / k;
+//                res += k - 1;
+//            }
+//        }
+//
+//        return res;
+//    }
+//};
+////来源: /* https://leetcode.cn/problems/minimum-replacements-to-sort-the-array/solution/by-endlesscheng-d11y/ */
