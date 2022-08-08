@@ -175,3 +175,127 @@
 ////1. n必须为偶数
 ////2. 其中一对直角边长度和为 n / 2, 则分配给两个边有[1, n/2), 即 n / 2 - 1 中分法
 ////3. 不能为正方形, 一个数对为一种, 和顺序无关.
+
+/*根能抵达的点*/
+/* https://www.acwing.com/problem/content/description/3715/ */
+////--二分
+//#include <iostream>
+//#include <cstring>
+//#include <algorithm>
+//#include <queue>
+//
+//using namespace std;
+//
+//const int N = 20007;
+//
+//int T, n, y;
+//
+//bool check(int X, vector<vector< pair<int, int> >>& arr)
+//{
+//    //初始化
+//    int res = 1;
+//    bool sta[N] = { 0 };
+//    queue<int> que;
+//    que.push(0), res = 1, sta[0] = true;
+//
+//    //BFS
+//    while (que.size())
+//    {
+//        int top = que.front();
+//        que.pop();
+//        for (int i = 0; i < arr[top].size(); i++)
+//            if (sta[arr[top][i].first] || arr[top][i].second < X) continue;//遍历过 或 权值小
+//            else
+//            {
+//                sta[arr[top][i].first] = true;
+//                que.push(arr[top][i].first);
+//                res++;
+//            }
+//        if (res > y) return false;
+//    }
+//
+//    return true;
+//}
+//
+//int main()
+//{
+//    scanf("%d", &T);
+//    while (T--)
+//    {
+//        scanf("%d%d", &n, &y);
+//
+//        int Max = 0;
+//        vector<vector< pair<int, int> >> arr(n);
+//
+//        //存图
+//        int u = 0, v = 0, w = 0;
+//        for (int i = 0; i < n - 1; i++)
+//        {
+//            scanf("%d %d %d", &u, &v, &w);
+//            Max = max(Max, w);
+//            arr[u].push_back({ v, w });
+//            arr[v].push_back({ u, w });
+//        }
+//
+//        //二分找Min
+//        int l = 0, r = Max + 1;
+//        while (l < r)
+//        {
+//            int mid = l + r >> 1;
+//
+//            if (check(mid, arr)) r = mid;
+//            else l = mid + 1;
+//        }
+//        cout << l << endl;
+//    }
+//
+//    return 0;
+//}
+//
+//
+//// //其他-- 作者: trudbot 
+//// #include <bits/stdc++.h>
+//// using namespace std;
+//// vector<vector<pair<int, int>>> g;//邻接表存图, pair{顶点编号, 权值}, 用着方便一点
+//// int n, y;
+//// vector<int> minCost;
+//
+//// //遍历图以获取每个结点的路径最小权
+//// //dp思想 : 结点v的minCost 等于 min (v的父结点的minCost, v的父结点到v这条边的权值)
+//// //v为当前结点编号, last为上一个结点(用于避免重复遍历, 可以用visit数组替代), m为v的路径最小权值
+//// int dfs(int v, int last, int m)
+//// {
+////     minCost[v] = m;
+////     for(auto &i : g[v])
+////     {
+////         if(i.first == last) continue;
+////         dfs(i.first, v, min(m, i.second));//i.first结点的最小权值为min(m, weight(v --> i.first) )
+////     }
+//// }
+//
+//// int main() {
+////     int T; cin >> T;
+////     while( T-- )
+////     {
+////         cin >> n >> y;
+////         g.resize(n);
+////         minCost.resize(n);
+//
+////         for(int i=1; i<n; i++)
+////         {
+////             int a, b, c;
+////             cin >> a >> b >> c;
+////             g[a].push_back({b, c});
+////             g[b].push_back({a, c});//题中没有明确这条边是a->b还是b->a, 所以为了保险视为无向边
+////         }
+////         dfs(0, -1, 1e9);//由于根结点没有父结点, 所以最小权手动给一个极大值
+////         sort(minCost.begin(), minCost.end());
+//
+////         if(n == y) cout << 0 << endl;//当n==y时不需要删除任何结点
+////         else cout << minCost[n-y-1] + 1 << endl;//+1的原因是X要严格大于权值才能删
+//
+////         g.clear();
+////     }
+//
+////     return 0;
+//// }
