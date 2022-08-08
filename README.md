@@ -76,7 +76,7 @@
 
 3. OJ-Day3/Bit-Linux/OS√
 
-4. OJ-Day4/OS√
+4. OJ-Day4/Bit-work9-OS√
 
 5. OJ-Day5/休息√
 
@@ -86,4 +86,4 @@
 
 8. OJ-Context-week10/Code-Week10
 
-    Day1/work9
+    Day1/work10/C++
