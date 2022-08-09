@@ -4,7 +4,7 @@
 
 11. OJ-Context-week6/Code-Week6
 
-    Bit-
+    Bit-summerWork
 
     Day1/Work1/Linux√
 
@@ -87,3 +87,7 @@
 8. OJ-Context-week10/Code-Week10
 
     Day1/work10/C++
+
+9. OJ-Day2/Bit-work11/C++
+
+10. OJ-Day3/Bit-work12/string
