@@ -67,3 +67,46 @@
 //
 //    return 0;
 //}
+
+/*素数*/
+/* https://www.acwing.com/problem/content/description/3529/ */
+//#include <iostream>
+//#include <cstring>
+//#include <algorithm>
+//#include <cmath>
+//
+//using namespace std;
+//
+//int n;
+//
+//bool prime(int p)
+//{
+//    if (p == 1) return false;
+//    if (p == 2 || p == 3) return true;
+//    if (p % 6 != 1 && p % 6 != 5) return false;
+//
+//    for (int i = 5; i <= floor(sqrt(p)); i += 6)
+//    {
+//        if (p % i == 0 || p % (i + 2) == 0)
+//            return false;
+//    }
+//
+//    return true;
+//}
+//int main()
+//{
+//    while (~scanf("%d", &n))
+//    {
+//        bool flag = true;
+//        for (int i = 11; i < n; i += 10)//要求个位为1, +10
+//            if (prime(i))
+//            {
+//                flag = false;
+//                printf("%d ", i);
+//            }
+//        if (flag) printf("-1\n");
+//        else printf("\n");
+//    }
+//
+//    return 0;
+//}
