@@ -90,8 +90,12 @@
 
 9. OJ-Day2/Bit-work11/C++
 
-10. OJ-Day3/Bit-work12/string
+10. OJ-Day3/Bit-work12/string运用
 
 11. OJ-Day4/休息√
 
-12. OJ-Day5
+12. OJ-Day5/string模拟√
+
+13. OJ-Day6/Acwing64
+
+14. OJ-LeetCode306单
