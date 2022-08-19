@@ -87,3 +87,16 @@ public:
         return ans;
     }
 };
+
+
+
+class Solution {
+public:
+    int busyStudent(vector<int>& st, vector<int>& et, int q) {
+        int res = 0;
+        for (int i = 0; i < st.size(); i++) {
+            if (st[i] <= q && et[i] >= q)res++;
+        }
+        return res;
+    }
+};
