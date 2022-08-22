@@ -1,5 +1,100 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 
+/*设计循环双端队列*/
+/* https://leetcode.cn/problems/design-circular-deque/submissions/ */
+//class MyCircularDeque {
+//
+//    /*
+//    * l, r 指向的空间存在内容
+//    * 当Size == 0 时, l, r 不动
+//    * 当Size != 0 时, 需要移动
+//    * 同理删除时, 若Size == 1, l , r 也不需要移动
+//    */
+//private:
+//    int l = 0, r = 0, Size = 0;//头, 尾, 长度
+//    int* arr = nullptr;
+//    int k = 0;
+//public:
+//    MyCircularDeque(int k) {
+//        Size = l = r = 0;
+//        this->k = k;
+//        arr = new int[k];
+//        memset(arr, 0, sizeof(int) * k);
+//    }
+//
+//    bool insertFront(int value) {
+//        if (isFull()) return false;
+//
+//
+//        if (!isEmpty())//不空
+//            l = (l - 1 + k) % k;
+//        arr[l] = value;
+//
+//        Size++;
+//        return true;
+//    }
+//
+//    bool insertLast(int value) {
+//        if (isFull()) return false;
+//
+//
+//        if (!isEmpty())//不空
+//            r = (r + 1) % k;
+//        arr[r] = value;
+//
+//        Size++;
+//        return true;
+//    }
+//
+//    bool deleteFront() {
+//        if (isEmpty()) return false;
+//
+//        if (Size > 1)
+//            l = (l + 1) % k;
+//        Size--;
+//
+//        return true;
+//
+//    }
+//
+//    bool deleteLast() {
+//        if (isEmpty()) return false;
+//
+//        if (Size > 1)
+//            r = (r - 1 + k) % k;
+//        Size--;
+//
+//        return true;
+//    }
+//
+//    int getFront() {
+//        if (isEmpty()) return -1;
+//
+//        return arr[l];
+//    }
+//
+//    int getRear() {
+//        if (isEmpty()) return -1;
+//
+//        return arr[r];
+//    }
+//
+//    bool isEmpty() {
+//        if (Size == 0) return true;
+//
+//        return false;
+//    }
+//
+//    bool isFull() {
+//
+//        //if((l - 1 + k) % k == r) return true;
+//        //if((r + 1) % k == l) return true;
+//        if (Size == k) return true;
+//
+//        return false;
+//    }
+//};
+
 /*1450. 在既定时间做作业的学生人数*/
 /* https://leetcode.cn/problems/number-of-students-doing-homework-at-a-given-time/ */
 //class Solution {
@@ -120,30 +215,58 @@
 
 /*最大二叉树*/
 /* https://leetcode.cn/problems/maximum-binary-tree/ */
+//  /*DFS*/
+//// class Solution {
+//// public:
+//
+////     vector<int> nums;
+//
+////     TreeNode* bulid(int l, int r)
+////     {
+////         if(l > r) return nullptr;
+//
+////         int Max = l;
+////         for(int i = l; i <= r; i++)
+////             if(nums[i] > nums[Max]) Max = i;
+//
+////         TreeNode* root = new TreeNode(nums[Max]);
+////         root->left = bulid(l, Max - 1);
+////         root->right = bulid(Max + 1, r);
+////         return root;
+////     }
+//
+////     TreeNode* constructMaximumBinaryTree(vector<int>& nums) {
+//
+////         this->nums = nums;
+//
+////         return bulid(0, nums.size() - 1);
+//
+////     }
+//// };
+// /*笛卡尔树-单调栈*/
+// /* https://www.acwing.com/activity/content/problem/content/7426/ */
 //class Solution {
 //public:
-//
-//    vector<int> nums;
-//
-//    TreeNode* bulid(int l, int r)
-//    {
-//        if (l > r) return nullptr;
-//
-//        int Max = l;
-//        for (int i = l; i <= r; i++)
-//            if (nums[i] > nums[Max]) Max = i;
-//
-//        TreeNode* root = new TreeNode(nums[Max]);
-//        root->left = bulid(l, Max - 1);
-//        root->right = bulid(Max + 1, r);
-//        return root;
-//    }
-//
 //    TreeNode* constructMaximumBinaryTree(vector<int>& nums) {
 //
-//        this->nums = nums;
+//        stack<TreeNode*> stk;
 //
-//        return bulid(0, nums.size() - 1);
+//        for (auto val : nums)
+//        {
+//            auto node = new TreeNode(val);
+//
+//            while (stk.size() && stk.top()->val < val)
+//            {
+//                node->left = stk.top();
+//                stk.pop();
+//            }
+//
+//            if (stk.size()) stk.top()->right = node;
+//            stk.push(node);
+//        }
+//
+//        while (stk.size() > 1) stk.pop();//栈底元素为最大值
+//        return stk.top();
 //
 //    }
 //};
