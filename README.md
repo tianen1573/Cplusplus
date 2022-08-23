@@ -2,9 +2,9 @@
 
 ### 2022.7
 
-11. OJ-Context-week6/Code-Week6
+11. OJ-Contest-week6/Code-Week6
 
-    Bit-summerWork
+    Bit-summerWork√
 
     Day1/Work1/Linux√
 
@@ -28,9 +28,9 @@
 
 17. OJ-LeetCode单302/Day6√
 
-18. OJ-Context-week7/Code-Week7
+18. OJ-Contest-week7/Code-Week7
 
-    Bit-（7_11）
+    Bit-test（7_11）√
 
     Day1/Work6√
 
@@ -50,7 +50,7 @@
 
 24. OJ-LeetCode303单/Day6√
 
-25. OJ-Context-week8/Code-Week8
+25. OJ-Contest-week8/Code-Week8
 
     Day1√/Bit-C++√
 
@@ -68,7 +68,7 @@
 
 ### 2022.8
 
-1. OJ-Context-week9/Code-Week9
+1. OJ-Contest-week9/Code-Week9
 
     Day1/Bit-Linux/-OS√
 
@@ -84,40 +84,42 @@
 
 7. OJ-Day6/LeetCode305单√
 
-8. OJ-Context-week10/Code-Week10
+8. OJ-Contest-week10/Code-Week10
 
-    Day1/work10/C++
+    **Day1/work10/C++**
 
-9. OJ-Day2/Bit-work11/C++
+9. **OJ-Day2/Bit-work11/C++**
 
-10. OJ-Day3/Bit-work12/string运用
+10. **OJ-Day3/Bit-work12/string运用**
 
 11. OJ-Day4/休息√
 
 12. OJ-Day5/string模拟√
 
-13. OJ-Day6/Acwing64
+13. **OJ-Day6/Acwing64**
 
-14. OJ-LeetCode306单/Bit-work13
+14. **OJ-LeetCode306单/Bit-work13**
 
-15. OJ-Context-week11/Code-Week11
+15. OJ-Contest-week11/Code-Week11
 
-     Day1/work14/补课√
+      Day1/work14/补课√
 
-16. OJ-Day2/Bit-work15
+16. OJ-Day2/Bit-work15√
 
-17. OJ-Day3/Bit-work16
+17. OJ-Day3/Bit-work16√
 
-18. OJ-Day4
+18. **OJ-Day4**
 
 19. OJ-Day5√
 
-20. OJ-Acwing65/LeetCode85双
+20. **OJ-Acwing65/LeetCode85双**
 
-21. OJ-Day6/LeetCode307单
+21. **OJ-Day6/LeetCode307单**
 
-22. OJ-Context-week12/Code-Week12
+22. OJ-Contest-week12/Code-Week12
 
-     Day1
+      Day1√
 
-23. 
+23. OJ-Day2/Bit-work√
+
+24. OJ-Day3/Bit-work
