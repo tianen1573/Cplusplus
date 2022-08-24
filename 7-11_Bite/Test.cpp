@@ -39,3 +39,18 @@
 //
 //	return 0;
 //}
+
+//#include <stdio.h>
+//#define a 10
+//void foo();
+//void foo() {
+//#undef a
+//#define a 50
+//}
+//int main()
+//{
+//	printf("%d..", a);
+//	//foo();
+//	printf("%d", a);
+//	return 0;
+//} 

@@ -122,4 +122,4 @@
 
 23. OJ-Day2/Bit-work√
 
-24. OJ-Day3/Bit-work
+24. OJ-Day3/Bit-work√
