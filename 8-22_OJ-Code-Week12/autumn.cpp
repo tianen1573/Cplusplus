@@ -113,3 +113,45 @@
 // * 则需要记录到达某点的最少转弯次数
 // * by:陌上青花_4
 // */
+
+/*将数字变成0的操作数*/
+/* https://leetcode.cn/problems/number-of-steps-to-reduce-a-number-to-zero/ */
+//class Solution {
+//public:
+//    int numberOfSteps(int num) {
+//
+//        int res = 0;
+//
+//        while (num)
+//        {
+//            if (num & 1) res += 2;
+//            else res += 1;
+//
+//            num >>= 1;
+//        }
+//
+//        if (res) res--;
+//
+//        return res;
+//    }
+//};
+
+/*大小为 K 且平均值大于等于阈值的子数组数目*/
+/* https://leetcode.cn/problems/number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold/ */
+//class Solution {
+//public:
+//    int numOfSubarrays(vector<int>& arr, int k, int threshold) {
+//
+//        vector<int> sum(arr.size() + 1);
+//        int res = 0, Sum = k * threshold;
+//
+//        for (int i = 1; i < sum.size(); i++)
+//            sum[i] = sum[i - 1] + arr[i - 1];
+//
+//        for (int i = k; i < sum.size(); i++)
+//            if (sum[i] - sum[i - k] >= Sum)
+//                res++;
+//
+//        return res;
+//    }
+//};
