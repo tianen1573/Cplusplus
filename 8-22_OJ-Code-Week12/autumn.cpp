@@ -155,3 +155,19 @@
 //        return res;
 //    }
 //};
+
+/*Ê±ÖÓÖ¸ÕëµÄ¼Ğ½Ç*/
+/* https://leetcode.cn/problems/angle-between-hands-of-a-clock/submissions/ */
+//class Solution {
+//public:
+//    double angleClock(int hour, int minutes) {
+//
+//        double md = minutes * 6;
+//        double hd = (hour % 12) * 30 + ((double)minutes / 60) * 30;
+//
+//        double res = abs(md - hd);
+//
+//        return res > 180 ? 360 - res : res;
+//
+//    }
+//};
