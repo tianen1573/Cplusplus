@@ -171,3 +171,76 @@
 //
 //    }
 //};
+
+/*跳跃游戏Ⅳ*/
+/* https://leetcode.cn/problems/jump-game-iv/ */
+//    /*BFS + STL
+//    * BFS求最短路径, 使得我们到达某点时一定是最小步数
+//    * map: 快速查找值相同的元素的下标
+//    * set: 剪枝, 避免当值相同时, 无意义的跳转
+//    * bool: 记录是否已经放入过队列
+//    */
+//class Solution {
+//public:
+//
+//    queue<int> pos;
+//    unordered_map<int, vector<int>> mvp;
+//    unordered_set<int> isTrue;
+//    bool st[50011] = { false };
+//
+//    int minJumps(vector<int>& arr) {
+//
+//        if (arr.size() == 1) return 0;
+//
+//        int step = 0;
+//        //统计相同值的元素下标
+//        for (int i = 0; i < arr.size(); i++)
+//            mvp[arr[i]].push_back(i);
+//
+//        int res = arr.size() - 1;
+//        pos.push(0); st[0] = true;
+//
+//        while (true)
+//        {
+//            int sz = pos.size();
+//            step++;
+//            for (int i = 0; i < sz; i++)
+//            {
+//                int p = pos.front();
+//                pos.pop();
+//                //下标 + 1
+//                if (!st[p + 1] && p + 1 < arr.size())
+//                {
+//                    pos.push(p + 1);
+//                    st[p + 1] = true;
+//                }
+//                if (p + 1 == res) return step;
+//
+//                //下标 - 1
+//                if (p - 1 >= 0 && !st[p - 1])
+//                {
+//                    pos.push(p - 1);
+//                    st[p - 1] = true;
+//                }
+//
+//                //同值元素
+//                if (isTrue.count(arr[p]) == 1)
+//                    continue;
+//                else
+//                {
+//                    for (auto x : mvp[arr[p]])
+//                    {
+//                        if (x == res) return step;
+//
+//                        if (x != p && !st[x]) pos.push(x);
+//                        st[x] = true;
+//                    }
+//                    isTrue.insert(arr[p]);
+//                }
+//
+//            }
+//        }
+//
+//        return 0;
+//    }
+//};
