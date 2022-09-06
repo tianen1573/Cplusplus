@@ -143,5 +143,15 @@
 ### 2022.9
 
 1. OJ-Day4/C++√
+
 1. OJ-Day5√
+
 1. OJ-Day6√
+
+1. OJ-Day7√
+
+1. OJ-Code-Week14
+
+    OJ-Day1√
+
+6. OJ-Day2√
