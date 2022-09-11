@@ -270,3 +270,59 @@
 //
 //    }
 //};
+
+/*1224. 最大相等频率*/
+/* https://leetcode.cn/problems/maximum-equal-frequency/ */
+
+#include<stdio.h>
+#include<unordered_map>
+using namespace std;
+
+
+//作者：yxc
+//链接：https ://www.acwing.com/activity/content/code/content/4125316/
+class Solution {
+public:
+    int maxEqualFreq(vector<int>& nums) {
+        unordered_map<int, int> cnt, hash;
+        int res = 0, len = 0;
+        for (auto x : nums) {
+            //如果该元素已存在
+            if (cnt.count(x)) {
+                //该元素出现次数+1, 则在 hash中 将出现次数为 cnt[x] 的元素的 次数 减1
+                //因为x的个数 不为cnt[x]了
+                hash[cnt[x]] --;
+                //如果, 减去之后, 出现次数为cnt[x]的个数为0, 则将其删除, 因为后面需要统计有多少中出现次数
+                if (!hash[cnt[x]]) hash.erase(cnt[x]);
+            }
+            //不存在则正常记录
+            cnt[x] ++;
+            hash[cnt[x]] ++;
+            len++;
+
+            //如果 出现次数 只有一种
+            if (hash.size() == 1) {
+                auto it = hash.begin();
+                //若出现次数为1, 则 出现次数相同的 个数 为所谓, 因为删去之后, 剩下的不变
+                //若 出现次数 不为1, 则必须只有一种元素值, 则只能有一种元素
+                if (it->first == 1 || it->second == 1) res = len;
+            }
+            //如果出现次数有 两种
+            else if (hash.size() == 2) {
+                vector<pair<int, int>> tmp(hash.begin(), hash.end());
+                //强制 第一个出现的少  后一个出现的多
+                if (tmp[0].first > tmp[1].first) swap(tmp[0], tmp[1]);
+                //出现次数少的只有一次, 并且只有一种元素的出现次数为当前值
+                //出现次数少的为出现一次, 且只有一种, 则减去它直接没有, 剩下的不变
+                if (tmp[0].first == 1 && tmp[0].second == 1) res = len;
+                //出现次数多的比出现次数少的多一次, 并且出现次数多的只有一种
+                //出现次数多的只有一种, 则其减去一个为少的值, 全部都为 出现次数次数少的
+                if (tmp[1].first == tmp[0].first + 1 && tmp[1].second == 1) res = len;
+            }
+            //三种, 删除任何一个都不满足
+        }
+
+        return res;
+    }
+};
+
