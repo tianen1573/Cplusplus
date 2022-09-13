@@ -1,6 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 
-//#include "Date.h"
+#include "Date.h"
 /*DateTest*/
 //void test1()
 //{
@@ -65,6 +65,14 @@
 //	//test3();
 //	//test4();
 //	test5();
+//
+//	return 0;
+//}
+
+////¡Ÿ ±∂‘œÛ
+//int main()
+//{
+//	cout << Date(1);
 //
 //	return 0;
 //}
