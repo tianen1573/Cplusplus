@@ -1,6 +1,7 @@
 #include "Date.h"
 
 
+
 int GetMonthDays(int year, int month)
 {
 	static int days[13] = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };

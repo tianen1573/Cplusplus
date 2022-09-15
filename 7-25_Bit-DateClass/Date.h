@@ -8,7 +8,14 @@ int GetMonthDays(int year, int month);
 
 class Date
 {
+
+	
+
 public:
+	static void aaa()
+	{
+		cout << 11;
+	}
 	Date(int year = 2022, int month = 7, int day = 27)//构造
 	{
 		cout << "构造\n";

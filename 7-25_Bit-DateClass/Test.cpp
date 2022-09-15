@@ -69,10 +69,11 @@
 //	return 0;
 //}
 
-////临时对象
+//临时对象
 //int main()
 //{
 //	cout << Date(1);
+//	Date::aaa();
 //
 //	return 0;
 //}
