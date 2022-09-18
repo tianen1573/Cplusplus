@@ -168,6 +168,16 @@
 
 12. OJ-Code-Week15
 
-     OJ-Day1√
+       OJ-Day1√
 
 13. OJ-Day2√
+
+14. OJ-Day3√
+
+15. OJ-Day4√
+
+16. OJ-Day5√
+
+17. OJ-Day6√
+
+18. Bit-模拟string
