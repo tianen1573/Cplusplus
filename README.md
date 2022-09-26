@@ -168,7 +168,7 @@
 
 12. OJ-Code-Week15
 
-       OJ-Day1√
+     OJ-Day1√
 
 13. OJ-Day2√
 
@@ -189,5 +189,6 @@
 21. Bit-模拟vector√
 22. Bit-MyVector√
 23. Bit-MyVector√
-24. 复习
-25. 复习
+24. 复习√
+25. 复习√
+26. 考试√
