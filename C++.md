@@ -1,0 +1,1876 @@
+#### 基础语法
+
+###### 命名空间
+
+```
+在C/C++中，变量、函数和后面要学到的类都是大量存在的，这些变量、函数和类的名称将都存在于全局作
+用域中，可能会导致很多冲突。使用命名空间的目的是对标识符的名称进行本地化，以避免命名冲突或名字
+污染，namespace关键字的出现就是针对这种问题的。
+定义命名空间，需要使用到namespace关键字，后面跟命名空间的名字，然后接一对{}即可，{}中即为命名
+空间的成员。
+//1. 普通的命名空间
+namespace N1 // N1为命名空间的名称
+{}
+//2. 命名空间可以嵌套
+//3. 同一个工程中允许存在多个相同名称的命名空间,编译器最后会合成同一个命名空间中。
+注意：一个命名空间就定义了一个新的作用域，命名空间中的所有内容都局限于该命名空间中
+--------------------
+ 命名空间使用
+加命名空间名称及作用域限定符 N::a//每次使用都要限定
+使用using将命名空间中成员引入 using N::a//只取出a
+使用using namespace 命名空间名称引入 using namespace N//全部取出
+```
+
+###### 缺省参数
+
+```
+允许函数参数缺省，但如果有实参,需要从左至右依次对照
+```
+
+###### 函数重载
+
+```
+形参列表不同： 参数类型不同， 参数顺序不同，参数个数不同
+原因:c++和c语言的符号表符号制定规则不同,c++可以区分不同形参列表的同名函数, 从而支持函数重载
+//两篇博客:
+https://www.cnblogs.com/skynet/archive/2010/09/05/1818636.html
+https://blog.csdn.net/lioncolumn/article/details/10376891
+```
+
+###### 引用
+
+```
+引用在定义时必须初始化
+一个变量可以有多个引用
+一个引用在定义后就无法更改
+引用和指针的不同点:
+1. 引用在定义时必须初始化，指针没有要求
+2. 引用在初始化时引用一个实体后，就不能再引用其他实体，而指针可以在任何时候指向任何一个同类型
+实体
+3. 没有NULL引用，但有NULL指针
+4. 在sizeof中含义不同：引用结果为引用类型的大小，但指针始终是地址空间所占字节个数(32位平台下占
+4个字节)
+5. 引用自加即引用的实体增加1，指针自加即指针向后偏移一个类型的大小
+6. 有多级指针，但是没有多级引用
+7. 访问实体方式不同，指针需要显式解引用，引用编译器自己处理
+8. 引用比指针使用起来相对更安全
+```
+
+###### extern "C"
+
+```
+有时候在C++工程中可能需要将某些函数按照C的风格来编译，在函数前加extern "C"，意思是告诉编译器，将该函数按照C语言规则来编译。
+C++调用C库，需要引用头文件时extern "C",告诉编译器,以c语言的方式在该头文件寻找函数/变量
+C调用C++库，需要条件编译 + h文件extern "C",条件编译->编译时,按C语言规则制表,extern "C",按照C语言标准查找函数
+```
+
+###### 日期转换成星期
+
+```
+蔡勒公式：随便给一个日期，直接算出是星期几。
+w=y+⌊y/4⌋+⌊c/4⌋−2c+⌊26(m+1)/10⌋+d−1w=y+⌊y/4⌋+⌊c/4⌋−2c+⌊26(m+1)/10⌋+d−1
+w为星期，c为世纪的前两位，y为年后两位，m为月，d为日。
+其中m大于等于3，小于等于14，某年的1,2月要看成上一年的十三月，十四月来计算。
+蔡勒公式甚至还能算到公元前，比如公元前1世纪，就令c=-1，以此类推。
+吉姆拉尔森公式：随便给一个日期，也能直接算出星期几
+w=d+2m+⌊3(m+1)/5⌋+y+⌊y/4⌋−⌊y/100⌋+⌊y/400⌋+1w=d+2m+⌊3(m+1)/5⌋+y+⌊y/4⌋−⌊y/100⌋+⌊y/400⌋+1 
+吉姆拉尔森公式代码写起来更短，因为不需要用到世纪。直接给出正常的年月日就行。
+算出来w=0为星期天，w=1为星期一，以此类推
+```
+
+###### 内联函数--建议性关键字
+
+```
+inline 修饰的函数，在编译时调用内联函数的地方可能会展开，没有函数压栈的开销
+1. inline是一种以空间换时间的做法，省去调用函数额开销。所以代码很长或者有循环/递归的函数不适宜使用作为内联函数。
+2. inline对于编译器而言只是一个建议，编译器会自动优化，如果定义为inline的函数体内有循环/递归等等，编译器优化时会忽略掉内联。
+3. inline不建议声明和定义分离，分离会导致链接错误。因为inline被展开，就没有函数地址了，链接就会找不到。[.c文件调用函数->通过.h文件的函数声明找出地址->call地址, 但inline展开后, 不会进符号表, 即没有这个函数了, call不到]
+```
+
+###### extern & static
+
+```
+extern 声明的全局变量， 写入符号表， 整个项目就一个
+static 修饰的变量，不写入符号表，仅当前文件
+```
+
+###### auto--自动推导变量类型
+
+```
+auto不再是一个存储类型指示符，而是作为一个新的类型指示符来指示编译器，auto声明的变量必须由编译器在编译时期推导而得。
+使用auto定义变量时必须对其进行初始化，在编译阶段编译器需要根据初始化表达式来推导auto的实际类
+型。因此auto并非是一种“类型”的声明，而是一个类型声明时的“占位符”，编译器在编译期会将auto替换为变量实际的类型。
+-----------auto的使用细则
+1. auto与指针和引用结合起来使用, 用auto声明指针类型时，用auto和auto*没有任何区别，但用auto声明引用类型时则必须加&
+2. 在同一行定义多个变量, 当在同一行声明多个变量时，这些变量必须是相同的类型，否则编译器将会报错，因为编译器实际只对第一个类型进行推导，然后用推导出来的类型定义其他变量.
+-----------auto不能推导的场景
+1. auto不能作为函数的参数
+2. auto不能直接用来声明数组
+3. 为了避免与C++98中的auto发生混淆，C++11只保留了auto作为类型指示符的用法
+4. auto在实际中最常见的优势用法就是跟以后会讲到的C++11提供的新式for循环，还有lambda表达式等进行配合使用。
+```
+
+**驼峰法命名**
+```
+大驼峰: 首字母大写
+小驼峰: 尾字母大小
+```
+
+###### nullptr
+
+```
+NULL为假空指针,实为(int)0, nullptr为空指针(真)
+1. 在使用nullptr表示指针空值时，不需要包含头文件，因为nullptr是C++11作为新关键字引入的。
+2. 在C++11中，sizeof(nullptr) 与 sizeof((void*)0)所占的字节数相同。
+3. 为了提高代码的健壮性，在后续表示指针空值时建议最好使用nullptr。
+```
+
+###### C++中struct和class的区别是什么？
+
+```
+C++需要兼容C语言，所以C++中struct可以当成结构体去使用。另外C++中struct还可以用来定义类。 和class是定义类是一样的，区别是struct的成员默认访问方式是public，class是struct的成员默认访问方式 是private。
+```
+
+######  类的访问限定符及封装 
+
+```
+C++实现封装的方式：用类将对象的属性与方法结合在一块，让对象更加完善，通过访问权限选择性的将其 接口提供给外部的用户使用。 
+【访问限定符说明】 
+1. public修饰的成员在类外可以直接被访问 
+2. protected和private修饰的成员在类外不能直接被访问(此处protected和private是类似的) 3. 访问权限作用域从该访问限定符出现的位置开始直到下一个访问限定符出现时为止 
+4. class的默认访问权限为private，struct为public(因为struct要兼容C)  
+注意：访问限定符只在编译时有用，当数据映射到内存后，没有任何访问限定符上的区别
+```
+
+######  类的实例化
+
+```
+用类类型创建对象的过程，称为类的实例化 
+1. 类只是一个模型一样的东西，限定了类有哪些成员，定义出一个类并没有分配实际的内存空间来存储它 2. 一个类可以实例化出多个对象，实例化出的对象 占用实际的物理空间，存储类成员变量 
+3. 做个比方。类实例化出对象就像现实中使用建筑设计图建造出房子，类就像是设计图，只设计出需要什 么东西，但是并没有实体的建筑存在，同样类也只是一个设计，实例化出的对象才能实际存储数据，占用物理空间  
+```
+
+######  类的作用域
+
+```
+类定义了一个新的作用域，类的所有成员都在类的作用域中。在类体外定义成员，需要使用 :: 作用域解析符 指明成员属于哪个类域
+```
+
+```c++
+class Person
+{
+public:
+ void PrintPersonInfo();
+private:
+ char _name[20];
+ char _gender[3];
+ int _age;
+};
+// 这里需要指定PrintPersonInfo是属于Person这个类域
+void Person::PrintPersonInfo()
+{
+ cout<<_name<<" "_gender<<" "<<_age<<endl;
+}
+```
+
+###### 类对象内存大小
+
+```
+类成员函数存放在公共代码区，不与成员变量存在同一区域，不算大小
+调用类成员函数代码，会在类作用域找函数，在编译时转换成call
+无成员函数的类，内存默认为1
+结论：一个类的大小，实际就是该类中”成员变量”之和，当然也要进行内存对齐，注意空类的大小，空类比较特殊，编译器给了空类一个字节来唯一标识这个类。
+```
+
+###### this指针
+
+```
+C++编译器给每个“非静态的成员函数“增加了一个隐藏的指针参数，让该指针指向当前对象(函数运行时调用该函数的对象)，在函数体中所有成员变量的操作，都是通过该指针去访问。只不过所有的操作对用户是透明的，即用户不需要来传递，编译器自动完成。
+-----this指针的特性
+1. this指针的类型：类类型* const
+2. 只能在“成员函数”的内部使用
+3. this指针本质上其实是一个成员函数的形参，是对象调用成员函数时，将对象地址作为实参传递给this形参。所以对象中不存储this指针。
+4. this指针是成员函数第一个隐含的指针形参，一般情况由编译器通过ecx寄存器自动传递，不需要用户传递
+5. this指针存在函数形参列表里, 可以通过强转变成空指针
+```
+
+###### 六大默认成员函数
+
+**构造函数：**
+
+```
+构造函数是一个特殊的成员函数，名字与类名相同,创建类类型对象时由编译器自动调用，保证每个数据成员都有一个合适的初始值，并且在对象的生命周期内只调用一次。需要注意的是，构造函数的虽然名称叫构造，但是构造函数的主要任务并不是开空间创建对象，而是初始化对象。
+其特征如下：
+1. 函数名与类名相同。
+2. 无返回值。
+3. 对象实例化时编译器自动调用对应的构造函数。
+4. 构造函数可以重载。
+5. 如果类中没有显式定义构造函数，则C++编译器会自动生成一个无参的默认构造函数，一旦用户显式定
+义编译器将不再生成。
+-----------------------------
+默认构造函数：a, 对内置类型不进行处理。b，对自定义类型，调用自定义类型的默认构造参数
+----------------------
+无参的构造函数和全缺省的构造函数都称为默认构造函数，并且默认构造函数只能有一个。注意：无参
+构造函数、全缺省构造函数、我们没写编译器默认生成的构造函数，都可以认为是默认成员函数。他们不能同时存在.
+
+```
+
+**析构函数:**
+
+```
+与构造函数功能相反，析构函数不是完成对象的销毁，局部对象销毁工作是由编译器完成的。而对象在销毁时会自动调用析构函数，完成类的一些资源清理工作。
+其特征如下：
+1. 析构函数名是在类名前加上字符 ~。
+2. 无参数无返回值。
+3. 一个类有且只有一个析构函数。若未显式定义，系统会自动生成默认的析构函数。
+4. 对象生命周期结束时，C++编译系统系统自动调用析构函数。
+--------------
+关于编译器自动生成的析构函数，是否会完成一些事情呢？下面的程序我们会看到，编译器生成的默认
+析构函数，对会自定类型成员调用它的析构函数。
+```
+
+**拷贝构造函数:**
+
+```
+构造函数：只有单个形参，该形参是对本类类型对象的引用(一般常用const修饰)，在用已存在的类类型对象创建新对象时由编译器自动调用。
+其特征如下：
+1. 拷贝构造函数是构造函数的一个重载形式。
+2. 拷贝构造函数的参数只有一个且必须使用引用传参，使用传值方式会引发无穷递归调用。//重点
+3. 若未显示定义，系统生成默认的拷贝构造函数。 默认的拷贝构造函数对象按内存存储按字节序完成拷
+贝，这种拷贝我们叫做浅拷贝，或者值拷贝。//如果申请了堆空间,则对应的指针会指向同一块空间
+4. 初始化赋值即int a = b; 会调用拷贝构造, 而不是赋值--编译器优化
+```
+
+**赋值运算符重载:**
+
+  ***运算符重载 :***
+
+```
+C++为了增强代码的可读性引入了运算符重载，运算符重载是具有特殊函数名的函数，也具有其返回值类
+型，函数名字以及参数列表，其返回值类型与参数列表与普通的函数类似。
+函数名字为：关键字operator后面接需要重载的运算符符号。
+函数原型：返回值类型 operator操作符(参数列表)
+--------注意：
+1. 不能通过连接其他符号来创建新的操作符：比如operator@ 
+2. 重载操作符必须有一个类类型或者枚举类型的操作数
+3. 用于内置类型的操作符，其含义不能改变，例如：内置的整型+，不 能改变其含义
+4. 作为类成员的重载函数时，其形参看起来比操作数数目少1, 因为成员函数的操作符有一个默认的形参this，限定为第一个形参
+5. .* 、:: 、sizeof 、?: 、. 注意以上5个运算符不能重载。这个经常在笔试选择题中出现。
+--------赋值运算符主要有四点：
+1. 参数类型
+2. 返回值
+3. 检测是否自己给自己赋值
+4. 返回*this
+5. 一个类如果没有显式定义赋值运算符重载，编译器也会生成一个，完成对象按字节序的值拷贝。
+6. 赋值运算符在类中不显式实现时，编译器会生成一份默认的，此时用户在类外再将赋值运算符重载为全局的，就和编译器生成的默认赋值运算符冲突了，故赋值运算符只能重载成成员函数
+```
+
+ **取地址及const取地址操作符重载** 
+
+```
+这两个默认成员函数一般不用重新定义 ，编译器默认会生成。
+这两个运算符一般不需要重载，使用编译器生成的默认取地址的重载即可，只有特殊情况，才需要重载，比
+如想让别人获取到指定的内容！
+```
+
+###### const成员
+ **const修饰类的成员函数**
+
+```
+将const修饰的类成员函数称之为const成员函数，const修饰类成员函数，实际修饰该成员函数隐含的this 指针，表明在该成员函数中不能对类的任何成员进行修改。
+形式: typeReturn name(typeElem ) const
+```
+**详解C++_const_**
+
+```
+
+```
+
+###### 匿名对象
+```
+
+```
+
+######   初始化列表
+
+```
+定义:
+可以认为是类成员变量定义的地方, 一般在构造函数间
+格式:
+ClassName (int a, int b, int c, ClassName1 cn1)
+	: _a(a)
+	, _b(b)
+	, _c(c)
+	, _cn1(cn1)
+	{
+	///	
+	}
+知识点:
+1. 初始化列表初始化顺序, 与成员变量声明顺序有关, 和初始化列表中出现的顺序无关	
+2. 每个成员变量在初始化列表中只能出现一次(初始化只能初始化一次)
+总结:
+引用类型, const修饰成员, 无默认构造函数自置类型必须初始化列表
+内置类型也建议初始化列表初始化
+
+```
+
+######  explicit:
+
+```
+用explicit修饰构造函数，将会禁止构造函数的隐式转换。 
+```
+
+###### 静态类成员:
+
+**静态变量: 只在定义文件显示, 文件外不可见**
+
+```
+1. 静态成员为所有类对象所共享，不属于某个具体的对象，存放在静态区
+2. 静态成员变量必须在类外定义，定义时不添加static关键字，类中只是声明
+3. 类静态成员即可用 类名::静态成员 或者 对象.静态成员 来访问
+4. 静态成员函数没有隐藏的this指针，不能访问任何非静态成员, 只能访问静态成员变量
+5. 静态成员也是类的成员，受public、protected、private 访问限定符的限制
+```
+
+###### 友元:
+
+ 友元提供了一种突破封装的方式，有时提供了便利。但是友元会增加耦合度，破坏了封装，所以友元不宜多 用。 
+
+友元分为：友元函数和友元类 
+
+```
+友元函数:
+友元函数可以直接访问类的私有成员，它是定义在类外部的普通函数，不属于任何类，但需要在类的内部声明，声明时需要加friend关键字。
+1. 友元函数可访问类的私有和保护成员，但不是类的成员函数
+2. 友元函数不能用const修饰
+3. 友元函数可以在类定义的任何地方声明，不受类访问限定符限制
+4. 一个函数可以是多个类的友元函数
+5. 友元函数的调用与普通函数的调用原理相同
+```
+
+```
+友元类:
+友元类的所有成员函数都可以是另一个类的友元函数，都可以访问另一个类中的非公有成员。
+1. 友元关系是单向的，不具有交换性。
+比如上述Time类和Date类，在Time类中声明Date类为其友元类，那么可以在Date类中直接访问Time类的私有成员变量，但想在Time类中访问Date类中私有的成员变量则不行。
+2. 友元关系不能传递
+如果B是A的友元，C是B的友元，则不能说明C时A的友元。
+3. 友元关系不能继承，在继承位置再给大家详细介绍。
+```
+
+###### 内部类:
+
+```
+ 概念：如果一个类定义在另一个类的内部，这个内部类就叫做内部类。内部类是一个独立的类，它不属于外 部类，更不能通过外部类的对象去访问内部类的成员。外部类对内部类没有任何优越的访问权限。
+
+ 注意：内部类就是外部类的友元类，参见友元类的定义，内部类可以通过外部类的对象参数来访问外部类中 的所有成员。但是外部类不是内部类的友元。  
+
+ 特性： 
+ 1. 内部类可以定义在外部类的public、protected、private都是可以的, 受访问限制符和外部类类域。 
+ 2. 注意内部类可以直接访问外部类中的static成员，不需要外部类的对象/类名。 
+ 3. sizeof(外部类)=外部类，和内部类没有任何关系。 
+```
+
+小知识
+
+```
+Class w{...};
+匿名类:
+w(val); //生命周期为一行
+编译器优化:
+构造 + 拷贝构造 ----> 编译器优化 ----> 合二为一
+eg: w w2(w()); //直接构造w2
+结论: 
+一连串语句, 可能会发生编译器优化.
+```
+
+###### C++内存分配:
+
+![[Pasted image 20220920210403.png]]
+
+https://www.bilibili.com/video/BV117411w7o2/?spm_id_from=333.788.videocard.0
+
+###### new/delete:
+
+new可以申请到堆空间
+
+```
+--------内置类型:
+和C语言没本质区别, 只是简化了语句
+申请new:
+int *p1 = new int;//申请大小为int的空间
+int *p2 = new int[5];//申请大小为 int * 5 的空间
+int *p3 = new int(5);//初始化
+int *p4 = new int[5]{1, 2, 3};//c++11支持, 98不支持
+释放delete:
+delete p1;//
+delete[] p2;//释放连续空间, 需要对应
+delete p3;
+delete[] p4;
+--------内置类型
+如果申请的是内置类型的空间，new和malloc，delete和free基本类似，不同的地方是： new/delete申请和释放的是单个元素的空间，new[]和delete[]申请的是连续空间，而且new在申 请空间失败时会抛异常，malloc会返回NULL。
+--------自置类型
+申请new:
+new不仅会申请堆空间, 还会进行初始化(调用构造函数)
+释放delete:
+delete释放空间, 并且会调用析构函数
+--------失败处理
+malloc失败会返回(int)0
+new失败会抛出异常错误
+--------原理
+new的原理
+1. 调用operator new函数申请空间
+2. 在申请的空间上执行构造函数，完成对象的构造
+delete的原理
+1. 在空间上执行析构函数，完成对象中资源的清理工作
+2. 调用operator delete函数释放对象的空间
+new T[N]的原理//////注意
+1. 调用operator new[]函数，在operator new[]中实际调用operator new函数完成N个对象空间的申请
+2. 在申请的空间上执行N次构造函数
+delete[]的原理
+1. 在释放的对象空间上执行N次析构函数，完成N个对象中资源的清理
+2. 调用operator delete[]释放空间，实际在operator delete[]中调用operator delete来释放空间
+```
+- 对于内置类型, new[]申请的空间, 可以用delete释放, 不会报错, 但不建议这样做
+- 对于自置类型, new[]申请的空间, 必须用delete[]释放, 否则会运行失败
+
+######  operator new与operator delete函数:
+
+```
+1. new和delete是用户进行动态内存申请和释放的操作符，operator new 和operator delete是系统提供的全局函数，new在底层调用operator new全局函数来申请空间，delete在底层通过operator delete全局函数来释放空间。
+2. new 和 delete 本质上调用了一个全局函数 operator new()/operator delete(), 这两个函数的功能, 本质上是用C语言内存函数实现的.
+3. operator new 实际也是通过malloc来申请空间，如果malloc申请空间成功就直接返回，否则执行用户提供的空间不足应对措施，如果用户提供该措施就继续申请，否则就抛异常。operator delete 最终是通过free来释放空间的。
+```
+
+ **重载operator new与operator delete:**
+
+```
+ 一般情况下不需要对 operator new 和 operator delete进行重载，除非在申请和释放空间 时候有某些特殊的需求。比如：在使用new和delete申请和释放空间时，打印一些日志信息，可 以简单帮助用户来检测是否存在内存泄漏。 
+```
+
+###### 常见内存管理面试题:
+
+```
+1. malloc/free和new/delete的区别
+malloc/free和new/delete的共同点是：都是从堆上申请空间，并且需要用户手动释放。不同的地方是：
+1. malloc和free是函数，new和delete是操作符
+2. malloc申请的空间不会初始化，new可以初始化
+3. malloc申请空间时，需要手动计算空间大小并传递，new只需在其后跟上空间的类型即可，如果是多个对象，[]中指定对象个数即可
+4. malloc的返回值为void*, 在使用时必须强转，new不需要，因为new后跟的是空间的类型
+5. malloc申请空间失败时，返回的是NULL，因此使用时必须判空，new不需要，但是new需要捕获异常
+6. 申请自定义类型对象时，malloc/free只会开辟空间，不会调用构造函数与析构函数，而new在申请空间后会调用构造函数完成对象的初始化，delete在释放空间前会调用析构函数完成空间中资源的清理
+2. 内存泄漏
+2.1 什么是内存泄漏，内存泄漏的危害
+什么是内存泄漏：内存泄漏指因为疏忽或错误造成程序未能释放已经不再使用的内存的情况。内存泄漏并不是指内存在物理上的消失，而是应用程序分配某段内存后，因为设计错误，失去了对该段内存的控制，因而造成了内存的浪费。
+内存泄漏的危害：长期运行的程序出现内存泄漏，影响很大，如操作系统、后台服务等等，出现内存泄漏会导致响应越来越慢，最终卡死。
+2.2 内存泄漏分类（了解）
+C/C++程序中一般我们关心两种方面的内存泄漏：
+堆内存泄漏(Heap leak):
+堆内存指的是程序执行中依据须要分配通过malloc / calloc / realloc / new等从堆中分配的一块内存，用完后必须通过调用相应的 free或者delete 删掉。假设程序的设计错误导致这部分内存没有被释放，那么以后这部分空间将无法再被使用，就会产生Heap Leak。
+系统资源泄漏:
+指程序使用系统分配的资源，比方套接字、文件描述符、管道等没有使用对应的函数释放掉，导致系统资源的浪费，严重可导致系统效能减少，系统执行不稳定。
+2.3 如何检测内存泄漏（了解）
+在vs下，可以使用windows操作系统提供的_CrtDumpMemoryLeaks() 函数进行简单检测，该函数只报出了大概泄漏了多少个字节，没有其他更准确的位置信息。
+因此写代码时一定要小心，尤其是动态内存操作时，一定要记着释放。但有些情况下总是防不胜防，简单的可以采用上述方式快速定位下。如果工程比较大，内存泄漏位置比较多，不太好查时一般都是借助第三方内存泄漏检测工具处理的。
+在linux下内存泄漏检测：linux下几款内存泄漏检测工具
+在windows下使用第三方工具：VLD工具说明
+其他工具：内存泄漏工具比较
+2.4如何避免内存泄漏
+1. 工程前期良好的设计规范，养成良好的编码规范，申请的内存空间记着匹配的去释放。ps：
+这个理想状态。但是如果碰上异常时，就算注意释放了，还是可能会出问题。需要下一条智能指针来管理才有保证。
+2. 采用RAII思想或者智能指针来管理资源。
+3. 有些公司内部规范使用内部实现的私有内存管理库。这套库自带内存泄漏检测的功能选项。
+4. 出问题了使用内存泄漏工具检测。ps：不过很多工具都不够靠谱，或者收费昂贵。
+总结一下:
+内存泄漏非常常见，解决方案分为两种：1、事前预防型。如智能指针等。2、事后查错型。如泄漏检测工具
+```
+
+#### STL
+
+书籍推荐: <<STL源码剖析>> 侯捷
+
+##### 泛型编程--模板:
+
+ 编写与类型无关的通用代码，是代码复用的一种手段。模板是泛型编程的基础。  可以缺省, 缺省类型, **模板的推导发生在编译阶段**
+
+**函数模板:**
+
+```
+函数模板代表了一个函数家族，该函数模板与类型无关，在使用时被参数化，根据实参类型产生函数的特定类型版本->实例化出对应函数。
+关键字: template, typename
+格式: template<typename 模板类型名字>
+eg: 
+	template<typename T>
+	void Swap(T& left, T& rig)
+	{
+		T temp = left;
+		left = rig;
+		rig = tmep;
+	}
+原理:
+函数模板是一个蓝图，它本身并不是函数，是编译器用使用方式产生特定具体类型函数的模具。所以其实模
+板就是将本来应该我们做的重复的事情交给了编译器
+在编译器编译阶段，对于模板函数的使用，编译器需要根据传入的实参类型来推演生成对应类型的函数以供
+调用。比如：当用double类型使用函数模板时，编译器通过对实参类型的推演，将T确定为double类型，然后产生一份专门处理double类型的代码，对于字符类型也是如此--推断在传参前。
+```
+
+**函数模板的实例化:**
+
+```
+用不同类型的参数使用函数模板时，称为函数模板的实例化。模板参数实例化分为：隐式实例化和显式实例
+化。
+隐式实例化:
+通过编译器自动推导, 隐式实例化模板函数
+显示实例化:
+在调用函数时, 指定模板参数类型, 不需要编译器推移
+eg: Swap<int>(a1, a2);//有几种模板类型, 指定几个
+如果类型不匹配，编译器会尝试进行隐式类型转换，如果无法转换成功编译器将会报错。
+匹配原则:
+1. 一个非模板函数可以和一个同名的函数模板同时存在，而且该函数模板还可以被实例化为这个非模板函
+数
+eg : Add(1, 2) , Add<int>(1, 2)
+2. 对于非模板函数和同名函数模板，如果其他条件都相同，在调动时会优先调用非模板函数而不会从该模
+板产生出一个实例。如果模板可以产生一个具有更好匹配的函数， 那么将选择模板
+3. 模板函数不允许自动类型转换，但普通函数可以进行自动类型转换
+```
+
+**类模板:**
+
+```
+格式:
+template<class T1, class T2, ..., class Tn>
+class 类模板名
+{
+ // 类内成员定义--存在模板类型成员
+}; 
+1. 在类中使用模板类型, 就是类模板
+2. 类模板都是显示实例化
+3. 模板类不支持分离编译, 即声明和定义必须在同一个文件
+```
+
+**实例化**
+
+```
+1. 类模板实例化与函数模板实例化不同，类模板实例化需要在类模板名字后跟<>，然后将实例化的类型放在<>中即可，类模板名字不是真正的类，而实例化的结果才是真正的类。
+eg: // Vector类名，Vector<int>才是真正的类
+```
+
+##### string类:
+
+###### vs和g++下string结构的说明
+```
+注意：下述结构是在32位平台下进行验证，32位平台下指针占4个字节。
+--vs下string的结构:
+string总共占28个字节，内部结构稍微复杂一点，先是有一个联合体，联合体用来定义string中字符串的存储空间：当字符串长度小于16时，使用内部固定的字符数组来存放;当字符串长度大于等于16时，从堆上开辟空间.
+这种设计也是有一定道理的，大多数情况下字符串的长度都小于16，那string对象创建好之后，内部已经有了16个字符数组的固定空间，不需要通过堆创建，效率高。 其次：还有一个size_t字段保存字符串长度，一个size_t字段保存从堆上开辟空间总的容量 最后：还有一个指针做一些其他事情。 故总共占16+4+4+4=28个字节。
+--g++下string的结构 
+G++下，string是通过写时拷贝实现的，string对象总共占4个字节，内部只包含了一个指针，该指 针将来指向一块堆空间，内部包含了如下字段： 
+1. 空间总大小 
+2. 字符串有效长度 
+3. 引用计数
+4. 指向堆空间的指针，用来存储字符串。
+struct _Rep_base
+{
+	size_type _M_length; 
+	size_type _M_capacity; 
+	_Atomic_word _M_refcount; 
+};
+```
+
+###### 浅拷贝/深拷贝/写时拷贝
+
+```
+--浅拷贝:
+值拷贝, 仅仅按字节拷贝内容, 而不考虑实际[也称位拷贝，编译器只是将对象中的值拷贝过来。如果对象中管理资源，最后就会导致多个对象共 享同一份资源，当一个对象销毁时就会将该资源释放掉，而此时另一些对象不知道该资源已经被释放，以为 还有效，所以当继续对资源进项操作时，就会发生发生了访问违规。]
+--深拷贝:
+自写拷贝, 按真实逻辑拷贝内容, 比如申请到堆上的空间[如果一个类中涉及到资源的管理，其拷贝构造函数、赋值运算符重载以及析构函数必须要显式给出。一般情 况都是按照深拷贝方式提供。]
+--写时拷贝:
+延迟拷贝奇数, 当构造对象只进行读操作时, 和被拷贝对象共享空间, 当需要进行写操作时, 才进行拷贝[写时拷贝就是一种拖延症，是在浅拷贝的基础之上增加了引用计数的方式来实现的。 引用计数：用来记录资源使用者的个数。在构造时，将资源的计数给成1，每增加一个对象使用该资源，就给 计数增加1，当某个对象被销毁时，先给该计数减1，然后再检查是否需要释放资源，如果计数为1，说明该 对象时资源的最后一个使用者，将该资源释放；否则就不能释放，因为还有其他对象在使用该资源。]
+```
+
+**推荐阅读**
+[C++ STL string的Copy-On-Write技术](https://coolshell.cn/articles/12199.html) 
+[C++的std::string的“读时也拷贝”技术](https://coolshell.cn/articles/1443.html)
+
+###### 全代码
+
+[String模拟实现参考](https://gitee.com/ailiangshilove/cpp-class/blob/master/%E8%AF%BE%E4%BB%B6%E4%BB%A3%E7%A0%81/C++%E8%AF%BE%E4%BB%B6V6/string%E7%9A%84%E6%A8%A1%E6%8B%9F%E5%AE%9E%E7%8E%B0/String.h)
+
+```c++
+#pragma once
+
+#include<iostream>
+#include<assert.h>
+#include<string>
+#include<algorithm>
+using namespace std;
+
+namespace Bit
+{
+
+	/*using std::cout;
+	using std::cin;
+	using std::endl;*/
+
+	class string
+	{
+
+		typedef char* iterator;
+		typedef const char* const_iterator;
+	public:
+
+#pragma region 其他
+		//swap
+		void swap(string& str)
+		{
+			std::swap(_str, str._str);
+			std::swap(_size, str._size);
+			std::swap(_capacity, str._capacity);
+		}
+
+		//c指针
+		const char* c_str() const
+		{
+			return _str;
+		}	 
+#pragma endregion
+
+#pragma region 构造函数
+		//无参
+		// _str(nullptr) 错误: 转换成c指针 用cout输出的结束条件为 *p = '\0', 解引用了空指针
+		// _str("\0") 错误: 常量字符串默认存在'\0'
+		string()
+			: _str(new char[1])
+			, _size(0)
+			, _capacity(0)
+		{
+			_str[0] = '\0';
+		}
+
+		//常量字符串
+		string(const char* str)
+		{
+			size_t len = strlen(str);
+			_size = len;
+			_capacity = len;
+			_str = new char[len + 1];
+
+			strcpy(_str, str);
+		}
+		////常量字符串全缺省默认构造
+		//string(const char* str = "")
+		//{
+		//	size_t len = strlen(str);
+		//	_size = len;
+		//	_capacity = len;
+		//	_str = new char[len + 1];
+		//	
+		//	strcpy(_str, str);
+		//}
+
+		//常量字符串前n个字符
+		string(const char* str, size_t n)
+		{
+			size_t len = strlen(str);
+			len = len > n ? n : len;
+
+			_size = _capacity = len;
+			_str = new char[_capacity + 1];
+
+			//strcpy 遇到\0结束, 不支持此前结束
+			for (size_t i = 0; i < _size; i++)
+			{
+				_str[i] = str[i];
+			}
+			_str[_size] = '\0';
+
+		}
+
+		//n个字符 ch
+		string(size_t n, char ch)
+			:_str(new char[n + 1])
+			, _size(n)
+			, _capacity(n)
+		{
+			for (size_t i = 0; i < _size; i++)
+			{
+				_str[i] = ch;
+			}
+			_str[_size] = '\0';
+		}
+
+		/*拷贝构造*/
+		////传统写法
+		//string(const string& str)
+		//	:_str(new char[str._capacity + 1])
+		//	, _size(str._size)
+		//	, _capacity(str._capacity)
+		//{
+		//	//string对象可包含'\0', 而strcpy无法copy'\0'
+		//	memcpy(_str, str._str, _capacity + 1);
+		//}
+		//
+		//现代写法
+		string(const string& str)
+			: _str(nullptr)
+			, _size(0)
+			, _capacity(0)
+		{
+			string tmp(str._str);
+			swap(tmp);
+		}
+
+		//sting对象 第 pos位置的 后n个字符
+		string(const string& str, size_t pos, size_t n = npos)
+			
+		{
+			assert(pos < str._size);//合法下标
+			*this = str.substr(pos, n);
+
+			//*this += str.substr(pos, n);
+			
+			//错误语句
+			// substr的返回值具有const属性, 无法修改, 不能作为swap的实参传递
+			//swap(str.substr(pos, n));
+		}  
+
+		//析构函数
+		~string()
+		{
+			delete[] _str;
+			_str = nullptr;
+			_size = _capacity = 0;
+		}
+#pragma endregion
+
+#pragma region 空间操作
+		//reserve
+		void reserve(size_t n)
+		{
+			if (n <= _size) return;
+
+			char* tmp = new char[n + 1];
+
+			memcpy(tmp, _str, _capacity + 1);
+
+			delete[] _str;
+			_str = tmp;
+			tmp = nullptr;
+			_capacity = n;
+		}
+		//resize
+		void resize(size_t n, char ch = '\0')
+		{
+			if (n > _size)
+			{
+				reserve(n);
+				for (_size; _size < n; _size++)
+				{
+					_str[_size] = ch;
+				}
+				_str[_size] = '\0';
+			}
+			else
+			{
+				_str[n] = '\0';
+				_size = n;
+			}
+		}
+
+		//size
+		size_t size() const
+		{
+			return _size;
+		}
+		//capacity
+		size_t capacity() const
+		{
+			return _capacity;
+		}
+
+		//clear()
+		void clear()
+		{
+			_str[0] = '\0';
+			_size = 0;
+		}
+#pragma endregion
+
+#pragma region 增删改查
+		
+		//push_back
+		void push_back(char ch)
+		{
+			//是否扩容
+			if (_size == _capacity)
+			{
+				reserve(_capacity == 0 ? 4 : _capacity * 2);
+			}
+
+			_str[_size] = ch;
+			_size++;
+			_str[_size] = '\0';
+		}
+		//append
+		void append(const char* str)
+		{
+			size_t len = strlen(str);
+
+			if (len + _size > _capacity)
+			{
+				reserve(len + _size);
+			}
+
+			strcpy(_str + _size, str);
+			//strcat(_str + _size, str);
+
+			_size += len;
+		}
+		void append(const string& str)
+		{
+			size_t len = str._size;
+
+			if (len + _size > _capacity)
+			{
+				reserve(len + _size);
+			}
+
+			memcpy(_str + _size, str._str, str._size + 1);
+
+			_size += len;
+		}
+
+		//substr
+		string substr(size_t pos, size_t len = npos) const
+		{
+			assert(pos < _size);//合法下标
+			size_t realLen = len;
+			//len = 1, 对应的是 提取pos位置的元素
+			if (len == npos || pos + len > _size)
+			{
+				realLen = _size - pos;
+			}
+
+			string tmp;
+			for (size_t i = 0; i < realLen; i++)
+			{
+				tmp += _str[pos + i];
+			}
+
+			return tmp;
+		}
+
+		//instert -- 引用返回值 可作为 右值或参数
+		string& insert(size_t pos, char ch)
+		{
+			assert(pos < _size);
+
+			if (_size == _capacity)
+			{
+				reserve(_capacity == 0 ? 4 : _capacity * 2);
+			}
+
+			size_t end = ++_size;
+
+			while (end > pos)
+			{
+				_str[end] = _str[end - 1];
+				end--;
+			}
+
+			_str[pos] = ch;
+
+			return *this;
+		}
+		string& insert(size_t pos, const char* str)
+		{
+			assert(pos < _size);
+
+			size_t len = strlen(str);
+
+			if (_size + len > _capacity)
+			{
+				reserve(_size + len);
+			}
+
+			size_t end = _size + len;
+
+			while (end >= pos + len)
+			{
+				_str[end] = _str[end - len];
+				end--;
+			}
+
+			strncpy(_str + pos, str, len);//不拷贝'\0', 只拷贝有效字符
+			//memcpy(_str + pos, str, len);
+			_size += len;
+
+			return *this;
+		}
+		string& insert(size_t pos, const string& str)
+		{
+			assert(pos < _size);
+
+			size_t len = str._size;
+
+			if (_size + len > _capacity)
+			{
+				reserve(_size + len);
+			}
+
+			size_t end = _size + len;
+
+			while (end >= pos + len)
+			{
+				_str[end] = _str[end - len];
+				end--;
+			}
+
+			//strncpy(_str + pos, str._str, len);//不拷贝'\0', 只拷贝有效字符
+			memcpy(_str + pos, str._str, len);
+			_size += len;
+
+			return *this;
+		}
+		/*
+		* 复用
+		* 对于substring 和 buffer 可以通过 (转换成string)截断 + substr 实现
+		*/
+
+		//find
+		size_t find(char ch, size_t pos = 0) const
+		{
+			assert(pos < _size);
+
+			for (size_t i = pos; i < _size; ++i)
+			{
+				if (ch == _str[i])
+				{
+					return i;
+				}
+			}
+
+			return npos;
+		}
+		size_t find(const char* sub, size_t pos = 0) const
+		{
+			assert(sub);
+			assert(pos < _size);
+
+			const char* ptr = strstr(_str + pos, sub);//cstrig库函数, 返回匹配的第一个字符的地址
+			if (ptr == nullptr)
+			{
+				return npos;
+			}
+			else
+			{
+				return ptr - _str;
+			}
+		}
+
+		//erase
+		string& erase(size_t pos = 0, size_t len = npos)
+		{
+			assert(pos < _size);
+
+			if (len == npos || pos + len >= _size)
+			{
+				_str[pos] = '\0';
+				_size = pos;
+			}
+			else
+			{
+				memcpy(_str + pos, _str + pos + len, _size - pos - len + 1);
+				_size -= len;
+			}
+
+			return *this;
+		}
+#pragma endregion
+
+#pragma region 操作符重载
+		
+		//逻辑操作符
+		bool operator>(const string& str) const
+		{
+			return strcmp(_str, str._str) > 0;
+		}
+		bool operator==(const string& str) const
+		{
+			return strcmp(_str, str._str) == 0;
+		}
+		bool operator>=(const string& str) const
+		{
+			return *this > str || *this == str;
+		}
+		bool operator<=(const string& str) const
+		{
+			return !(*this > str);
+		}
+		bool operator<(const string& str) const
+		{
+			return !(*this >= str);
+		}
+		bool operator!=(const string& str) const
+		{
+			return !(*this == str);
+		}
+
+		//运算操作符
+		string& operator=(string str)
+		{
+			swap(str);
+			return *this;
+		}
+
+		string& operator+=(const char ch)
+		{
+			push_back(ch);
+			return *this;
+		}
+		string operator+(const char ch)
+		{
+			string tmp(*this);
+			tmp += ch;
+			return tmp;
+		}
+		string& operator+=(const string& str)
+		{
+			append(str);
+			return *this;
+		}
+		string operator+(const string& str)
+		{
+			string tmp(*this);
+			tmp.append(str);
+			return tmp;
+		}
+		string& operator+=(const char* str)
+		{
+			append(str);
+			return *this;
+		}
+		string operator+(const char* str)
+		{
+			string tmp(*this);
+			tmp.append(str);
+			return tmp;
+		}
+		
+		//[]
+		char& operator[](size_t pos)
+		{
+			assert(pos < _size);
+			return _str[pos];
+		}
+		const char& operator[](size_t pos) const
+		{
+			assert(pos < _size);
+			return _str[pos];
+		}		
+#pragma endregion
+	
+#pragma region 迭代器
+		
+		iterator begin()
+		{
+			return _str;
+		}
+
+		iterator end()
+		{
+			return _str + _size;
+		}
+
+
+		const_iterator begin() const
+		{
+			return _str;
+		}
+
+		const_iterator end() const
+		{
+			return _str + _size;
+		}
+#pragma endregion
+
+#pragma region 成员变量
+	private:
+		size_t _capacity;//最大有效存储长度
+		size_t _size;//实际长度
+		char* _str;//字符串地址
+	public:
+
+		//静态成员变量 : 声明定义分离
+		static size_t npos;
+		//C++11特性 : 加上const可直接在类内定义静态变量
+		//const static size_t npos = -1;  
+#pragma endregion
+
+	};
+
+	size_t string::npos = -1;
+
+#pragma region 输入输出
+	//<<
+	ostream& operator<<(std::ostream& out, const string& str)
+	{
+		for (size_t i = 0; i < str.size(); ++i)
+		{
+			out << str[i];
+		}
+		return out;
+	}
+
+	////>> -- 基础版本
+	//istream& operator>>(istream& in, string& str)
+	//{
+	//	//清理并设置初始容量
+	//	str.clear();
+	//	str.reserve(64);
+	//
+	//	char ch;
+	//
+	//	ch = in.get();
+	//	while (ch != ' ' && ch != '\n')
+	//	{
+	//		str += ch;
+	//		ch = in.get();
+	//	}
+	//
+	//	return in;
+	//}
+	
+	//升级版--减少扩容操作
+	istream& operator>>(istream& in, string& str)
+	{
+		//清理并设置初始容量
+		str.clear();
+		str.reserve(64);
+
+		const int N = 32;
+		char buff[N];
+		size_t i = 0;
+	
+		char ch;
+	
+		ch = in.get();
+		while (ch != ' ' && ch != '\n')
+		{
+			buff[i++] = ch;
+
+			if (i == N - 1)
+			{
+				buff[i] = '\0';
+				str += buff;
+				i = 0;
+			}
+
+			ch = in.get();
+		}
+
+		buff[i] = '\0';
+		str += buff;
+	
+		return in;
+	}
+#pragma endregion
+
+	//构造
+	void test1()
+	{
+		cout << "MyString" << endl;
+		string s1;
+		string s2("String");
+		string s3("HelloSTL", 5);
+		string s4(20, 'o');
+		string s5(s2);
+		string s6(s4, 10);
+
+		cout << s1 << endl;
+		cout << s2 << endl;
+		cout << s3 << endl;
+		cout << s4 << endl;
+		cout << s5 << endl;
+		cout << s6 << endl;
+
+	}
+	//操作符
+	void test2()
+	{
+		string s1("helloSTl");
+		string s2;
+
+		cin >> s1 >> s2;
+		cout << s1 << endl << s2 << endl;
+		s2 = s1;
+		cout << s1 << endl << s2 << endl;
+	}
+	void test3()
+	{
+		string s1("Hello");
+		string s2("Mystring");
+
+		cout << s1 + '!' << endl;
+		cout << s1 + " Bit" << endl;
+		cout << s1 + s2 << endl;
+
+
+		cout << (s1 += '!') << endl;
+		cout << (s1 += " Bit") << endl;
+		cout << (s1 += s2) << endl;
+	}
+	//增删改查
+	void DealUrl(const string& url)
+	{
+		size_t pos1 = url.find("://");
+		if (pos1 == string::npos)
+		{
+			cout << "非法url" << endl;
+			return;
+		}
+		// 休息到16:08继续
+		string protocol = url.substr(0, pos1);
+		cout << protocol << endl;
+
+		size_t pos2 = url.find('/', pos1 + 3);
+		if (pos2 == string::npos)
+		{
+			cout << "非法url" << endl;
+			return;
+		}
+		string domain = url.substr(pos1 + 3, pos2 - pos1 - 3);
+		cout << domain << endl;
+
+		string uri = url.substr(pos2 + 1);
+		cout << uri << endl << endl;
+	}
+	void test4()
+	{
+		string url1 = "https://cplusplus.com/reference/string/string/";
+		string url2 = "https://image.baidu.com/search/detail?ct=503316480&z=0&ipn=d&word=ascall&step_word=&hs=0&pn=0&spn=0&di=7108135681917976577&pi=0&rn=1&tn=baiduimagedetail&is=0%2C0&istype=0&ie=utf-8&oe=utf-8&in=&cl=2&lm=-1&st=undefined&cs=2613959014%2C543572025&os=2740573600%2C1059518451&simid=2613959014%2C543572025&adpicid=0&lpn=0&ln=179&fr=&fmq=1660115697093_R&fm=&ic=undefined&s=undefined&hd=undefined&latest=undefined&copyright=undefined&se=&sme=&tab=0&width=undefined&height=undefined&face=undefined&ist=&jit=&cg=&bdtype=0&oriquery=&objurl=https%3A%2F%2Fgimg2.baidu.com%2Fimage_search%2Fsrc%3Dhttp%3A%2F%2Fimg.php.cn%2Fupload%2Fimage%2F147%2F157%2F796%2F1593765739620093.png%26refer%3Dhttp%3A%2F%2Fimg.php.cn%26app%3D2002%26size%3Df9999%2C10000%26q%3Da80%26n%3D0%26g%3D0n%26fmt%3Dauto%3Fsec%3D1662707704%26t%3Da68cb238bbb3f99d0554098c785d526e&fromurl=ippr_z2C%24qAzdH3FAzdH3Fooo_z%26e3Brir_z%26e3BvgAzdH3FuwqAzdH3F9c9amd_z%26e3Bip4s&gsm=1&rpstart=0&rpnum=0&islist=&querylist=&nojc=undefined&dyTabStr=MCwzLDIsNCw2LDEsNSw3LDgsOQ%3D%3D";
+		string url3 = "ftp://ftp.cs.umd.edu/pub/skipLists/skiplists.pdf";
+
+		DealUrl(url1);
+		DealUrl(url2);
+		DealUrl(url3);
+	}
+	void test5()
+	{
+		string s1;
+		s1.resize(20);
+		cout << s1 << endl;
+
+		string s2("hello");
+		s2.resize(20, 'x');
+		cout << s2 << endl;
+		s2.resize(10);
+		cout << s2 << endl;
+
+	}
+	void test6()
+	{
+		string s("12345678");
+		string s1("12345678");
+
+		cout << s.erase(0, 5) << endl;
+		cout << s1.erase(6, 9) << endl;
+		cout << string("123456").erase();
+
+	}
+
+}
+
+
+
+
+```
+
+###### 构造函数
+```c++
+//无参
+	//---------注意
+	// _str(nullptr) 错误: 转换成c指针 用cout输出的结束条件为 *p = '\0', 解引用了空指针
+	// _str("\0") 错误: 常量字符串默认存在'\0'
+	string()
+		: _str(new char[1])
+		, _size(0)
+		, _capacity(0)
+	{
+		_str[0] = '\0';
+	}
+
+//常量字符串
+	string(const char* str)
+	{
+		size_t len = strlen(str);
+		_size = len;
+		_capacity = len;
+		_str = new char[len + 1];
+		//使用strcpy拷贝, 符合常量字符串以'\0'结尾的规范
+		strcpy(_str, str);
+	}
+	////常量字符串全缺省默认构造
+	//string(const char* str = "")
+	//{
+	//	size_t len = strlen(str);
+	//	_size = len;
+	//	_capacity = len;
+	//	_str = new char[len + 1];
+	//	
+	//	strcpy(_str, str);
+	//}
+
+//常量字符串前n个字符
+	string(const char* str, size_t n)
+	{
+		//确定实际长度
+		size_t len = strlen(str);
+		len = len > n ? n : len;
+
+		_size = _capacity = len;
+		_str = new char[_capacity + 1];
+
+		//strcpy 遇到\0结束, 不支持提前结束
+		for (size_t i = 0; i < _size; i++)
+		{
+			_str[i] = str[i];
+		}
+		_str[_size] = '\0';
+
+	}
+
+//n个字符 ch
+	string(size_t n, char ch)
+		:_str(new char[n + 1])//初始化列表初始化
+		, _size(n)
+		, _capacity(n)
+	{
+		for (size_t i = 0; i < _size; i++)
+		{
+			_str[i] = ch;
+		}
+		_str[_size] = '\0';
+	}
+
+/*拷贝构造*/
+	////传统写法
+	//string(const string& str)
+	//	:_str(new char[str._capacity + 1])
+	//	, _size(str._size)
+	//	, _capacity(str._capacity)
+	//{
+	//	//string对象可包含'\0', 而strcpy无法copy'\0'
+	//	memcpy(_str, str._str, _capacity + 1);
+	//}
+	//
+	
+	//现代写法
+	string(const string& str)
+		: _str(nullptr)
+		, _size(0)
+		, _capacity(0)
+	{
+		string tmp(str._str);//调用常量字符串构造, 复用代码
+		swap(tmp);//交换
+	}
+
+//sting对象 第 pos位置的 后n个字符
+	string(const string& str, size_t pos, size_t n = npos)
+		
+	{
+		assert(pos < str._size);//合法下标
+		
+		*this = str.substr(pos, n);//调用substr, 此处偷懒
+
+		//*this += str.substr(pos, n);
+		
+		//错误语句
+		// substr的返回值具有const属性, 无法修改, 不能作为swap的实参传递
+		//swap(str.substr(pos, n));
+	}  
+
+//析构函数
+	~string()
+	{
+		delete[] _str;
+		_str = nullptr;
+		_size = _capacity = 0;
+	}
+```
+
+###### 空间操作
+```c++
+//reserve
+	//仅扩充空间大小
+	void reserve(size_t n)
+	{
+		//仅扩充, 不缩小
+		if (n <= _size) return;
+
+		char* tmp = new char[n + 1];
+		
+		//string中可包含'\0', strcpy遇到'\0', 可能发生截断,应该按字节拷贝
+		memcpy(tmp, _str, _capacity + 1);
+
+		delete[] _str;
+		_str = tmp;
+		tmp = nullptr;
+		_capacity = n;
+	}
+//resize
+	//扩充/缩减长度 ---> 扩充空间
+	void resize(size_t n, char ch = '\0')
+	{
+		if (n > _size)
+		{
+			//判断扩容
+			reserve(n);
+			//填充字符
+			for (_size; _size < n; _size++)
+			{
+				_str[_size] = ch;
+			}
+			_str[_size] = '\0';
+		}
+		else//缩减长度
+		{
+			_str[n] = '\0';
+			_size = n;
+		}
+	}
+//size
+	size_t size() const
+	{
+		return _size;
+	}
+//capacity
+	size_t capacity() const
+	{
+		return _capacity;
+	}
+//clear()
+	//仅改变字符串长度
+	void clear()
+	{
+		_str[0] = '\0';
+		_size = 0;
+	}
+```
+
+###### 增删改查
+```c++	
+//push_back
+	void push_back(char ch)
+	{
+		//是否扩容
+		if (_size == _capacity)
+		{
+			reserve(_capacity == 0 ? 4 : _capacity * 2);
+		}
+
+		_str[_size] = ch;
+		_size++;
+		_str[_size] = '\0';
+	}
+//append
+	void append(const char* str)
+	{
+		size_t len = strlen(str);
+		
+		//是否扩容
+		if (len + _size > _capacity)
+		{
+			reserve(len + _size);
+		}
+
+		strcpy(_str + _size, str);
+		//strcat(_str + _size, str);
+
+		_size += len;
+	}
+	void append(const string& str)
+	{
+		size_t len = str._size;
+
+		if (len + _size > _capacity)
+		{
+			reserve(len + _size);
+		}
+
+		memcpy(_str + _size, str._str, str._size + 1);
+
+		_size += len;
+	}
+//substr
+	string substr(size_t pos, size_t len = npos) const
+	{
+		assert(pos < _size);//合法下标
+		size_t realLen = len;
+
+		//判断是否超出string长度
+		//len = 1, 对应的是 提取pos位置的元素
+		if (len == npos || pos + len > _size)
+		{
+			realLen = _size - pos;
+		}
+
+		string tmp;
+		for (size_t i = 0; i < realLen; i++)
+		{
+			tmp += _str[pos + i];
+		}
+
+		return tmp;//返回的临时对象为const属性
+	}
+//instert -- 引用返回值 可作为 右值或参数
+	string& insert(size_t pos, char ch)
+	{
+		assert(pos < _size);
+
+		if (_size == _capacity)
+		{
+			reserve(_capacity == 0 ? 4 : _capacity * 2);
+		}
+
+		size_t end = ++_size;
+
+		while (end > pos)
+		{
+			_str[end] = _str[end - 1];
+			end--;
+		}
+
+		_str[pos] = ch;
+
+		return *this;
+	}
+	string& insert(size_t pos, const char* str)
+	{
+		assert(pos < _size);
+
+		size_t len = strlen(str);
+
+		if (_size + len > _capacity)
+		{
+			reserve(_size + len);
+		}
+
+		size_t end = _size + len;
+
+		while (end >= pos + len)
+		{
+			_str[end] = _str[end - len];
+			end--;
+		}
+
+		strncpy(_str + pos, str, len);//不拷贝'\0', 只拷贝有效字符
+		//memcpy(_str + pos, str, len);
+		_size += len;
+
+		return *this;
+	}
+	string& insert(size_t pos, const string& str)
+	{
+		assert(pos < _size);
+
+		size_t len = str._size;
+
+		if (_size + len > _capacity)
+		{
+			reserve(_size + len);
+		}
+
+		size_t end = _size + len;
+
+		while (end >= pos + len)
+		{
+			_str[end] = _str[end - len];
+			end--;
+		}
+
+		memcpy(_str + pos, str._str, len);
+		_size += len;
+
+		return *this;
+	}
+	/*
+	* 复用
+	* 对于substring 和 buffer 可以通过 (转换成string)截断 + substr 实现
+	*/
+
+//find
+	size_t find(char ch, size_t pos = 0) const
+	{
+		assert(pos < _size);
+
+		for (size_t i = pos; i < _size; ++i)
+		{
+			if (ch == _str[i])
+			{
+				return i;
+			}
+		}
+
+		return npos;
+	}
+	size_t find(const char* sub, size_t pos = 0) const
+	{
+		assert(sub);
+		assert(pos < _size);
+
+		const char* ptr = strstr(_str + pos, sub);//cstrig库函数, 返回匹配的第一个字符的地址
+		if (ptr == nullptr)
+		{
+			return npos;
+		}
+		else
+		{
+			return ptr - _str;
+		}
+	}
+
+//erase
+	string& erase(size_t pos = 0, size_t len = npos)
+	{
+		assert(pos < _size);
+
+		if (len == npos || pos + len >= _size)
+		{
+			_str[pos] = '\0';
+			_size = pos;
+		}
+		else
+		{
+			memcpy(_str + pos, _str + pos + len, _size - pos - len + 1);
+			_size -= len;
+		}
+
+		return *this;
+	}
+```
+
+###### 操作符重载
+```c++	
+//逻辑操作符
+	bool operator>(const string& str) const
+	{
+		return strcmp(_str, str._str) > 0;
+	}
+	bool operator==(const string& str) const
+	{
+		return strcmp(_str, str._str) == 0;
+	}
+	bool operator>=(const string& str) const
+	{
+		return *this > str || *this == str;
+	}
+	bool operator<=(const string& str) const
+	{
+		return !(*this > str);
+	}
+	bool operator<(const string& str) const
+	{
+		return !(*this >= str);
+	}
+	bool operator!=(const string& str) const
+	{
+		return !(*this == str);
+	}
+
+//运算操作符
+	string& operator=(string str)
+	{
+		swap(str);
+		return *this;
+	}
+
+	string& operator+=(const char ch)
+	{
+		push_back(ch);
+		return *this;
+	}
+	string operator+(const char ch)
+	{
+		string tmp(*this);
+		tmp += ch;
+		return tmp;
+	}
+	
+	string& operator+=(const string& str)
+	{
+		append(str);
+		return *this;
+	}
+	string operator+(const string& str)
+	{
+		string tmp(*this);
+		tmp.append(str);
+		return tmp;
+	}
+	
+	string& operator+=(const char* str)
+	{
+		append(str);
+		return *this;
+	}
+	string operator+(const char* str)
+	{
+		string tmp(*this);
+		tmp.append(str);
+		return tmp;
+	}
+	
+//[]
+	char& operator[](size_t pos)
+	{
+		assert(pos < _size);
+		return _str[pos];
+	}
+	const char& operator[](size_t pos) const
+	{
+		assert(pos < _size);
+		return _str[pos];
+	}		
+```
+
+###### 迭代器/其他
+```c++
+//迭代器	
+	iterator begin()
+	{
+		return _str;
+	}
+
+	iterator end()
+	{
+		return _str + _size;
+	}
+
+
+	const_iterator begin() const
+	{
+		return _str;
+	}
+
+	const_iterator end() const
+	{
+		return _str + _size;
+	}
+//其他
+	//swap
+	void swap(string& str)
+	{
+		std::swap(_str, str._str);
+		std::swap(_size, str._size);
+		std::swap(_capacity, str._capacity);
+	}
+
+	//c指针
+	const char* c_str() const
+	{
+		return _str;
+	}	 
+```
+
+###### 输入输出
+```c++
+//<<
+	ostream& operator<<(std::ostream& out, const string& str)
+	{
+		for (size_t i = 0; i < str.size(); ++i)
+		{
+			out << str[i];
+		}
+		return out;
+	}
+
+//>> 
+	//基础版本
+	//istream& operator>>(istream& in, string& str)
+	//{
+	//	//清理并设置初始容量
+	//	str.clear();
+	//	str.reserve(64);
+	//
+	//	char ch;
+	//
+	//	ch = in.get();
+	//	while (ch != ' ' && ch != '\n')
+	//	{
+	//		str += ch;
+	//		ch = in.get();
+	//	}
+	//
+	//	return in;
+	//}
+	
+	//升级版--减少前期扩容操作
+	istream& operator>>(istream& in, string& str)
+	{
+		//清理并设置初始容量
+		str.clear();
+		str.reserve(64);
+
+		const int N = 32;
+		char buff[N];
+		size_t i = 0;
+	
+		char ch;
+	
+		ch = in.get();
+		while (ch != ' ' && ch != '\n')
+		{
+			buff[i++] = ch;
+
+			if (i == N - 1)
+			{
+				buff[i] = '\0';
+				str += buff;
+				i = 0;
+			}
+
+			ch = in.get();
+		}
+
+		buff[i] = '\0';
+		str += buff;
+	
+		return in;
+	}
+```
+
+###### 阅读推荐
+<a href = "https://coolshell.cn/articles/10478.html">酷壳-陈浩-C++面试中string类的一种正确写法</a>
+<a href = "https://blog.csdn.net/haoel/article/details/1491219?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166368282316782414956992%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=166368282316782414956992&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-1491219-null-null.nonecase&utm_term=string%E7%B1%BB%E5%88%B0%E5%BA%95%E6%80%8E%E4%B9%88%E5%95%A6&spm=1018.2226.3001.4450">strig类到底怎么啦</a>
+
+##### vector类
+
+[Vector模拟实现](https://gitee.com/ailiangshilove/cpp-class/blob/master/%E8%AF%BE%E4%BB%B6%E4%BB%A3%E7%A0%81/C++%E8%AF%BE%E4%BB%B6V6/vector%E7%9A%84%E6%A8%A1%E6%8B%9F%E5%AE%9E%E7%8E%B0/Vector.h)
+
+迭代器失效
+```
+迭代器失效问题: insert(), erase()
+insert: 发生扩容 使pos指向的空间非法, 野指针; 插入后, pos不再指向原来的 [逻辑位置], 运行结果不符合逻辑, std::insert()返回插入的元素的迭代器
+erase: 发生缩容, 使pos指向的空间非法, 野指针; 逻辑问题. erase()根据编译器规则不同, 会有不同的结果. 不建议erase后立即访问, std::erase()返回删除元素的后一个元素的迭代器
+```
+
+**模板构造: 双层深拷贝**
+
+
+留存
+```
+capacity的代码在vs和g++下分别运行会发现，vs下capacity是按1.5倍增长的，g++是按2倍增长的。 这个问题经常会考察，不要固化的认为，vector增容都是2倍，具体增长多少是根据具体的需求定义 的。vs是PJ版本STL，g++是SGI版本STL。 reserve只负责开辟空间，如果确定知道需要用多少空间，reserve可以缓解vector增容的代价缺陷问 题。 resize在开空间的同时还会进行初始化，影响size。
+```
+
+
+
+
+
+
+
+
+
+
+
+
