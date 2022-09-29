@@ -26,6 +26,8 @@ namespace qlz
 		{
 			return _finish;
 		}
+		//const_iterator begin() const, 构成函数重载
+		//因为第一个形参, 即对象的指针是不同类型, 一个是非const指针, 一个是const指针
 		const_iterator cbegin() const
 		{
 			return _start;
@@ -407,5 +409,35 @@ namespace qlz
 			cout << e << " ";
 		}
 		cout << endl;
+
+		/*qlz::vector<int> vvv;
+		vvv.push_back(1);
+		vvv.push_back(2);
+		vvv.push_back(3);
+		vvv.push_back(4);
+		vvv.push_back(5);
+
+		qlz::vector<char> vv;
+		vv.push_back('a');
+		vv.push_back('b');
+		vv.push_back('c');
+		vv.push_back('d');*/
+
+	}
+
+	void Test3()
+	{
+		vector<int*> vec;
+		int a = 1, b = 2, c = 3;
+		vec.push_back(&a);
+		vec.push_back(&c);
+		vec.push_back(&b);
+
+		for (auto& ptr : vec)
+		{
+			cout << *ptr << ' ';
+		}
+
+
 	}
 }
