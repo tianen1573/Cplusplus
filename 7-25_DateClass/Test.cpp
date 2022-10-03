@@ -52,22 +52,22 @@
 //	cout << d1 - d2 << endl;
 //
 //}
-//void test5()
-//{
-//	Date d1(2012, 12, 31);
-//	d1.HowManyDays();
-//}
-//
-//int main()
-//{
-//	//test1();
-//	//test2();
-//	//test3();
-//	//test4();
-//	test5();
-//
-//	return 0;
-//}
+void test5()
+{
+	Date d1(2012, 12, 31);
+	d1.HowManyDays();
+}
+
+int main()
+{
+	//test1();
+	//test2();
+	//test3();
+	//test4();
+	test5();
+
+	return 0;
+}
 
 //ÁÙÊ±¶ÔÏó
 //int main()
