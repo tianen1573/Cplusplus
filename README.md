@@ -1,10 +1,10 @@
-### 基础语法
+
 
 ------
 
 [TOC]
 
-
+### 基础语法
 
 ##### 命名空间
 
@@ -256,21 +256,21 @@
 >
 >     ```c++
 >     //返回值类型若为引用类型, 此时编译器不会拷贝返回值,则要求在函数结束时, 返回值的生命周期还在, 即返回值不能随函数结束而回收, 否则会发生内存泄漏
->         
+>                                                                                             
 >     int& fun()
 >     {
 >         static int a = 10;//全局域, 文件内而访问
 >         int b = 10;//局部变量, 随函数结束而释放
->             
+>                                                                                                 
 >         return b;//内存泄漏
 >         //return a;//
 >     }
->         
+>                                                                                             
 >     int main()
 >     { 
 >         int val = fun();
 >         //接受到某个变量的引用, fun()结束时, b所在的空间已被释放, 造成内存泄漏
->             
+>                                                                                                 
 >         return 0;
 >     }
 >     ```
@@ -351,6 +351,9 @@
 > 1. 常量定义 换用const enum
 > 2. 短小函数定义 换用内联函数
 >
+> **宏和define的区别**
+>
+> ![1658315233880](%E5%9B%BE%E7%89%87/README/1658315233880.png)
 
 -----
 
@@ -1224,8 +1227,6 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 
 ------
 
-
-
 ##### 小知识
 
 > ```
@@ -1288,25 +1289,34 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 > 4. **数据段**--存储全局数据和静态数据。 
 > 5. **代码段**--可执行的代码/只读常量。
 
+------
+
 ##### C语言中动态内存管理方式：malloc/calloc/realloc/free
 
 > ~~~C++
 > void Test ()
 > {
->     int* p1 = (int*) malloc(sizeof(int));
->     free(p1);
->     // 1.malloc/calloc/realloc的区别是什么？
->     int* p2 = (int*)calloc(4, sizeof (int));
->     int* p3 = (int*)realloc(p2, sizeof(int)*10);
->     // 这里需要free(p2)吗？
->     free(p3 );
+>  int* p1 = (int*) malloc(sizeof(int));
+>  free(p1);
+>  // 1.malloc/calloc/realloc的区别是什么？
+>  int* p2 = (int*)calloc(4, sizeof (int));
+>  int* p3 = (int*)realloc(p2, sizeof(int)*10);
+>  // 这里需要free(p2)吗？
+>  free(p3 );
 > }
 > ~~~
 >
 > **面试题:**
 >
 > 1. malloc/calloc/realloc的区别？
-> 2.  malloc的实现原理？ [glibc中malloc实现原理](https://www.bilibili.com/video/BV117411w7o2/?spm_id_from=333.788.videocard.0)
+>
+>     ~~~
+>     relloc第一个参数为空指针时, 相当于malloc, 需要包含stdlib.h头文件
+>     ~~~
+>
+> 2. malloc的实现原理？ [glibc中malloc实现原理](https://www.bilibili.com/video/BV117411w7o2/?spm_id_from=333.788.videocard.0)
+>
+> 3. ![image-20221031133601791](%E5%9B%BE%E7%89%87/README/image-20221031133601791.png)
 
 ##### C++动态内存管理方式: new/delete
 
@@ -1426,6 +1436,12 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 > ```
 >
 
+##### 只允许在堆或栈上创建对象
+
+> [(12条消息) C++ 如何让类对象只在堆或栈上创建_stashblog的博客-CSDN博客_c++创建堆对象](https://blog.csdn.net/qq_30835655/article/details/68938861)
+>
+> [(12条消息) C++如何限制只能在堆或栈上创建对象？_sstinky的博客-CSDN博客](https://blog.csdn.net/sstinky/article/details/103718720)
+
 ##### 常见内存管理面试题:
 
 > 1. malloc/free和new/delete的区别
@@ -1443,7 +1459,7 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 >   - 什么是内存泄漏，内存泄漏的危害
 >
 >       ```
->       什么是内存泄漏：内存泄漏指因为疏忽或错误造成程序未能释放已经不再使用的内存的情况。内存泄漏并不是指内存在物理上的消失，而是应用程序分配某段内存后，因为设计错误，失去了对该段内存的控制，因而造成了内存的浪费。
+>       什么是内存泄漏：内存泄漏指因为疏忽或错误造成程序未能释放已经不再使用的内存的情况，野指针问题也属于内存泄漏。内存泄漏并不是指内存在物理上的消失，而是应用程序分配某段内存后，因为设计错误，失去了对该段内存的控制，因而造成了内存的浪费。
 >       内存泄漏的危害：长期运行的程序出现内存泄漏，影响很大，如操作系统、后台服务等等，出现内存泄漏会导致响应越来越慢，最终卡死。
 >       ```
 >
@@ -1631,7 +1647,7 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 >     {
 >         int a = 10;
 >         double b = 20.0;
->     
+>                                                                                         
 >         // 显式实例化
 >         Add<int>(a, b);
 >         return 0;
@@ -1715,6 +1731,8 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 > 1. 模板参数列表, 和其函数模板, 类模板是一一对应的
 >
 > 2. 类模板/函数模板 只是一种声明, 并不是定义, 由编译器在编译阶段推导出来的模板函数/模板类才是定义
+>
+> 3. **类模板实例化只会实例化需要的部分**，若存在未用到函数，则不会实例化改函数
 
 #### STL容器
 
@@ -5192,3 +5210,1245 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 > ```
 >
 > 
+
+### 继承
+
+##### 继承的基本概念和定义
+
+###### 概念
+
+> **继承(inheritance)机制是面向对象程序设计使代码可以复用的最重要的手段**，它允许程序员在保持原有类特性的基础上进行扩展，增加功能，这样产生新的类，称派生类。继承呈现了面向对象 程序设计的层次结构，体现了由简单到复杂的认知过程。以前我们接触的复用都是函数复用，继承是类设计层次的复用。
+>
+> ~~~c++
+> class Person
+> {
+>     public:
+>     void Print()
+>     {
+>         cout << "name:" << _name << endl;
+>         cout << "age:" << _age << endl;
+>     }
+>     protected:
+>     string _name = "peter"; // 姓名
+>     int _age = 18;  // 年龄
+> };
+> // 继承后父类的Person的成员（成员函数+成员变量）都会变成子类的一部分。这里体现出了Student和Teacher复用了Person的成员。下面我们使用监视窗口查看Student和Teacher对象，可以看到变量的复用。调用Print可以看到成员函数的复用。
+> class Student : public Person
+> {
+>     protected:
+>     int _stuid; // 学号
+> };
+> class Teacher : public Person
+> {
+>     protected:
+>     int _jobid; // 工号
+> };
+> int main()
+> {
+>     Student s;
+>     Teacher t;
+>     s.Print();
+>     t.Print();
+>     return 0;
+> }
+> ~~~
+
+###### 定义格式
+
+> 1. 定义格式： 下面我们看到Person是父类，也称作基类。Student是子类，也称作派生类。
+>
+>     ![image-20221020141552758](%E5%9B%BE%E7%89%87/README/image-20221020141552758.png)
+>
+> 2. 继承关系
+>
+>     ![image-20221020141634603](%E5%9B%BE%E7%89%87/README/image-20221020141634603.png)
+
+###### 继承的基类成员访问权限的变化
+
+> | 类成员/继承方式      |       public继承       | protected继承          | private继承          |
+> | -------------------- | :--------------------: | ---------------------- | -------------------- |
+> | 基类的public成员     |   派生类的public成员   | 派生类的protected 成员 | 派生类的private 成员 |
+> | 基类的protected 成员 | 派生类的protected 成员 | 派生类的protected 成员 | 派生类的private 成员 |
+> | 基类的private成 员   |    在派生类中不可见    | 在派生类中不可见       | 在派生类中不可 见    |
+>
+> 即：
+>
+> 1. 基类private成员在派生类中无论以什么方式继承都是不可见的。这里的**不可见是指基类的私 有成员还是被继承到了派生类对象中，但是语法上限制派生类对象不管在类里面还是类外面 都不能去访问它。** 
+> 2. 基类private成员在派生类中是不能被访问，如果基类成员不想在类外直接被访问，但需要在 派生类中能访问，就定义为protected。**可以看出保护成员限定符是因继承才出现的。**
+> 3. 实际上面的表格我们进行一下总结会发现，基类的私有成员在子类都是不可见。基类的其他 成员在子类的访问方式 == Min(成员在基类的访问限定符，继承方式)，public > protected  > private。 
+> 4. 使用关键字**class时默认的继承方式是private，使用struct时默认的继承方式是public**，不过 **最好显示的写出继承方式。**
+> 5. **在实际运用中一般使用都是public继承，几乎很少使用protetced/private继承**，也不提倡 使用protetced/private继承，因为protetced/private继承下来的成员都只能在派生类的类里 面使用，实际中扩展维护性不强。
+>
+> ~~~C++
+> // 实例演示三种继承关系下基类成员的各类型成员访问关系的变化  
+> class Person
+> {
+> public
+>  void Print ()
+>  {
+>  cout<<_name <<endl;
+>  }
+> protected :
+>  string _name ; // 姓名
+> private :
+>  int _age ; // 年龄
+> };
+> //class Student : protected Person
+> //class Student : private Person
+> class Student : public Person
+> {
+> protected :
+>  int _stunum ; // 学号
+> };
+> ~~~
+
+##### 基类和派生类 对象赋值转换
+
+> - **派生类对象 可以赋值给 基类的对象 / 基类的指针 / 基类的引用。**这里有个形象的说法叫**切片 或者切割**。寓意把派生类中父类那部分切来赋值过去。 
+> - **基类对象不能赋值给派生类对象。** 
+> - **基类的指针或者引用可以通过强制类型转换赋值给派生类的指针或者引用。** **但是必须是基类 的指针是指向派生类对象时才是安全的。**(如：基类的引用是被派生类赋值的， 则这个基类引用可以强转成对应子类的引用) 这里基类如果是多态类型，可以使用RTTI(RunTime Type Information)的dynamic_cast 来进行识别后进行安全转换。（ps：这个我们后 面再讲解，这里先了解一下）
+>
+> ![image-20221020143620244](%E5%9B%BE%E7%89%87/README/image-20221020143620244.png)
+>
+> ~~~C++
+> class Person
+> {
+>     protected :
+>     string _name; // 姓名
+>     string _sex;  // 性别
+>     int _age; // 年龄
+> };
+> class Student : public Person
+> {
+>     public :
+>     int _No ; // 学号
+> };
+> void Test ()
+> {
+>     Student sobj ;
+>     // 1.子类对象可以赋值给父类对象/指针/引用
+>     Person pobj = sobj ;
+>     Person* pp = &sobj;
+>     Person& rp = sobj;
+> 
+>     //2.基类对象不能赋值给派生类对象
+>     sobj = pobj;
+> 
+>     // 3.基类的指针可以通过强制类型转换赋值给派生类的指针
+>     pp = &sobj;
+>     Student* ps1 = (Student*)pp; // 这种情况转换时可以的。
+>     ps1->_No = 10;
+> 
+>     pp = &pobj;
+>     Student* ps2 = (Student*)pp; // 这种情况转换时虽然可以，但是会存在越界访问的问题
+>     ps2->_No = 10;
+> }
+> ~~~
+> **注意**：这种转换不属于类型转换，而是特殊语法
+>
+> ![image-20221015092045923](%E5%9B%BE%E7%89%87/README/image-20221015092045923.png)
+
+------
+
+
+
+##### 继承中的作用域
+
+> 1. 在继承体系中基类和派生类都有独立的作用域。 
+> 2. **子类和父类中有同名成员，子类成员将屏蔽父类对同名成员的直接访问，这种情况叫隐藏， 也叫重定义。（在子类成员函数中，可以使用 基类::基类成员 显示访问）** 
+> 3. 需要注意的是**如果是成员函数的隐藏，只需要函数名相同就构成隐藏**。 
+> 4. 注意在实际中在继承体系里面最好不要定义同名的成员。
+>
+> ~~~C++
+> // Student的_num和Person的_num构成隐藏关系，可以看出这样代码虽然能跑，但是非常容易混淆
+> class Person
+> {
+>     protected :
+>     string _name = "小李子"; // 姓名
+>     int _num = 111;   // 身份证号
+> };
+> class Student : public Person
+> {
+>     public:
+>     void Print()
+>     {
+>         cout<<" 姓名:"<<_name<< endl;
+>         cout<<" 身份证号:"<<Person::_num<< endl;
+>         cout<<" 学号:"<<_num<<endl;
+>     }
+>     protected:
+>     int _num = 999; // 学号
+> };
+> void Test()
+> {
+>     Student s1;
+>     s1.Print();
+> };
+> 
+> ~~~
+>
+> ~~~C++
+> // B中的fun和A中的fun不是构成重载，因为不是在同一作用域
+> // B中的fun和A中的fun构成隐藏，成员函数满足函数名相同就构成隐藏。
+> class A
+> {
+>     public:
+>     void fun()
+>     {
+>         cout << "func()" << endl;
+>     }
+> };
+> class B : public A
+> {
+>     public:
+>     void fun(int i)
+>     {
+>         A::fun();
+>         cout << "func(int i)->" <<i<<endl;
+>     }
+> };
+> void Test()
+> {
+>     B b;
+>     b.fun(10);
+> };
+> ~~~
+
+------
+
+
+
+##### 派生类的默认成员函数
+
+> 6个默认成员函数，“默认”的意思就是指我们不写，编译器会变我们自动生成一个，那么在派生类 中，这几个成员函数是如何生成的呢？ 
+>
+> 1. **派生类的构造函数必须调用基类的构造函数初始化基类的那一部分成员。**如果**基类没有默认 的构造函数**，则**必须在派生类构造函数的初始化列表阶段显示调用。** 
+> 2. 派生类的拷贝构造函数**必须调用基类的拷贝构造完成基类的拷贝初始化**。 
+> 3. 派生类的operator=**必须要调用基类的operator=完成基类的复制。** 
+> 4. **派生类的析构函数会在被调用完成后自动调用基类的析构函数清理基类成员。**因为这样才能 保证派生类对象先清理派生类成员再清理基类成员的顺序。
+> 5. **派生类对象初始化先调用基类构造再调派生类构造。** 
+> 6.  **派生类对象析构清理先调用派生类析构再调基类的析构。** 
+> 7. 因为后续一些场景析构函数需要构成重写，重写的条件之一是函数名相同(这个我们后面会讲 解)。那么**编译器会对析构函数名进行特殊处理，处理成destrutor()，所以父类析构函数不加 virtual的情况下，子类析构函数和父类析构函数构成隐藏关系。**
+>
+> ![image-20221020145447885](%E5%9B%BE%E7%89%87/README/image-20221020145447885.png)
+>
+> ~~~C++
+> class Person
+> {
+>     public :
+>     Person(const char* name = "peter")
+>         : _name(name )
+>         {
+>             cout<<"Person()" <<endl;
+>         }
+> 
+>     Person(const Person& p)
+>         : _name(p._name)
+>         {
+>             cout<<"Person(const Person& p)" <<endl;
+>         }
+> 
+>     Person& operator=(const Person& p )
+>     {
+>         cout<<"Person operator=(const Person& p)"<< endl;
+>         if (this != &p)
+>             _name = p ._name;
+> 
+>         return *this ;
+>     }
+> 
+>     ~Person()
+>     {
+>         cout<<"~Person()" <<endl;
+>     }
+>     protected :
+>     string _name ; // 姓名
+> };
+> class Student : public Person
+> {
+>     public :
+>     Student(const char* name, int num)
+>         : Person(name )
+>             , _num(num )
+>         {
+>             cout<<"Student()" <<endl;
+>         }
+> 
+>     Student(const Student& s)
+>         : Person(s)
+>             , _num(s ._num)
+>         {
+>             cout<<"Student(const Student& s)" <<endl ;
+>         }
+> 
+>     Student& operator = (const Student& s )
+>     {
+>         cout<<"Student& operator= (const Student& s)"<< endl;
+>         if (this != &s)
+>         {
+>             Person::operator =(s);
+>             _num = s ._num;
+>         }
+>         return *this ;
+>     } 
+> 
+>     ~Student()
+>     {
+>         cout<<"~Student()" <<endl;
+>     }
+>     protected :
+>     int _num ; //学号
+> };
+> void Test ()
+> {
+>     Student s1 ("jack", 18);
+>     Student s2 (s1);
+>     Student s3 ("rose", 17);
+>     s1 = s3 ;
+> }
+> 
+> ~~~
+>
+> 
+
+------
+
+##### 继承与友元
+
+> 友元关系不能继承，也就是说基类友元不能访问子类私有和保护成员 
+>
+> ~~~C++
+> class Student;
+> class Person
+> {
+>     public:
+>     friend void Display(const Person& p, const Student& s);
+>     protected:
+>     string _name; // 姓名
+> };
+> class Student : public Person
+> {
+>     protected:
+>     int _stuNum; // 学号
+> };
+> void Display(const Person& p, const Student& s)
+> {
+>     cout << p._name << endl;
+>     cout << s._stuNum << endl;
+> }
+> void main()
+> {
+>     Person p;
+>     Student s;
+>     Display(p, s);
+> }
+> 
+> ~~~
+>
+> 
+
+------
+
+##### 继承与静态成员
+
+> 基类定义了static静态成员，则整个继承体系里面只有一个这样的成员。无论派生出多少个子 类，都只有一个static成员实例 。
+>
+> ~~~C++
+> class Person
+> {
+>     public :
+>     Person () {++ _count ;}
+>     protected :
+>     string _name ; // 姓名
+>     public :
+>     static int _count; // 统计人的个数。
+> };
+> int Person :: _count = 0;
+> class Student : public Person
+> {
+>     protected :
+>     int _stuNum ; // 学号
+> };
+> class Graduate : public Student
+> {
+>     protected :
+>     string _seminarCourse ; // 研究科目
+> };
+> void TestPerson()
+> {
+>     Student s1 ;
+>     Student s2 ;
+>     Student s3 ;
+>     Graduate s4 ;
+>     cout <<" 人数 :"<< Person ::_count << endl;
+>     Student ::_count = 0;
+>     cout <<" 人数 :"<< Person ::_count << endl;
+> }
+> 
+> ~~~
+>
+> 
+
+------
+
+##### 复杂的菱形继承及菱形虚拟继承
+
+###### 继承方式
+
+> **单继承：**一个子类只有一个直接父类时称这个继承关系为单继承
+>
+> ![image-20221020145902743](%E5%9B%BE%E7%89%87/README/image-20221020145902743.png)
+>
+> **多继承：**一个子类有两个或以上直接父类时称这个继承关系为多继承
+>
+> ![image-20221020145949271](%E5%9B%BE%E7%89%87/README/image-20221020145949271.png)
+>
+> **菱形继承：**菱形继承是多继承的一种特殊情况。
+>
+> ![image-20221020150007884](%E5%9B%BE%E7%89%87/README/image-20221020150007884.png)
+
+###### 菱形继承的问题 与 虚拟继承
+
+> **菱形继承的问题：从下面的对象成员模型构造，可以看出菱形继承有数据冗余和二义性的问题。 在Assistant的对象中Person成员会有两份。**
+>
+> ![image-20221020150043641](%E5%9B%BE%E7%89%87/README/image-20221020150043641.png)
+>
+> ~~~C++
+> class Person
+> {
+>     public :
+>     string _name ; // 姓名
+> };
+> class Student : public Person
+> {
+>     protected :
+>     int _num ; //学号
+> };
+> class Teacher : public Person
+> {
+>     protected :
+>     int _id ; // 职工编号
+> };
+> class Assistant : public Student, public Teacher
+> {
+>     protected :
+>     string _majorCourse ; // 主修课程
+> };
+> void Test ()
+> {
+>     // 这样会有二义性无法明确知道访问的是哪一个
+>     Assistant a ;
+>     a._name = "peter";
+>     // 需要显示指定访问哪个父类的成员可以解决二义性问题，但是数据冗余问题无法解决
+>     a.Student::_name = "xxx";
+>     a.Teacher::_name = "yyy";
+> }
+> 
+> ~~~
+>
+> **虚拟继承可以解决菱形继承的二义性和数据冗余的问题。如上面的继承关系，在Student和 Teacher的继承Person时使用虚拟继承，即可解决问题。需要注意的是，虚拟继承不要在其他地方去使用。**
+>
+> ~~~C++
+> class Person
+> {
+> public :
+>  string _name ; // 姓名
+> };
+> class Student : virtual public Person
+> {
+> protected :
+>  int _num ; //学号
+> };
+> class Teacher : virtual public Person
+> {
+> protected :
+>  int _id ; // 职工编号
+> };
+> class Assistant : public Student, public Teacher
+> {
+> protected :
+>  string _majorCourse ; // 主修课程
+> };
+> void Test ()
+> {
+>  Assistant a ;
+>  a._name = "peter";
+> }
+> ~~~
+>
+> **虚拟继承解决数据冗余和二义性的原理** 
+>
+> 为了研究虚拟继承原理，我们给出了一个简化的菱形虚拟继承体系，再借助内存窗口观察对象成 员的模型。
+>
+> ~~~C++
+> class A
+> {
+>     public:
+>     int _a;
+> };
+> // class B : public A
+> class B : virtual public A
+> {
+>     public:
+>     int _b;
+> };
+> // class C : public A
+> class C : virtual public A
+> {
+>     public:
+>     int _c;
+> };
+> class D : public B, public C
+> {
+>     public:
+>     int _d;
+> };
+> int main()
+> {
+>     D d;
+>     d.B::_a = 1;
+>     d.C::_a = 2;
+>     d._b = 3;
+>     d._c = 4;
+>     d._d = 5;
+>     return 0;
+> }
+> ~~~
+>
+> 下图是菱形继承的内存对象成员模型：这里可以看到数据冗余
+>
+> ![image-20221020150405408](%E5%9B%BE%E7%89%87/README/image-20221020150405408.png)
+>
+> 下图是菱形虚拟继承的内存对象成员模型：这里可以分析出D对象中将A放到的了对象组成的最下 面，这个A同时属于B和C，那么B和C如何去找到公共的A呢？**这里是通过了B和C的两个指针，指 向的一张表。这两个指针叫虚基表指针，这两个表叫虚基表。虚基表中存的偏移量。通过偏移量 可以找到下面的A。**
+>
+> ![image-20221020150441865](%E5%9B%BE%E7%89%87/README/image-20221020150441865.png)
+>
+> ~~~C++
+>      // 有童鞋会有疑问为什么D中B和C部分要去找属于自己的A？那么大家看看当下面的赋值发生时，d是不是要去找出B/C成员中的A才能赋值过去？
+> D d;
+> B b = d;
+> C c = d;
+> ~~~
+> 
+>下面是上面的Person关系菱形虚拟继承的原理解释：
+> 
+>![image-20221020150526890](%E5%9B%BE%E7%89%87/README/image-20221020150526890.png)
+
+------
+
+
+
+##### 继承的总结和反思
+
+> 1. 很多人说C++语法复杂，其实多继承就是一个体现。有了多继承，就存在菱形继承，有了菱 形继承就有菱形虚拟继承，底层实现就很复杂。所以一般不建议设计出多继承，一定不要设 计出菱形继承。否则在复杂度及性能上都有问题。 
+>
+> 2.  多继承可以认为是C++的缺陷之一，很多后来的OO语言都没有多继承，如Java。 
+>
+> 3. 继承和组合
+>
+>     - public继承是一种is-a的关系。也就是说每个派生类对象都是一个基类对象。 
+>     - 组合是一种has-a的关系。假设B组合了A，每个B对象中都有一个A对象。
+>     - 优先使用对象组合，而不是类继承 。[优先使用对象组合，而不是类继承 - 残雪余香 - 博客园 (cnblogs.com)](https://www.cnblogs.com/nexiyi/archive/2013/06/16/3138568.html)
+>     - 继承允许你根据基类的实现来定义派生类的实现。这种通过生成派生类的复用通常被称 为白箱复用(white-box reuse)。术语“白箱”是相对可视性而言：在继承方式中，基类的 内部细节对子类可见 。继承一定程度破坏了基类的封装，基类的改变，对派生类有很 大的影响。派生类和基类间的依赖关系很强，耦合度高。 
+>     - 对象组合是类继承之外的另一种复用选择。新的更复杂的功能可以通过组装或组合对象 来获得。对象组合要求被组合的对象具有良好定义的接口。这种复用风格被称为黑箱复 用(black-box reuse)，因为对象的内部细节是不可见的。对象只以“黑箱”的形式出现。 组合类之间没有很强的依赖关系，耦合度低。优先使用对象组合有助于你保持每个类被 封装。 
+>     - 实际尽量多去用组合。组合的耦合度低，代码维护性好。不过继承也有用武之地的，有 些关系就适合继承那就用继承，另外要实现多态，也必须要继承。类之间的关系可以用 继承，可以用组合，就用组合。
+>
+>     ~~~C++
+>     // Car和BMW Car和Benz构成is-a的关系
+>     class Car{
+>         protected:
+>         string _colour = "白色"; // 颜色
+>         string _num = "陕ABIT00"; // 车牌号
+>     };
+>                                                                                 
+>     class BMW : public Car{
+>         public:
+>         void Drive() {cout << "好开-操控" << endl;}
+>     };
+>                                                                                 
+>     class Benz : public Car{
+>         public:
+>         void Drive() {cout << "好坐-舒适" << endl;}
+>     };
+>                                                                                 
+>     // Tire和Car构成has-a的关系
+>                                                                                 
+>     class Tire{
+>         protected:
+>         string _brand = "Michelin";  // 品牌
+>         size_t _size = 17;         // 尺寸
+>                                                                                 
+>     };
+>                                                                                 
+>     class Car{
+>         protected:
+>         string _colour = "白色"; // 颜色
+>         string _num = "陕ABIT00"; // 车牌号
+>         Tire _t; // 轮胎
+>     }; 
+>     ~~~
+>
+>     
+
+------
+
+##### 笔试面试
+
+> 1. 什么是菱形继承？菱形继承的问题是什么？ 
+> 2. 什么是菱形虚拟继承？如何解决数据冗余和二义性的 
+> 3. 继承和组合的区别？什么时候用继承？什么时候用组合？
+
+------
+
+
+
+### 多态
+
+多态的概念：通俗来说，就是多种形态，具体点就是去完成某个行为，当不同的对象去完成时会 产生出不同的状态。
+
+##### 定义及实现
+
+###### 多态的构成条件
+
+> 多态是在不同继承关系的类对象，去调用同一函数，产生了不同的行为。比如Student继承了 Person。Person对象买票全价，Student对象买票半价。 
+>
+> 那么在继承中要构成多态还有两个条件： 
+>
+> 1. **必须通过基类的指针或者引用调用虚函数**
+> 2. **被调用的函数必须是虚函数，且派生类必须对基类的虚函数进行重写**
+>
+> ![image-20221020153736497](%E5%9B%BE%E7%89%87/README/image-20221020153736497.png)
+
+###### 虚函数
+
+> 虚函数：
+>
+> 即被virtual修饰的**类成员函数**称为虚函数。
+>
+> ~~~c++
+> class Person {
+>     public:
+>     virtual void BuyTicket() { cout << "买票-全价" << endl;}
+> };
+> ~~~
+
+###### 虚函数的重写
+
+> 虚函数的重写(覆盖)：派生类中有一个跟基类完全相同的虚函数(即派生类虚函数与基类虚函数的 返回值类型、函数名字、参数列表完全相同)，称子类的虚函数重写了基类的虚函数。
+>
+> ~~~C++
+> class Person {
+>     public:
+>     virtual void BuyTicket() { cout << "买票-全价" << endl; }
+> };
+> class Student : public Person {
+>     public:
+>     virtual void BuyTicket() { cout << "买票-半价" << endl; }
+>     /*注意：在重写基类虚函数时，派生类的虚函数在不加virtual关键字时，虽然也可以构成重写(因
+>     为继承后基类的虚函数被继承下来了在派生类依旧保持虚函数属性),但是该种写法不是很规范，不建议
+>     这样使用*/
+>     /*void BuyTicket() { cout << "买票-半价" << endl; }*/
+> };
+> void Func(Person& p)
+> { p.BuyTicket(); }
+> int main()
+> {
+>     Person ps;
+>     Student st;
+>     Func(ps);
+>     Func(st);
+>     return 0;
+> }
+> 
+> ~~~
+>
+> **虚函数重写的两个例外**： 
+>
+> 1. **协变(基类与派生类虚函数返回值类型不同)** 
+>
+>     派生类重写基类虚函数时，与基类虚函数返回值类型不同。**即基类虚函数返回基类对象的指 针或者引用，派生类虚函数返回派生类对象的指针或者引用时，称为协变。**（了解）
+>
+>     ~~~C++
+>     class A{};
+>     class B : public A {};
+>     class Person {
+>         public:
+>         virtual A* f() {return new A;}
+>     };
+>     class Student : public Person {
+>         public:
+>         virtual B* f() {return new B;}
+>     };
+>     
+>     ~~~
+>
+> 2. **析构函数的重写(基类与派生类析构函数的名字不同)**
+>
+>     如果基类的析构函数为虚函数，此时派生类析构函数只要定义，无论是否加virtual关键字， 都与基类的析构函数构成重写，虽然基类与派生类析构函数名字不同。虽然函数名不相同， 看起来违背了重写的规则，其实不然，这**里可以理解为编译器对析构函数的名称做了特殊处 理，编译后析构函数的名称统一处理成destructor。**
+>
+>     ~~~C++
+>     class Person {
+>         public:
+>         virtual ~Person() {cout << "~Person()" << endl;}
+>     };
+>     class Student : public Person {
+>         public:
+>         virtual ~Student() { cout << "~Student()" << endl; }
+>     };
+>     // 只有派生类Student的析构函数重写了Person的析构函数，下面的delete对象调用析构函
+>     数，才能构成多态，才能保证p1和p2指向的对象正确的调用析构函数。
+>         int main()
+>     {
+>         Person* p1 = new Person;
+>         Person* p2 = new Student;
+>         delete p1;
+>         delete p2;
+>         return 0;
+>     }
+>                                                                                 
+>     ~~~
+
+------
+
+#####  C++11 override 和 final
+
+> 从上面可以看出，C++对函数重写的要求比较严格，但是有些情况下由于疏忽，可能会导致函数 名字母次序写反而无法构成重载，而这种错误在编译期间是不会报出的，只有在程序运行时没有 得到预期结果才来debug会得不偿失，因此：**C++11提供了override和final两个关键字，可以帮 助用户检测是否重写。**
+>
+> 1. **final：修饰虚函数，表示该虚函数不能再被重写**
+>
+>     ~~~C++
+>     class Car
+>     {
+>         public:
+>         virtual void Drive() final {}
+>     };
+>     class Benz :public Car
+>     {
+>         public:
+>         virtual void Drive() {cout << "Benz-舒适" << endl;}
+>     };
+>     ~~~
+>
+> 2.  **override: 检查派生类虚函数是否重写了基类某个虚函数，如果没有重写编译报错**。
+>
+>     ~~~C++
+>     class Car{
+>         public:
+>         virtual void Drive(){}
+>     };
+>     class Benz :public Car {
+>         public:
+>         virtual void Drive() override {cout << "Benz-舒适" << endl;}
+>     };
+>     ~~~
+>
+>     
+
+------
+
+##### 重载、覆盖(重写)、隐藏(重定义)的对比
+
+
+
+> ![image-20221020164121890](%E5%9B%BE%E7%89%87/README/image-20221020164121890.png)
+
+------
+
+##### 建议
+
+###### 不实现多态不要将函数定义为虚函数
+
+> ~~~C++
+> 存在虚函数就会产生虚表， 有虚表就会运行时决议， 浪费时间空间
+> ~~~
+
+###### 析构函数建议定义为虚函数
+
+> ~~~c++
+> 父类* str1 = new 父类;
+> 父类* str2 = new 子类;
+> delete str1;
+> delete str2;
+> 若不把析构函数定义为虚函数， 不满足多态，则delete父类类型指针，会调用两次父类的析构
+> ~~~
+>
+> 
+
+------
+
+##### 抽象类
+
+###### 抽象类
+
+> **在虚函数的后面写上 =0 ，则这个函数为纯虚函数。**包含纯虚函数的类叫做抽象类（**也叫接口 类**），抽象类不能实例化出对象。**派生类继承后也不能实例化出对象，只有重写全部纯虚函数，派生类才能实例化出对象，否则派生类仍是抽象类，不能实例化对象**。纯虚函数规范了派生类必须重写，另外纯虚函数更体现出了接口继承。
+>
+> ~~~C++
+> class Car
+> {
+>     public:
+>     virtual void Drive() = 0;
+> };
+> class Benz :public Car
+> {
+>     public:
+>     virtual void Drive()
+>     {
+>         cout << "Benz-舒适" << endl;
+>     }
+> };
+> class BMW :public Car
+> {
+>     public:
+>     virtual void Drive()
+>     {
+>         cout << "BMW-操控" << endl;
+>     }
+> };
+> void Test()
+> {
+>     Car* pBenz = new Benz;
+>     pBenz->Drive();
+>     Car* pBMW = new BMW;
+>     pBMW->Drive();
+> }
+> ~~~
+
+###### 接口继承和实现继承
+
+> 普通函数的继承是一种实现继承，派生类继承了基类函数，可以使用函数，继承的是函数的实 现。虚函数的继承是一种接口继承，派生类继承的是基类虚函数的接口，目的是为了重写，达成 多态，继承的是接口。所以如果不实现多态，不要把函数定义成虚函数。**因为存在虚函数就会产生虚表， 有虚表就会运行时决议， 浪费时间空间。**
+
+------
+
+##### 多态的原理
+
+###### 虚函数表
+
+> ~~~C++
+> // 这里常考一道笔试题：sizeof(Base)是多少？
+> class Base
+> {
+>  public:
+>  virtual void Func1()
+>  {
+>      cout << "Func1()" << endl;
+>  }
+>  private:
+>  int _b = 1;
+> };
+> 
+> ~~~
+>
+> 通过观察测试我们发现b对象是8bytes，**除了_b成员，还多一个__vfptr放在对象的前面(注意有些 平台可能会放到对象的最后面，这个跟平台有关)，对象中的这个指针我们叫做虚函数表指针(v代 表virtual，f代表function)。**一个含有虚函数的类中都至少都有一个虚函数表指针，因为虚函数 的地址要被放到虚函数表中，虚函数表也简称虚表，。那么派生类中这个表放了些什么呢？我们 接着往下分析
+>
+> ![image-20221020165130484](%E5%9B%BE%E7%89%87/README/image-20221020165130484.png)
+>
+> ~~~C++
+> // 针对上面的代码我们做出以下改造
+> // 1.我们增加一个派生类Derive去继承Base
+> // 2.Derive中重写Func1
+> // 3.Base再增加一个虚函数Func2和一个普通函数Func3
+> class Base
+> {
+>     public:
+>     virtual void Func1()
+>     {
+>         cout << "Base::Func1()" << endl;
+>     }
+>     virtual void Func2()
+>     {
+>         cout << "Base::Func2()" << endl;
+>     }
+>     void Func3()
+>     {
+>         cout << "Base::Func3()" << endl;
+>     }
+>     private:
+>     int _b = 1;
+> };
+> class Derive : public Base
+> {
+>     public:
+>     virtual void Func1()
+>     {
+>         cout << "Derive::Func1()" << endl;
+>     }
+>     private:
+>     int _d = 2;
+> };
+> int main()
+> {
+>     Base b;
+>     Derive d;
+>     return 0;
+> }
+> 
+> ~~~
+>
+> **通过观察和测试，我们发现了以下几点问题：** 
+>
+> 1. 派生类对象d中也有一个虚表指针，d对象由两部分构成，一部分是父类继承下来的成员，虚表指针也就是父类部分的，另一部分是自己的成员。 
+>
+> 2. **基类b对象和派生类d对象虚表是不一样的，**这里我们发现Func1完成了重写，所以**d的虚表 中存的是重写的Derive::Func1，**所以虚函数的重写也叫作覆盖，覆盖就是指虚表中虚函数 的覆盖。重写是语法的叫法，覆盖是原理层的叫法。 
+>
+> 3. 另外**Func2继承下来后是虚函数，所以放进了虚表，Func3也继承下来了，但是不是虚函 数，所以不会放进虚表。** 
+>
+> 4.  **虚函数表本质是一个存虚函数指针的指针数组，一般情况这个数组最后面放了一个nullptr。**
+>
+> 5. 总结一下派生类的虚表生成：
+>
+>     - 先将**基类中的虚表内容拷贝一份到派生类虚表中** 
+>     - 如果派生 类重写了基类中某个虚函数，用派生类自己的**虚函数覆盖虚表中基类的虚函数** 
+>     - **派生类自己 新增加的虚函数按其在派生类中的声明次序增加到派生类虚表的最后。** 
+>
+> 6. 这里还有一个童鞋们很容易混淆的问题：虚函数存在哪的？虚表存在哪的？ **答：虚函数存在 虚表，虚表存在对象中。注意上面的回答的错的。**但是很多童鞋都是这样深以为然的。注意 **虚表存的是虚函数指针，不是虚函数，虚函数和普通函数一样的，都是存在代码段的，只是 他的指针又存到了虚表中。另外对象中存的不是虚表，存的是虚表指针。那么虚表存在哪的 呢？实际我们去验证一下会发现vs下是存在代码段的，**Linux g++下大家自己去验证？
+>
+>     ![image-20221020170157379](%E5%9B%BE%E7%89%87/README/image-20221020170157379.png)
+
+------
+
+###### 多态的原理▲
+
+> 上面分析了这个半天了那么多态的原理到底是什么？还记得这里Func函数传Person调用的 Person::BuyTicket，传Student调用的是Student::BuyTicket
+>
+> ![image-20221020170939096](%E5%9B%BE%E7%89%87/README/image-20221020170939096.png)
+>
+> ~~~C++
+> class Person {
+>     public:
+>     virtual void BuyTicket() { cout << "买票-全价" << endl; }
+> };
+> class Student : public Person {
+>     public:
+>     virtual void BuyTicket() { cout << "买票-半价" << endl; }
+> };
+> void Func(Person& p)
+> {
+>     p.BuyTicket();
+> }
+> int main()
+> {
+>     Person Mike;
+>     Func(Mike);
+>     Student Johnson;
+>     Func(Johnson);
+>     return 0;
+> }
+> ~~~
+>
+> 1. 观察下图的红色箭头我们看到，p是指向mike对象时，p->BuyTicket在mike的虚表中找到虚 函数是Person::BuyTicket。 
+>
+> 2. 观察下图的蓝色箭头我们看到，p是指向johnson对象时，p->BuyTicket在johson的虚表中 找到虚函数是Student::BuyTicket。
+>
+> 3. 这样就实现出了不同对象去完成同一行为时，展现出不同的形态。
+>
+> 4. 反过来思考我们要达到多态，有两个条件，一个是虚函数覆盖，一个是对象的指针或引用调 用虚函数。反思一下为什么？ 
+>
+> 5.  再通过下面的汇编代码分析，看出**满足多态以后的函数调用，不是在编译时确定的，是运行 起来以后到对象的中取找的。不满足多态的函数调用时编译时确认好的。**
+>
+>     ![image-20221020171058295](%E5%9B%BE%E7%89%87/README/image-20221020171058295.png)
+>
+>     ~~~C++
+>     void Func(Person* p)
+>     {
+>         p->BuyTicket();
+>     }
+>     int main()
+>     {
+>         Person mike;
+>         Func(&mike);
+>         mike.BuyTicket();
+>                                                                 
+>         return 0;
+>     }
+>     // 以下汇编代码中跟你这个问题不相关的都被去掉了
+>     void Func(Person* p)
+>     {
+>         //...
+>             p->BuyTicket();
+>         // p中存的是mike对象的指针，将p移动到eax中
+>         001940DE  mov         eax,dword ptr [p]
+>             // [eax]就是取eax值指向的内容，这里相当于把mike对象头4个字节(虚表指针)移动到了edx
+>             001940E1  mov         edx,dword ptr [eax]
+>             // [edx]就是取edx值指向的内容，这里相当于把虚表中的头4字节存的虚函数指针移动到了eax
+>             00B823EE  mov         eax,dword ptr [edx]
+>             // call eax中存虚函数的指针。这里可以看出满足多态的调用，不是在编译时确定的，是运行起来以后到对象的中取找的。
+>             001940EA  call        eax  
+>             001940EC  cmp         esi,esp  
+>     }
+>     int main()
+>     {
+>         ... 
+>             // 首先BuyTicket虽然是虚函数，但是mike是对象，不满足多态的条件，所以这里是普通函数的调用转换成地址时，是在编译时已经从符号表确认了函数的地址，直接call 地址
+>             mike.BuyTicket();
+>         00195182  lea         ecx,[mike]
+>         00195185  call        Person::BuyTicket (01914F6h)  
+>             ... 
+>     }
+>                                                                 
+>     ~~~
+>
+>     
+
+###### 动态绑定与静态绑定
+
+> 1. 静态绑定又称为前期绑定(早绑定)，在程序编译期间确定了程序的行为，也称为静态多态， 比如：函数重载，模板编程
+> 2. 动态绑定又称后期绑定(晚绑定)，是在程序运行期间，根据具体拿到的类型确定程序的具体 行为，调用具体的函数，也称为动态多态。 
+> 3. 本小节之前(5.2小节)买票的汇编代码很好的解释了什么是静态(编译器)绑定和动态(运行时)绑 定。
+
+------
+
+##### 单继承和多继承关系的虚函数表
+
+> 需要注意的是在单继承和多继承关系中，下面我们去关注的是派生类对象的虚表模型，因为基类 的虚表模型前面我们已经看过了，没什么需要特别研究的
+
+###### 单继承中的虚函数表
+
+> ~~~C++
+> class Base { 
+>     public :
+>     virtual void func1() { cout<<"Base::func1" <<endl;}
+>     virtual void func2() {cout<<"Base::func2" <<endl;}
+>     private :
+>     int a;
+> };
+> class Derive :public Base { 
+>     public :
+>     virtual void func1() {cout<<"Derive::func1" <<endl;}
+>     virtual void func3() {cout<<"Derive::func3" <<endl;}
+>     virtual void func4() {cout<<"Derive::func4" <<endl;}
+>     private :
+>     int b;
+> };
+> 
+> ~~~
+>
+> 观察下图中的监视窗口中我们发现看不见func3和func4。这里是编译器的监视窗口故意隐藏了这 两个函数，也可以认为是他的一个小bug。那么我们如何查看d的虚表呢？下面我们使用代码打印 出虚表中的函数。
+>
+> ![image-20221020171810440](%E5%9B%BE%E7%89%87/README/image-20221020171810440.png)
+>
+> ~~~C++
+> typedef void(*VFPTR) ();
+> void PrintVTable(VFPTR vTable[])
+> {
+>     // 依次取虚表中的虚函数指针打印并调用。调用就可以看出存的是哪个函数
+>     cout << " 虚表地址>" << vTable << endl;
+>     for (int i = 0; vTable[i] != nullptr; ++i)
+>     {
+>         printf(" 第%d个虚函数地址 :0X%x,->", i, vTable[i]);
+>         VFPTR f = vTable[i];
+>         f();
+>     }
+>     cout << endl;
+> }
+> int main()
+> {
+>     Base b;
+>     Derive d;
+>     // 思路：取出b、d对象的头4bytes，就是虚表的指针，前面我们说了虚函数表本质是一个存虚函数指针的指针数组，这个数组最后面放了一个nullptr
+>     // 1.先取b的地址，强转成一个int*的指针
+>     // 2.再解引用取值，就取到了b对象头4bytes的值，这个值就是指向虚表的指针
+>     // 3.再强转成VFPTR*，因为虚表就是一个存VFPTR类型(虚函数指针类型)的数组。
+>     // 4.虚表指针传递给PrintVTable进行打印虚表
+>     // 5.需要说明的是这个打印虚表的代码经常会崩溃，因为编译器有时对虚表的处理不干净，虚表最后面没有放nullptr，导致越界，这是编译器的问题。我们只需要点目录栏的-生成-清理解决方案，再编译就好了。
+>     VFPTR* vTableb = (VFPTR*)(*(int*)&b);
+>     PrintVTable(vTableb);
+>     VFPTR* vTabled = (VFPTR*)(*(int*)&d);
+>     PrintVTable(vTabled);
+>     return 0;
+> }
+> 
+> ~~~
+>
+> ![image-20221020171905028](%E5%9B%BE%E7%89%87/README/image-20221020171905028.png)
+
+###### 多继承中的虚函数表
+
+> ~~~C++
+> class Base1 {
+>  public:
+>  virtual void func1() {cout << "Base1::func1" << endl;}
+>  virtual void func2() {cout << "Base1::func2" << endl;}
+>  private:
+>  int b1;
+> };
+> class Base2 {
+>  public:
+>  virtual void func1() {cout << "Base2::func1" << endl;}
+>  virtual void func2() {cout << "Base2::func2" << endl;}
+>  private:
+>  int b2;
+> };
+> class Derive : public Base1, public Base2 {
+>  public:
+>  virtual void func1() {cout << "Derive::func1" << endl;}
+>  virtual void func3() {cout << "Derive::func3" << endl;}
+>  private:
+>  int d1;
+> };
+> typedef void(*VFPTR) ();
+> void PrintVTable(VFPTR vTable[])
+> {
+>  cout << " 虚表地址>" << vTable << endl;
+>  for (int i = 0; vTable[i] != nullptr; ++i)
+>  {
+>      printf(" 第%d个虚函数地址 :0X%x,->", i, vTable[i]);
+>      VFPTR f = vTable[i];
+>      f();
+>  }
+>  cout << endl;
+> }
+> int main()
+> {
+>  Derive d;
+>  VFPTR* vTableb1 = (VFPTR*)(*(int*)&d);
+>  PrintVTable(vTableb1);
+>  VFPTR* vTableb2 = (VFPTR*)(*(int*)((char*)&d+sizeof(Base1)));
+>  PrintVTable(vTableb2);
+>  return 0;
+> }
+> 
+> ~~~
+>
+> 观察下图可以看出：多继承派生类的未重写的/新增的虚函数放在**第一个继承基类部分的虚函数表**中
+>
+> ![image-20221020172015696](%E5%9B%BE%E7%89%87/README/image-20221020172015696.png)
+>
+> **为什么两个父类的虚表中， func1的地址不一样▲**
+>
+> ~~~c++
+> 因为VS编译器， call的地址，不是函数的地址， 而是一条jump指令的地址， 跳转到这个指令， 通过这个指令去call原函数
+> ~~~
+>
+> 
+
+######  菱形继承、菱形虚拟继承
+
+> 实际中我们不建议设计出菱形继承及菱形虚拟继承，一方面太复杂容易出问题，另一方面这样的 模型，访问基类成员有一定得性能损耗。所以菱形继承、菱形虚拟继承我们的虚表我们就不看 了，一般我们也不需要研究清楚，因为实际中很少用。如果好奇心比较强的宝宝，可以去看下面 的两篇链接文章。
+>
+> 1. [C++ 虚函数表解析 | 酷 壳 - CoolShell](https://coolshell.cn/articles/12165.html)
+> 2. [C++ 对象的内存布局 | 酷 壳 - CoolShell](https://coolshell.cn/articles/12176.html)
+
+------
+
+##### 相关试题
+
+###### 概念考察
+
+> 1. 下面哪种面向对象的方法可以让你变得富有( )  A: 继承 B: 封装 C: 多态 D: 抽象 
+>
+> 2. ( )是面向对象程序设计语言中的一种机制。这种机制实现了方法的定义与具体的对象无关， 而对方法的调用则可以关联于具体的对象。 A: 继承 B: 模板 C: 对象的自身引用 D: 动态绑定 
+>
+> 3.  面向对象设计中的继承和组合，下面说法错误的是？（） A：继承允许我们覆盖重写父类的实现细节，父类的实现对于子类是可见的，是一种静态复 用，也称为白盒复用 B：组合的对象不需要关心各自的实现细节，之间的关系是在运行时候才确定的，是一种动 态复用，也称为黑盒复用 C：优先使用继承，而不是组合，是面向对象设计的第二原则 D：继承可以使子类能自动继承父类的接口，但在设计模式中认为这是一种破坏了父类的封 装性的表现 
+>
+> 4. 以下关于纯虚函数的说法,正确的是( ) A：声明纯虚函数的类不能实例化对象 B：声明纯虚函数的类是虚基类 C：子类必须实现基类的纯虚函数 D：纯虚函数必须是空函数 
+>
+> 5. 关于虚函数的描述正确的是( ) A：派生类的虚函数与基类的虚函数具有不同的参数个数和类型 B：内联函数不能是虚函数 C：派生类必须重新定义基类的虚函数 D：虚函数可以是一个static型的函数  
+>
+> 6. 关于虚表说法正确的是（ ） A：一个类只能有一张虚表 B：基类中有虚函数，如果子类中没有重写基类的虚函数，此时子类与基类共用同一张虚表 C：虚表是在运行期间动态生成的 D：一个类的不同对象共享该类的虚表 
+>
+> 7. 假设A类中有虚函数，B继承自A，B重写A中的虚函数，也没有定义任何虚函数，则（ ） A：A类对象的前4个字节存储虚表地址，B类对象前4个字节不是虚表地址 B：A类对象和B类对象前4个字节存储的都是虚基表的地址 C：A类对象和B类对象前4个字节存储的虚表地址相同 D：A类和B类虚表中虚函数个数相同，但A类和B类使用的不是同一张虚表
+>
+> 8. 下面程序输出结果是什么? （）
+>
+>     ~~~C++
+>     #include<iostream>
+>     using namespace std;
+>     class A{
+>         public:
+>         A(char *s) { cout<<s<<endl; }
+>         ~A(){}
+>     };
+>     class B:virtual public A
+>     {
+>         public:
+>         B(char *s1,char*s2):A(s1) { cout<<s2<<endl; }
+>     };
+>     class C:virtual public A
+>     {
+>         public:
+>         C(char *s1,char*s2):A(s1) { cout<<s2<<endl; }
+>     };
+>     class D:public B,public C
+>     {
+>         public:
+>         D(char *s1,char *s2,char *s3,char *s4):B(s1,s2),C(s1,s3),A(s1)
+>         { cout<<s4<<endl;}
+>     };
+>     int main() {
+>         D *p=new D("class A","class B","class C","class D");
+>         delete p;
+>         return 0;
+>     }
+>
+>     ~~~
+>
+>     A：class A class B class C class D B：class D class B class C class A C：class D class C class B class A D：class A class C class B class D 
+>
+> 9. 多继承中指针偏移问题？下面说法正确的是( )
+>
+>     ~~~C++
+>     class Base1 {  public:  int _b1; };
+>     class Base2 {  public:  int _b2; };
+>     class Derive : public Base1, public Base2 { public: int _d; };
+>     int main(){
+>         Derive d;
+>         Base1* p1 = &d;
+>         Base2* p2 = &d;
+>         Derive* p3 = &d;
+>         return 0;
+>     }
+>                 
+>     ~~~
+>
+>     A：p1 == p2 == p3 B：p1 < p2 < p3 C：p1 == p3 != p2 D：p1 != p2 != p3
+>
+>
+> 10. **以下程序输出结果是什么（）**
+>
+>     ~~~C++
+>     class A
+>     {
+>         public:
+>         virtual void func(int val = 1){ std::cout<<"A->"<< val <<std::endl;}
+>         virtual void test(){ func();}
+>     };
+>                 
+>     class B : public A
+>     {
+>         public:
+>         void func(int val=0){ std::cout<<"B->"<< val <<std::endl; }
+>     };
+>                 
+>     int main(int argc ,char* argv[])
+>     {
+>         B*p = new B;
+>         p->test();
+>         return 0;
+>     }
+>     //仅重写方法体
+>     ~~~
+>     
+>     A: A->0 B: B->1 C: A->1 D: B->0 E: 编译出错 F: 以上都不正确
+>
+> ~~~C++
+> 参考答案：
+>    1. A   2. D   3. C   4. A   5. B
+>    6. D   7. D   8. A   9. C   10. B
+> ~~~
+>
+> 
+
+###### 问答题
+
+> 1. 什么是多态？答：参考本节课件内容 
+> 2. 什么是重载、重写(覆盖)、重定义(隐藏)？答：参考本节课件内容
+> 3. 多态的实现原理？答：参考本节课件内容 
+> 4. inline函数可以是虚函数吗？答：可以，不过编译器就忽略inline属性，这个函数就不再是 inline，因为虚函数要放到虚表中去。
+> 5. 静态成员可以是虚函数吗？答：不能，因为静态成员函数没有this指针，使用类型::成员函数 的调用方式无法访问虚函数表，所以静态成员函数无法放进虚函数表。 
+> 6. 构造函数可以是虚函数吗？答：不能，因为对象中的虚函数表指针是在构造函数初始化列表 阶段才初始化的。 
+> 7. 析构函数可以是虚函数吗？什么场景下析构函数是虚函数？答：可以，并且最好把基类的析 构函数定义成虚函数。参考本节课件内容 
+> 8. 对象访问普通函数快还是虚函数更快？答：首先如果是普通对象，是一样快的。如果是指针 对象或者是引用对象，则调用的普通函数快，因为构成多态，运行时调用虚函数需要到虚函 数表中去查找。 
+> 9. 虚函数表是在什么阶段生成的，存在哪的？答：虚函数表是在编译阶段就生成的，一般情况 下存在代码段(常量区)的。 
+> 10. C++菱形继承的问题？虚继承的原理？答：参考继承课件。注意这里不要把虚函数表和虚基 表搞混了。 
+> 11. 什么是抽象类？抽象类的作用？答：参考（3.抽象类）。抽象类强制重写了虚函数，另外抽 象类体现出了接口继承关系。
+
