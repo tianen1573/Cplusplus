@@ -54,8 +54,13 @@
 //}
 void test5()
 {
-	Date d1(2012, 12, 31);
-	d1.HowManyDays();
+	Date d(2012, 12, 31);
+
+	const Date& d1 = d;
+	//d1._year = 10;
+
+	Date& const d2 = d;
+	//d2._year = 10;
 }
 
 int main()

@@ -82,19 +82,34 @@
 
 using namespace std;
 
+//int main()
+//{
+//	string dest, src;
+//
+//	getline(cin, dest);
+//
+//	int prePos = 0;
+//	int pos = 0;
+//
+//	while (true)
+//	{
+//		
+//		int last = dest.find(' ');
+//	}
+//
+//}
+
+template<class T>
+class test
+{
+	typedef T dataType;
+
+	auto t = 1;
+};
+
 int main()
 {
-	string dest, src;
+	test<int> t;
 
-	getline(cin, dest);
-
-	int prePos = 0;
-	int pos = 0;
-
-	while (true)
-	{
-		
-		int last = dest.find(' ');
-	}
-
+	return 0;
 }
