@@ -79,6 +79,8 @@
 #include<iostream>
 #include<stdlib.h>
 #include<string>
+#include<vector>
+#include<list>
 
 using namespace std;
 
@@ -99,17 +101,23 @@ using namespace std;
 //
 //}
 
-template<class T>
-class test
-{
-	typedef T dataType;
-
-	auto t = 1;
-};
+//template<class T>
+//class test
+//{
+//	typedef T dataType;
+//
+//	auto t = 1;
+//};
 
 int main()
 {
-	test<int> t;
+	/*test<int> t;*/
+
+	const vector<int> cvec;
+	const list<int> cl;
+
+	vector<int>::const_iterator it = cvec.begin();
+	list<int>::const_iterator it2 = cl.begin();
 
 	return 0;
 }

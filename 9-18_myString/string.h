@@ -118,7 +118,7 @@ namespace Bit
 			, _size(0)
 			, _capacity(0)
 		{
-			string tmp(str._str);
+			string tmp(str._str);//C指针构造，不是拷贝构造
 			swap(tmp);
 		}
 

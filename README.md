@@ -256,21 +256,21 @@
 >
 >     ```c++
 >     //返回值类型若为引用类型, 此时编译器不会拷贝返回值,则要求在函数结束时, 返回值的生命周期还在, 即返回值不能随函数结束而回收, 否则会发生内存泄漏
->                                                                                                         
+>                                                                                                                     
 >     int& fun()
 >     {
 >         static int a = 10;//全局域, 文件内而访问
 >         int b = 10;//局部变量, 随函数结束而释放
->                                                                                                             
+>                                                                                                                         
 >         return b;//内存泄漏
 >         //return a;//
 >     }
->                                                                                                         
+>                                                                                                                     
 >     int main()
 >     { 
 >         int val = fun();
 >         //接受到某个变量的引用, fun()结束时, b所在的空间已被释放, 造成内存泄漏
->                                                                                                             
+>                                                                                                                         
 >         return 0;
 >     }
 >     ```
@@ -1647,7 +1647,7 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 >     {
 >         int a = 10;
 >         double b = 20.0;
->                                                                                                     
+>                                                                                                                 
 >         // 显式实例化
 >         Add<int>(a, b);
 >         return 0;
@@ -1914,7 +1914,7 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 > 			, _size(0)
 > 			, _capacity(0)
 > 		{
-> 			string tmp(str._str);
+> 			string tmp(str._str);//C指针构造
 > 			swap(tmp);
 > 		}
 > 
@@ -5773,26 +5773,26 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 >         string _colour = "白色"; // 颜色
 >         string _num = "陕ABIT00"; // 车牌号
 >     };
->                                                                                             
+>                                                                                                         
 >     class BMW : public Car{
 >         public:
 >         void Drive() {cout << "好开-操控" << endl;}
 >     };
->                                                                                             
+>                                                                                                         
 >     class Benz : public Car{
 >         public:
 >         void Drive() {cout << "好坐-舒适" << endl;}
 >     };
->                                                                                             
+>                                                                                                         
 >     // Tire和Car构成has-a的关系
->                                                                                             
+>                                                                                                         
 >     class Tire{
 >         protected:
 >         string _brand = "Michelin";  // 品牌
 >         size_t _size = 17;         // 尺寸
->                                                                                             
+>                                                                                                         
 >     };
->                                                                                             
+>                                                                                                         
 >     class Car{
 >         protected:
 >         string _colour = "白色"; // 颜色
@@ -5918,7 +5918,7 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 >         delete p2;
 >         return 0;
 >     }
->                                                                                             
+>                                                                                                         
 >     ~~~
 
 ------
@@ -6170,7 +6170,7 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 >         Person mike;
 >         Func(&mike);
 >         mike.BuyTicket();
->                                                                             
+>                                                                                         
 >         return 0;
 >     }
 >     // 以下汇编代码中跟你这个问题不相关的都被去掉了
@@ -6197,7 +6197,7 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 >         00195185  call        Person::BuyTicket (01914F6h)  
 >             ... 
 >     }
->                                                                             
+>                                                                                         
 >     ~~~
 >
 >     
@@ -6410,7 +6410,7 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 >         Derive* p3 = &d;
 >         return 0;
 >     }
->                             
+>                                         
 >     ~~~
 >
 >     A：p1 == p2 == p3 B：p1 < p2 < p3 C：p1 == p3 != p2 D：p1 != p2 != p3
@@ -6425,13 +6425,13 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 >         virtual void func(int val = 1){ std::cout<<"A->"<< val <<std::endl;}
 >         virtual void test(){ func();}
 >     };
->                             
+>                                         
 >     class B : public A
 >     {
 >         public:
 >         void func(int val=0){ std::cout<<"B->"<< val <<std::endl; }
 >     };
->                             
+>                                         
 >     int main(int argc ,char* argv[])
 >     {
 >         B*p = new B;
@@ -6465,3 +6465,22 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 > 10. C++菱形继承的问题？虚继承的原理？答：参考继承课件。注意这里不要把虚函数表和虚基 表搞混了。 
 > 11. 什么是抽象类？抽象类的作用？答：参考（3.抽象类）。抽象类强制重写了虚函数，另外抽 象类体现出了接口继承关系。
 
+### 哈希应用
+
+位图
+
+布隆过滤器
+
+哈希切分
+
+### c++11
+
+列表初始化
+
+decltype关键字
+
+nullptr
+
+for : each
+
+新容器
