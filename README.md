@@ -256,21 +256,21 @@
 >
 >     ```c++
 >     //返回值类型若为引用类型, 此时编译器不会拷贝返回值,则要求在函数结束时, 返回值的生命周期还在, 即返回值不能随函数结束而回收, 否则会发生内存泄漏
->                                                                                                                     
+>                                                                                                                                                                                                     
 >     int& fun()
 >     {
 >         static int a = 10;//全局域, 文件内而访问
 >         int b = 10;//局部变量, 随函数结束而释放
->                                                                                                                         
+>                                                                                                                                                                                                         
 >         return b;//内存泄漏
 >         //return a;//
 >     }
->                                                                                                                     
+>                                                                                                                                                                                                     
 >     int main()
 >     { 
 >         int val = fun();
 >         //接受到某个变量的引用, fun()结束时, b所在的空间已被释放, 造成内存泄漏
->                                                                                                                         
+>                                                                                                                                                                                                         
 >         return 0;
 >     }
 >     ```
@@ -1647,7 +1647,7 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 >     {
 >         int a = 10;
 >         double b = 20.0;
->                                                                                                                 
+>                                                                                                                                                                                                 
 >         // 显式实例化
 >         Add<int>(a, b);
 >         return 0;
@@ -5773,26 +5773,26 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 >         string _colour = "白色"; // 颜色
 >         string _num = "陕ABIT00"; // 车牌号
 >     };
->                                                                                                         
+>                                                                                                                                                                                         
 >     class BMW : public Car{
 >         public:
 >         void Drive() {cout << "好开-操控" << endl;}
 >     };
->                                                                                                         
+>                                                                                                                                                                                         
 >     class Benz : public Car{
 >         public:
 >         void Drive() {cout << "好坐-舒适" << endl;}
 >     };
->                                                                                                         
+>                                                                                                                                                                                         
 >     // Tire和Car构成has-a的关系
->                                                                                                         
+>                                                                                                                                                                                         
 >     class Tire{
 >         protected:
 >         string _brand = "Michelin";  // 品牌
 >         size_t _size = 17;         // 尺寸
->                                                                                                         
+>                                                                                                                                                                                         
 >     };
->                                                                                                         
+>                                                                                                                                                                                         
 >     class Car{
 >         protected:
 >         string _colour = "白色"; // 颜色
@@ -5918,7 +5918,7 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 >         delete p2;
 >         return 0;
 >     }
->                                                                                                         
+>                                                                                                                                                                                         
 >     ~~~
 
 ------
@@ -6170,7 +6170,7 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 >         Person mike;
 >         Func(&mike);
 >         mike.BuyTicket();
->                                                                                         
+>                                                                                                                                                                         
 >         return 0;
 >     }
 >     // 以下汇编代码中跟你这个问题不相关的都被去掉了
@@ -6197,7 +6197,7 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 >         00195185  call        Person::BuyTicket (01914F6h)  
 >             ... 
 >     }
->                                                                                         
+>                                                                                                                                                                         
 >     ~~~
 >
 >     
@@ -6410,7 +6410,7 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 >         Derive* p3 = &d;
 >         return 0;
 >     }
->                                         
+>                                                                                                                         
 >     ~~~
 >
 >     A：p1 == p2 == p3 B：p1 < p2 < p3 C：p1 == p3 != p2 D：p1 != p2 != p3
@@ -6425,13 +6425,13 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 >         virtual void func(int val = 1){ std::cout<<"A->"<< val <<std::endl;}
 >         virtual void test(){ func();}
 >     };
->                                         
+>                                                                                                                         
 >     class B : public A
 >     {
 >         public:
 >         void func(int val=0){ std::cout<<"B->"<< val <<std::endl; }
 >     };
->                                         
+>                                                                                                                         
 >     int main(int argc ,char* argv[])
 >     {
 >         B*p = new B;
@@ -6473,14 +6473,2606 @@ className(2022, 10, 2)//没有对象名,生命周期为一行
 
 哈希切分
 
-### c++11
+### C++11
 
-列表初始化
+##### 列表初始化
 
-decltype关键字
+> 在C++98中，标准允许使用花括号{}对数组或者结构体元素进行统一的列表初始值设定。
+>
+> C++11扩大了用大括号括起的列表(初始化列表)的使用范围，使其可用于所有的内置类型和用户自 定义的类型，使用初始化列表时，可添加等号(=)，也可不添加。
 
-nullptr
+###### std::initializer_list
 
-for : each
+> std::initializer_list的介绍文档： http://www.cplusplus.com/reference/initializer_list/initializer_list/
+>
+> std::initializer_list一般是作为构造函数的参数，C++11对STL中的不少容器就增加 std::initializer_list作为参数的构造函数，这样初始化容器对象就更方便了。也可以作为operator= 的参数，这样就可以用大括号赋值。是支持列表初始化/赋值的关键。
+>
+>  http://www.cplusplus.com/reference/list/list/list/ 
+>
+> http://www.cplusplus.com/reference/vector/vector/vector/ 
+>
+> http://www.cplusplus.com/reference/map/map/map/ 
+>
+> http://www.cplusplus.com/reference/vector/vector/operator=/
 
-新容器
+##### 多个关键字
+
+###### auto
+
+> ~~~C++
+> 在C++98中auto是一个存储类型的说明符，表明变量是局部自动存储类型，但是局部域中定义局部的变量默认就是自动存储类型，所以auto就没什么价值了。C++11中废弃auto原来的用法，将其用于实现自动类型腿断。这样要求必须进行显示初始化，让编译器将定义对象的类型设置为初始化值的类型。
+> ~~~
+
+###### decltype
+
+> ~~~C++
+> //关键字decltype将变量的类型声明为表达式指定的类型。
+> // decltype的一些使用使用场景
+> template<class T1, class T2>
+> void F(T1 t1, T2 t2)
+> {
+>     decltype(t1 * t2) ret;
+>     cout << typeid(ret).name() << endl;
+> }
+> int main()
+> {
+>     const int x = 1;
+>     double y = 2.2;
+>     decltype(x * y) ret; // ret的类型是double
+>     decltype(&x) p;      // p的类型是int*
+>     cout << typeid(ret).name() << endl;
+>     cout << typeid(p).name() << endl;
+>     F(1, 'a');
+>     return 0;
+> }
+> ~~~
+>
+> 
+
+###### nullptr
+
+> ~~~C++
+> //由于C++中NULL被定义成字面量0，这样就可能回带来一些问题，因为0既能指针常量，又能表示整形常量。所以出于清晰和安全的角度考虑，C++11中新增了nullptr，用于表示空指针。
+> #ifndef NULL
+> #ifdef __cplusplus
+> #define NULL   0
+> #else
+> #define NULL   ((void *)0)
+> #endif
+> #endif
+> ~~~
+>
+> 
+
+###### for : each
+
+> ~~~C++
+> 底层是迭代器，在编译阶段替换成迭代器遍历，使用范围for循环，迭代器需要支持++操作
+> ~~~
+>
+> 
+
+##### STL变化
+
+###### 新容器
+
+> 用橘色圈起来是C++11中的一些几个新容器，但是实际最有用的是unordered_map和 unordered_set。这两个我们前面已经进行了非常详细的讲解，其他的大家了解一下即可。
+>
+> ![image-20221120214646334](%E5%9B%BE%E7%89%87/README/image-20221120214646334.png)
+>
+> 
+
+###### 新方法
+
+> ~~~C++
+> 如果我们再细细去看会发现基本每个容器中都增加了一些C++11的方法，但是其实很多都是用得比较少的。
+> 比如提供了cbegin和cend方法返回const迭代器等等，但是实际意义不大，因为begin和end也是可以返回const迭代器的，这些都是属于锦上添花的操作。
+>     
+> 实际上C++11更新后，容器中增加的新方法最后用的插入接口函数的右值引用版本：
+>     
+> http://www.cplusplus.com/reference/vector/vector/emplace_back/
+> http://www.cplusplus.com/reference/vector/vector/push_back/
+> http://www.cplusplus.com/reference/map/map/insert/
+> http://www.cplusplus.com/reference/map/map/emplace/
+> 
+> 但是这些接口到底意义在哪？网上都说他们能提高效率，他们是如何提高效率的？
+> 请看下面的右值引用和移动语义章节的讲解。另外emplace还涉及模板的可变参数，也需要再继续深入学习后面章节的知识。
+> ~~~
+>
+> 
+
+##### 右值引用和移动语义▲
+
+###### 左值引用和右值引用
+
+> 传统的C++语法中就有引用的语法，而C++11中新增了的右值引用语法特性，所以从现在开始我们 之前学习的引用就叫做左值引用。无论左值引用还是右值引用，都是给对象取别名。 
+>
+> 什么是左值？什么是左值引用？ 
+>
+> 左值是一个表示数据的表达式(如变量名或解引用的指针)，我们可以获取它的地址+可以对它赋 值，左值可以出现赋值符号的左边，右值不能出现在赋值符号左边。定义时const修饰符后的左 值，不能给他赋值，但是可以取它的地址。左值引用就是给左值的引用，给左值取别名。
+>
+> ~~~C++
+> int main()
+> {
+>     // 以下的p、b、c、*p都是左值
+>     int* p = new int(0);
+>     int b = 1;
+>     const int c = 2;
+>     // 以下几个是对上面左值的左值引用
+>     int*& rp = p;
+>     int& rb = b;
+>     const int& rc = c;
+>     int& pvalue = *p;
+>     return 0;
+> }
+> ~~~
+>
+> 什么是右值？什么是右值引用？ 
+>
+> 右值也是一个表示数据的表达式，如：字面常量、表达式返回值，函数返回值(这个不能是左值引 用返回)等等，右值可以出现在赋值符号的右边，但是不能出现出现在赋值符号的左边，右值不能 取地址。右值引用就是对右值的引用，给右值取别名。
+>
+> ~~~C++
+> int main()
+> {
+>     double x = 1.1, y = 2.2;
+>     // 以下几个都是常见的右值
+>     10;
+>     x + y;
+>     fmin(x, y);
+>     // 以下几个都是对右值的右值引用
+>     int&& rr1 = 10;
+>     double&& rr2 = x + y;
+>     double&& rr3 = fmin(x, y);
+>     // 这里编译会报错：error C2106: “=”: 左操作数必须为左值
+>     10 = 1;
+>     x + y = 1;
+>     fmin(x, y) = 1;
+>     return 0;
+> }
+> ~~~
+>
+> 需要注意的是右值是不能取地址的，但是给右值取别名后，会导致**右值被存储到特定位置，且可以取到该位置的地址**，也就是说例如：不能取字面量10的地址，但是rr1引用后，可以对rr1取地 址，也可以修改rr1。如果不想rr1被修改，可以用const int&& rr1 去引用，是不是感觉很神奇， 这个了解一下实际中右值引用的使用场景并不在于此，这个特性也不重要。
+>
+> 
+
+###### 左值引用与右值引用比较
+
+> 左值引用总结： 
+>
+> 1. 左值引用只能引用左值，不能引用右值。 
+>
+> 2. 但是const左值引用既可引用左值，也可引用右值。
+>
+>     ~~~C++
+>     int main()
+>     {
+>         // 左值引用只能引用左值，不能引用右值。
+>         int a = 10;
+>         int& ra1 = a;   // ra为a的别名
+>         //int& ra2 = 10;   // 编译失败，因为10是右值
+>         // const左值引用既可引用左值，也可引用右值。
+>         const int& ra3 = 10;
+>         const int& ra4 = a;
+>         return 0;
+>     }
+>     ~~~
+>
+>     右值引用总结： 
+>
+>     1. 右值引用只能右值，不能引用左值。
+>     2. 但是右值引用可以move以后的左值。
+>
+>     ~~~C++
+>     int main()
+>     {
+>         // 右值引用只能右值，不能引用左值。
+>         int&& r1 = 10;
+>         // error C2440: “初始化”: 无法从“int”转换为“int &&”
+>         // message : 无法将左值绑定到右值引用
+>         int a = 10;
+>         int&& r2 = a;
+>         // 右值引用可以引用move以后的左值
+>         int&& r3 = std::move(a);
+>      	return 0;
+>     }
+>     ~~~
+>
+>     
+
+###### 右值引用使用场景和意义
+
+> 前面我们可以看到左值引用既可以引用左值和又可以引用右值，那为什么C++11还要提出右值引 用呢？是不是化蛇添足呢？下面我们来看看左值引用的短板，右值引用是如何补齐这个短板的！
+>
+> ~~~C++
+> namespace bit
+> {
+>      class string
+>      {
+>      public:
+>          typedef char* iterator;
+>          iterator begin() 
+>          {
+>          	return _str;
+>          }
+>          iterator end()
+>          {
+>          	return _str + _size;
+>          }
+>          string(const char* str = "")
+>          :_size(strlen(str))
+>          , _capacity(_size)
+>          {
+>              //cout << "string(char* str)" << endl;
+>              _str = new char[_capacity + 1];
+>              strcpy(_str, str);
+>          }
+>          // s1.swap(s2)
+>          void swap(string& s)
+>          {
+>              ::swap(_str, s._str);
+>              ::swap(_size, s._size);
+>              ::swap(_capacity, s._capacity);
+>          }
+>          // 拷贝构造
+>          string(const string& s)
+>          :_str(nullptr)
+>          {
+>              cout << "string(const string& s) -- 深拷贝" << endl;
+>              string tmp(s._str);
+>              swap(tmp);
+>          }
+>          // 赋值重载
+>          string& operator=(const string& s)
+>          {
+>              cout << "string& operator=(string s) -- 深拷贝" << endl;
+>              string tmp(s);
+>              swap(tmp);
+>              return *this;
+>          }
+>          // 移动构造
+>          string(string&& s)
+>          :_str(nullptr)
+>          ,_size(0)
+>          ,_capacity(0)
+>          {
+>              cout << "string(string&& s) -- 移动语义" << endl;
+>              swap(s);
+>          }
+>          // 移动赋值
+>          string& operator=(string&& s)
+>          {
+>              cout << "string& operator=(string&& s) -- 移动语义" << endl;
+>              swap(s);
+>              return *this;
+>          }
+>          ~string()
+>          {
+>              delete[] _str;
+>              _str = nullptr;
+>          }
+>          char& operator[](size_t pos)
+>          {
+>              assert(pos < _size);
+>              return _str[pos];
+>          }
+>          void reserve(size_t n)
+>          {
+>              if (n > _capacity)
+>              {
+>                  char* tmp = new char[n + 1];
+>                  strcpy(tmp, _str);
+>                  delete[] _str;
+>                  _str = tmp;
+>                  _capacity = n;
+>              }
+>          }
+>          void push_back(char ch)
+>          {
+>              if (_size >= _capacity)
+>              {
+>              	size_t newcapacity = _capacity == 0 ? 4 : _capacity * 2;
+>              	reserve(newcapacity);
+>              }
+>              _str[_size] = ch;
+>              ++_size;
+>              _str[_size] = '\0';
+>          }
+>              //string operator+=(char ch)
+>          string& operator+=(char ch)
+>          {
+>              push_back(ch);
+>              return *this;
+>          }
+>          const char* c_str() const
+>          {
+>          	return _str;
+>          }
+>      private:
+>          char* _str;
+>          size_t _size;
+>          size_t _capacity; // 不包含最后做标识的\0
+>      };
+> }
+> 
+> ~~~
+>
+> **左值引用的使用场景**
+>
+> 做参数和做返回值都可以提高效率。
+>
+> ~~~C++
+> void func1(bit::string s)
+> {}
+> void func2(const bit::string& s)
+> {}
+> int main()
+> {
+>      bit::string s1("hello world");
+>      // func1和func2的调用我们可以看到左值引用做参数减少了拷贝，提高效率的使用场景和价值
+>      func1(s1);
+>      func2(s1);
+>      // string operator+=(char ch) 传值返回存在深拷贝
+>      // string& operator+=(char ch) 传左值引用没有拷贝提高了效率
+>      s1 += '!';
+>      return 0;
+> }
+> ~~~
+>
+> **左值引用的短板**： 
+>
+> 但是当函数返回对象是一个局部变量，出了函数作用域就不存在了，就不能使用左值引用返回， 只能传值返回。例如：bit::string to_string(int value)函数中可以看到，这里只能使用传值返回， 传值返回会导致至少1次拷贝构造(如果是一些旧一点的编译器可能是两次拷贝构造)。
+>
+> ![image-20221120220304508](%E5%9B%BE%E7%89%87/README/image-20221120220304508.png)
+>
+> ~~~C++
+> namespace bit
+> {
+>      bit::string to_string(int value)
+>      {
+>          bool flag = true;
+>          if (value < 0)
+>          {
+>              flag = false;
+>              value = 0 - value;
+>          }
+>          bit::string str;
+>          while (value > 0)
+>          {
+>              int x = value % 10;
+>              value /= 10;
+>              str += ('0' + x);
+>          }
+>          if (flag == false)
+>          {
+>          	str += '-';
+>          }
+>          std::reverse(str.begin(), str.end());
+>          return str;
+>      }
+> }
+> int main()
+> {
+>     // 在bit::string to_string(int value)函数中可以看到，这里
+>     // 只能使用传值返回，传值返回会导致至少1次拷贝构造(如果是一些旧一点的编译器可能是两次拷
+>     贝构造)。
+>      bit::string ret1 = bit::to_string(1234);
+>      bit::string ret2 = bit::to_string(-1234);
+>      return 0;
+> }
+> ~~~
+>
+> ![image-20221120220236045](%E5%9B%BE%E7%89%87/README/image-20221120220236045.png)
+>
+> **右值引用和移动语义解决上述问题：** 
+>
+> 在bit::string中增加移动构造，**移动构造本质是将参数右值的资源窃取过来，占位已有，那么就不 用做深拷贝了，所以它叫做移动构造，就是窃取别人的资源来构造自己。**
+>
+> ~~~C++
+> // 移动构造
+> string(string&& s)
+>  :_str(nullptr)
+>  ,_size(0)
+>  ,_capacity(0)
+> {
+>      cout << "string(string&& s) -- 移动语义" << endl;
+>      swap(s);
+> }
+> int main()
+> {
+>      bit::string ret2 = bit::to_string(-1234);
+>      return 0;
+> }
+> ~~~
+>
+> 再运行上面bit::to_string的两个调用，我们会发现，这里没有调用深拷贝的拷贝构造，而是调用 了移动构造，移动构造中没有新开空间，拷贝数据，所以效率提高了。
+>
+> ![image-20221120220219139](%E5%9B%BE%E7%89%87/README/image-20221120220219139.png)
+>
+> **不仅仅有移动构造，还有移动赋值：**
+>
+>  在bit::string类中增加移动赋值函数，再去调用bit::to_string(1234)，不过这次是将 bit::to_string(1234)返回的右值对象赋值给ret1对象，这时调用的是移动构造。
+>
+> ~~~C++
+> // 移动赋值
+> string& operator=(string&& s)
+> {
+>     cout << "string& operator=(string&& s) -- 移动语义" << endl;
+>     swap(s);
+>     return *this;
+> }
+> int main()
+> {
+>      bit::string ret1;
+>      ret1 = bit::to_string(1234);
+>      return 0;
+> }
+> // 运行结果：
+> // string(string&& s) -- 移动语义
+> // string& operator=(string&& s) -- 移动语义
+> ~~~
+>
+> 这里运行后，我们看到调用了一次移动构造和一次移动赋值。因为如果是用一个已经存在的对象 接收，编译器就没办法优化了。bit::to_string函数中会先用str生成构造生成一个临时对象，但是 我们可以看到，编译器很聪明的在这里把str识别成了右值，调用了移动构造。然后在把这个临时 对象做为bit::to_string函数调用的返回值赋值给ret1，这里调用的移动赋值。
+>
+> **STL中的容器都是增加了移动构造和移动赋值：** 
+>
+> http://www.cplusplus.com/reference/string/string/string/ 
+>
+> http://www.cplusplus.com/reference/vector/vector/vector/
+
+###### 右值引用引用左值及其一些更深入的使用场景分析
+
+> 按照语法，右值引用只能引用右值，但右值引用一定不能引用左值吗？因为：有些场景下，可能 真的需要用右值去引用左值实现移动语义。**当需要用右值引用引用一个左值时，可以通过move 函数将左值转化为右值。**C++11中，std::move()函数位于 头文件中，该函数名字具有迷惑性， 它**并不搬移任何东西，唯一的功能就是将一个左值强制转化为右值引用，然后实现移动语义。**
+>
+> ~~~C++
+> template<class _Ty>
+> inline typename remove_reference<_Ty>::type&& move(_Ty&& _Arg) _NOEXCEPT
+> {
+>     // forward _Arg as movable
+>      return ((typename remove_reference<_Ty>::type&&)_Arg);
+> }
+> int main()
+> {
+>      bit::string s1("hello world");
+>      // 这里s1是左值，调用的是拷贝构造
+>      bit::string s2(s1);
+>      // 这里我们把s1 move处理以后, 会被当成右值，调用移动构造
+>      // 但是这里要注意，一般是不要这样用的，因为我们会发现s1的
+>      // 资源被转移给了s3，s1被置空了。
+>      bit::string s3(std::move(s1));
+>      return 0;
+> }
+> ~~~
+>
+> **STL容器插入接口函数也增加了右值引用版本：**
+>
+> http://www.cplusplus.com/reference/list/list/push_back/ 
+>
+> http://www.cplusplus.com/reference/vector/vector/push_back/
+>
+> ~~~C++
+> void push_back (value_type&& val);
+> int main()
+> {
+>      list<bit::string> lt;
+>      bit::string s1("1111");
+>     // 这里调用的是拷贝构造
+>      lt.push_back(s1);
+>     // 下面调用都是移动构造
+>      lt.push_back("2222");
+>      lt.push_back(std::move(s1));
+>      return 0;
+> }
+> 
+> //运行结果：
+> // string(const string& s) -- 深拷贝
+> // string(string&& s) -- 移动语义
+> // string(string&& s) -- 移动语义
+> 
+> ~~~
+>
+> ![image-20221120220742758](%E5%9B%BE%E7%89%87/README/image-20221120220742758.png)
+
+###### 完美转发
+
+> **模板中的&& 万能引用**
+>
+> ~~~C++
+> void Fun(int &x){ cout << "左值引用" << endl; }
+> void Fun(const int &x){ cout << "const 左值引用" << endl; }
+> void Fun(int &&x){ cout << "右值引用" << endl; }
+> void Fun(const int &&x){ cout << "const 右值引用" << endl; }
+> // 模板中的&&不代表右值引用，而是万能引用，其既能接收左值又能接收右值。
+> // 模板的万能引用只是提供了能够接收同时接收左值引用和右值引用的能力，
+> // 但是引用类型的唯一作用就是限制了接收的类型，后续使用中都退化成了左值，
+> // 我们希望能够在传递过程中保持它的左值或者右值的属性, 就需要用我们下面学习的完美转发
+> template<typename T>
+> void PerfectForward(T&& t)
+> {
+>     //传进来的是右值引用，但t作为实参，传给fun的是作者
+>  	Fun(t);
+> }
+> int main()
+> {
+>      PerfectForward(10);           // 右值
+>      int a;
+>      PerfectForward(a);            // 左值
+>      PerfectForward(std::move(a)); // 右值
+>      const int b = 8;
+>      PerfectForward(b);      // const 左值
+>      PerfectForward(std::move(b)); // const 右值
+>      return 0;
+> }
+> ~~~
+>
+> **std::forward 完美转发在传参的过程中保留对象原生类型属性**
+>
+> ~~~C++
+> void Fun(int &x){ cout << "左值引用" << endl; }
+> void Fun(const int &x){ cout << "const 左值引用" << endl; }
+> void Fun(int &&x){ cout << "右值引用" << endl; }
+> void Fun(const int &&x){ cout << "const 右值引用" << endl; }
+> // std::forward<T>(t)在传参的过程中保持了t的原生类型属性。
+> template<typename T>
+> void PerfectForward(T&& t)
+> {
+>     //forward会在传参时保存t的原属性
+>     Fun(std::forward<T>(t));
+> }
+> int main()
+> {
+>      PerfectForward(10);           // 右值
+>      int a;
+>      PerfectForward(a);            // 左值
+>      PerfectForward(std::move(a)); // 右值
+>      const int b = 8;
+>      PerfectForward(b);      // const 左值
+>      PerfectForward(std::move(b)); // const 右值
+>      return 0;
+> }
+> ~~~
+>
+> **完美转发实际中的使用场景：**
+>
+> ~~~C++
+> template<class T>
+> struct ListNode
+> {
+>      ListNode* _next = nullptr;
+>      ListNode* _prev = nullptr;
+>      T _data;
+> };
+> template<class T>
+> class List
+> {
+>  	typedef ListNode<T> Node;
+> public:
+>      List()
+>      {
+>          _head = new Node;
+>          _head->_next = _head;
+>          _head->_prev = _head;
+>      }
+>      void PushBack(T&& x)
+>      {
+>          //Insert(_head, x);
+>          Insert(_head, std::forward<T>(x));
+>      }
+>      void PushFront(T&& x)
+>      {
+>          //Insert(_head->_next, x);
+>          Insert(_head->_next, std::forward<T>(x));
+>      }
+>      void Insert(Node* pos, T&& x)
+>      {
+>          Node* prev = pos->_prev;
+>          Node* newnode = new Node;
+>          newnode->_data = std::forward<T>(x); // 关键位置
+>          // prev newnode pos
+>          prev->_next = newnode;
+>          newnode->_prev = prev;
+>          newnode->_next = pos;
+>          pos->_prev = newnode;
+>      }
+>      void Insert(Node* pos, const T& x)
+>      {
+>          Node* prev = pos->_prev;
+>          Node* newnode = new Node;
+>          newnode->_data = x; // 关键位置
+>          // prev newnode pos
+>          prev->_next = newnode;
+>         newnode->_prev = prev;
+>          newnode->_next = pos;
+>          pos->_prev = newnode;
+>      }
+> private:
+>  	Node* _head;
+> };
+> int main()
+> {
+>      List<bit::string> lt;
+>      lt.PushBack("1111");
+>      lt.PushFront("2222");
+>      return 0;
+> }
+> ~~~
+>
+> 
+
+##### 新的类功能
+
+###### 默认成员函数
+
+> 原来C++类中，有6个默认成员函数： 
+>
+> 1. 构造函数 
+> 2. 析构函数 
+> 3. 拷贝构造函数 
+> 4.  拷贝赋值重载 
+> 5.  取地址重载 
+> 6.  const 取地址重载 
+>
+> 最后重要的是前4个，后两个用处不大。默认成员函数就是我们不写编译器会生成一个默认的。 
+>
+> C++11 新增了两个：移动构造函数和移动赋值运算符重载。 
+>
+> 针对移动构造函数和移动赋值运算符重载有一些需要注意的点如下： 
+>
+> 1. 如果你没有自己实现移动构造函数，且**没有实现析构函数 、拷贝构造、拷贝赋值重载中的任意一个**。那么编译器会自动生成一个默认移动构造。默认生成的移动构造函数，对于内置类 型成员会执行逐成员**按字节拷贝**，自定义类型成员，则需要看这个成员是否实现移动构造， 如果**实现了就调用移动构造，没有实现就调用拷贝构造**。 
+> 2. 如果你没有自己实现移动赋值重载函数，且没**有实现析构函数 、拷贝构造、拷贝赋值重载中 的任意一个**，那么编译器会自动生成一个默认移动赋值。默认生成的移动构造函数，对于内置类型成员会执行逐成员**按字节拷贝**，自定义类型成员，则需要看这个成员是否实现移动赋 值，如果**实现了就调用移动赋值，没有实现就调用拷贝赋值**。(默认移动赋值跟上面移动构造完全类似) 如果你提供了移动构造或者移动赋值，编译器不会自动提供拷贝构造和拷贝赋值。
+>
+> ~~~C++
+> // 以下代码在vs2013中不能体现，在vs2019下才能演示体现上面的特性。
+> class Person
+> {
+> public:
+>      Person(const char* name = "", int age = 0)
+>      :_name(name)
+>      , _age(age)
+>      {}
+>      /*Person(const Person& p)
+>     :_name(p._name)
+>      ,_age(p._age)
+>      {}*/
+>      /*Person& operator=(const Person& p)
+>      {
+>          if(this != &p)
+>          {
+>              _name = p._name;
+>              _age = p._age;
+>          }
+>      	return *this;
+>      }*/
+>      /*~Person()
+>      {}*/
+> private:
+>      bit::string _name;
+>      int _age;
+> };
+> int main()
+> {
+>      Person s1;
+>      Person s2 = s1;
+>      Person s3 = std::move(s1);
+>      Person s4;
+>      s4 = std::move(s2);
+>      return 0;
+> }
+> 
+> ~~~
+>
+> 
+
+###### 类成员变量初始化 
+
+> C++11允许在类定义时给成员变量初始缺省值，默认生成构造函数会使用这些缺省值初始化，这 个我们在类和对象默认就讲了，这里就不再细讲了。 
+>
+> 
+
+###### 强制生成默认函数的关键字default
+
+> C++11可以让你更好的控制要使用的默认函数。假设你要使用某个默认的函数，但是因为一些原 因这个函数没有默认生成。比如：我们提供了拷贝构造，就不会生成移动构造了，那么我们可以 使用default关键字显示指定移动构造生成。
+>
+> ~~~C++
+> class Person
+> {
+> public:
+>      Person(const char* name = "", int age = 0)
+>      :_name(name)
+>      , _age(age)
+>      {}
+>      Person(const Person& p)
+>      :_name(p._name)
+>      ,_age(p._age)
+>      {}
+>     Person(Person&& p) = default;
+> private:
+>      bit::string _name;
+>      int _age;
+> };
+> int main()
+> {
+>      Person s1;
+>      Person s2 = s1;
+>      Person s3 = std::move(s1);
+>      return 0;
+> }
+> ~~~
+>
+> 
+
+###### 禁止生成默认函数的关键字delete
+
+> 如果能想要限制某些默认函数的生成，在C++98中，是该函数设置成private，并且只声明补丁 已，这样只要其他人想要调用就会报错。在C++11中更简单，只需在该函数声明加上=delete即 可，该语法指示编译器不生成对应函数的默认版本，称=delete修饰的函数为删除函数。
+>
+> ~~~C++
+> class Person
+> {
+> public:
+>      Person(const char* name = "", int age = 0)
+>      :_name(name)
+>      , _age(age)
+>      {}
+>      Person(const Person& p) = delete;
+> private:
+>      bit::string _name;
+>      int _age;
+> };
+> int main()
+> {
+>      Person s1;
+>      Person s2 = s1;
+>      Person s3 = std::move(s1);
+>      return 0;
+> }
+> ~~~
+>
+> 
+
+###### 继承和多态中的final与override关键字
+
+> 这个我们在继承和多态章节已经进行了详细讲解这里就不再细讲，需要的话去复习继承和多台章 节吧。
+
+##### 可变参数模板--了解
+
+> C++11的新特性可变参数模板能够让您创建可以接受可变参数的函数模板和类模板，相比 C++98/03，类模版和函数模版中只能含固定数量的模版参数，可变模版参数无疑是一个巨大的改 进。然而由于可变模版参数比较抽象，使用起来需要一定的技巧，所以这块还是比较晦涩的。现 阶段呢，我们掌握一些基础的可变参数模板特性就够我们用了，所以这里我们点到为止，以后大 家如果有需要，再可以深入学习。 
+>
+> 下面就是一个基本可变参数的函数模板
+>
+> ~~~C++
+> // Args是一个模板参数包，args是一个函数形参参数包
+> // 声明一个参数包Args...args，这个参数包中可以包含0到任意个模板参数。
+> template <class ...Args>
+> void ShowList(Args... args)
+> {}
+> ~~~
+>
+> 上面的参数args前面有省略号，所以它就是一个可变模版参数，我们把带省略号的参数称为“参数 包”，它里面包含了0到N（N>=0）个模版参数。我们无法直接获取参数包args中的每个参数的， 只能通过展开参数包的方式来获取参数包中的每个参数，这是使用可变模版参数的一个主要特 点，也是最大的难点，即如何展开可变模版参数。由于语法不支持使用args[i]这样方式获取可变 参数，所以我们的用一些奇招来一一获取参数包的值。 
+>
+> **1. 递归函数方式展开参数包**
+>
+> ~~~C++
+> // 递归终止函数
+> template <class T>
+> void ShowList(const T& t)
+> {
+> 	 cout << t << endl;
+> }
+> // 展开函数
+> template <class T, class ...Args>
+> void ShowList(T value, Args... args)
+> {
+>      cout << value <<" ";
+>      ShowList(args...);
+> }
+> int main()
+> {
+>      ShowList(1);
+>      ShowList(1, 'A');
+>      ShowList(1, 'A', std::string("sort"));
+>      return 0;
+> }
+> ~~~
+>
+> **2. 逗号表达式展开参数包**
+>
+> 这种展开参数包的方式，不需要通过递归终止函数，是直接在expand函数体中展开的, printarg 不是一个递归终止函数，只是一个处理参数包中每一个参数的函数。这种就地展开参数包的方式 实现的关键是逗号表达式。我们知道逗号表达式会按顺序执行逗号前面的表达式。 
+>
+> expand函数中的逗号表达式：(printarg(args), 0)，也是按照这个执行顺序，先执行 printarg(args)，再得到逗号表达式的结果0。同时还用到了C++11的另外一个特性——初始化列 表，通过初始化列表来初始化一个变长数组, {(printarg(args), 0)...}将会展开成((printarg(arg1),0),  (printarg(arg2),0), (printarg(arg3),0), etc... )，最终会创建一个元素值都为0的数组int arr[sizeof...(Args)]。由于是逗号表达式，在创建数组的过程中会先执行逗号表达式前面的部分printarg(args) 打印出参数，也就是说在构造int数组的过程中就将参数包展开了，这个数组的目的纯粹是为了在 数组构造的过程展开参数包
+>
+> ~~~C++
+> template <class T>
+> void PrintArg(T t)
+> {
+>  	cout << t << " ";
+> }
+> //展开函数
+> template <class ...Args>
+> void ShowList(Args... args)
+> {
+>  	int arr[] = { (PrintArg(args), 0)... };
+>  	cout << endl;
+> }
+> int main()
+> {
+>      ShowList(1);
+>      ShowList(1, 'A');
+>      ShowList(1, 'A', std::string("sort"));
+>      return 0;
+> }
+> ~~~
+>
+> **STL**容器中的empalce相关接口函数： 
+>
+> http://www.cplusplus.com/reference/vector/vector/emplace_back/ 
+>
+> http://www.cplusplus.com/reference/list/list/emplace_back/
+>
+> ~~~C++
+> template <class... Args>
+> void emplace_back (Args&&... args);
+> ~~~
+>
+> 首先我们看到的emplace系列的接口，支持模板的可变参数，并且万能引用。那么相对insert和 emplace系列接口的优势到底在哪里呢？
+>
+> ~~~C++
+> int main()
+> {
+>      std::list< std::pair<int, char> > mylist;
+>      // emplace_back支持可变参数，拿到构建pair对象的参数后自己去创建对象
+>      // 那么在这里我们可以看到除了用法上，和push_back没什么太大的区别
+>      mylist.emplace_back(10, 'a');
+>      mylist.emplace_back(20, 'b');
+>      mylist.emplace_back(make_pair(30, 'c'));
+>      mylist.push_back(make_pair(40, 'd'));
+>      mylist.push_back({ 50, 'e' });
+>      for (auto e : mylist)
+>      cout << e.first << ":" << e.second << endl;
+>      return 0;
+> }
+> 
+> int main()
+> {
+>     // 下面我们试一下带有拷贝构造和移动构造的bit::string，再试试呢
+>     // 我们会发现其实差别也不到，emplace_back是直接构造了，push_back
+>     // 是先构造，再移动构造，其实也还好。
+>      std::list< std::pair<int, bit::string> > mylist;
+>      mylist.emplace_back(10, "sort");
+>      mylist.emplace_back(make_pair(20, "sort"));
+>      mylist.push_back(make_pair(30, "sort"));
+>      mylist.push_back({ 40, "sort"});
+>      return 0;
+> }
+> ~~~
+>
+> 
+
+#### lambda表达式▲
+
+##### 前言
+
+> 在C++98中，如果想要对一个数据集合中的元素进行排序，可以使用std::sort方法。
+>
+> ~~~C++
+> #include <algorithm>
+> #include <functional>
+> int main()
+> {
+> int array[] = {4,1,8,5,3,7,0,9,2,6};
+> // 默认按照小于比较，排出来结果是升序
+> std::sort(array, array+sizeof(array)/sizeof(array[0]));
+> // 如果需要降序，需要改变元素的比较规则
+> std::sort(array, array + sizeof(array) / sizeof(array[0]), greater<int>());
+> return 0;
+> }
+> ~~~
+>
+> 如果待排序元素为自定义类型，需要用户定义排序时的比较规则：
+>
+> ~~~C++
+> struct Goods
+> {
+>      string _name;  // 名字
+>      double _price; // 价格
+>      int _evaluate; // 评价
+>      Goods(const char* str, double price, int evaluate)
+>      :_name(str)
+>      , _price(price)
+>      , _evaluate(evaluate)
+>      {}
+> };
+> struct ComparePriceLess
+> {
+>      bool operator()(const Goods& gl, const Goods& gr)
+>      {
+>      	return gl._price < gr._price;
+>      }
+> };
+> struct ComparePriceGreater
+> {
+>      bool operator()(const Goods& gl, const Goods& gr)
+>      {
+>      	return gl._price > gr._price;
+>      }
+> };
+> int main()
+> {
+>      vector<Goods> v = { { "苹果", 2.1, 5 }, { "香蕉", 3, 4 }, { "橙子", 2.2, 
+>      3 }, { "菠萝", 1.5, 4 } };
+>      sort(v.begin(), v.end(), ComparePriceLess());
+>      sort(v.begin(), v.end(), ComparePriceGreater());
+> }
+> ~~~
+>
+> 随着C++语法的发展，**人们开始觉得上面的写法太复杂了，每次为了实现一个algorithm算法， 都要重新去写一个类，如果每次比较的逻辑不一样，还要去实现多个类，特别是相同类的命名， 这些都给编程者带来了极大的不便**。因此，在C++11语法中出现了Lambda表达式。
+
+##### lambda表达式
+
+> ~~~C++
+> int main()
+> {
+>      vector<Goods> v = { { "苹果", 2.1, 5 }, { "香蕉", 3, 4 }, { "橙子", 2.2, 
+>      3 }, { "菠萝", 1.5, 4 } };
+>      sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2){
+>      return g1._price < g2._price; });
+>      sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2){
+>      return g1._price > g2._price; });
+>      sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2){
+>      return g1._evaluate < g2._evaluate; });
+>      sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2){
+>      return g1._evaluate > g2._evaluate; });
+> }
+> ~~~
+>
+> 上述代码就是使用C++11中的lambda表达式来解决，可以看出lambda表达式实际是一个匿名函数。
+>
+> lambda表达式书写格式：[capture-list] (parameters) mutable -> return-type { statement  } 
+>
+> 
+
+###### 1. lambda表达式各部分说明 
+
+> 
+>
+> - [capture-list] : 捕捉列表，该列表总是出现在lambda函数的开始位置，编译器根据[]来 判断接下来的代码是否为lambda函数，捕捉列表能够捕捉上下文中的变量供lambda 函数使用。 
+> - (parameters)：参数列表。与普通函数的参数列表一致，如果不需要参数传递，则可以 连同()一起省略 
+> - mutable：默认情况下，lambda函数总是一个const函数，mutable可以取消其常量 性。使用该修饰符时，参数列表不可省略(即使参数为空)。
+> - ->returntype：返回值类型。用追踪返回类型形式声明函数的返回值类型，没有返回 值时此部分可省略。返回值类型明确情况下，也可省略，由编译器对返回类型进行推 导。 
+> - {statement}：函数体。在该函数体内，除了可以使用其参数外，还可以使用所有捕获 到的变量。
+>
+> **注意：** 
+>
+> 在lambda函数定义中，**参数列表和返回值类型都是可选部分**，**而捕捉列表和函数体可以为 空。**因此C++11中**最简单的lambda函数为：[]{}**; 该lambda函数不能做任何事情。
+>
+> ~~~C++
+> int main()
+> {
+>     // 最简单的lambda表达式, 该lambda表达式没有任何意义
+>    []{}; 
+>     
+>     // 省略参数列表和返回值类型，返回值类型由编译器推导为int
+>     int a = 3, b = 4;
+>    [=]{return a + 3; }; 
+>     
+>     // 省略了返回值类型，无返回值类型
+>     auto fun1 = [&](int c){b = a + c; }; 
+>     fun1(10)
+>     cout<<a<<" "<<b<<endl;
+>     
+>     // 各部分都很完善的lambda函数
+>     auto fun2 = [=, &b](int c)->int{return b += a+ c; }; 
+>     cout<<fun2(10)<<endl;
+>     
+>     // 复制捕捉x
+>     int x = 10;
+>     auto add_x = [x](int a) mutable { x *= 2; return a + x; }; 
+>     cout << add_x(10) << endl; 
+>     return 0;
+> }
+> ~~~
+>
+> 通过上述例子可以看出，lambda表达式实际上可以理解为无名函数，该函数无法直接调 用，如果想要直接调用，可借助auto将其赋值给一个变量。
+
+###### 2. 捕获列表说明
+
+> 捕捉列表描述了上下文中那些数据可以被lambda使用，以及使用的方式传值还是传引用。 
+>
+> - [var]：表示值传递方式捕捉变量
+> - var [=]：表示值传递方式捕获所有父作用域中的变量(包括this) 
+> - [&var]：表示引用传递捕捉变量var 
+> - [&]：表示引用传递捕捉所有父作用域中的变量(包括this) 
+> - [this]：表示值传递方式捕捉当前的this指针
+>
+> 注意：
+>
+> - 父作用域指包含lambda函数的语句块
+> - 语法上捕捉列表可由多个捕捉项组成，并以逗号分割。 比如：[=, &a, &b]：以引用传递的方式捕捉变量a和b，值传递方式捕捉其他所有变量 [&，a, this]：值传递方式捕捉变量a和this，引用方式捕捉其他变量 
+> - 捕捉列表不允许变量重复传递，否则就会导致编译错误。 比如：[=, a]：=已经以值传递方式捕捉了所有变量，捕捉a重复
+> - 在块作用域以外的lambda函数捕捉列表必须为空。 
+> - 在块作用域中的lambda函数仅能捕捉父作用域中局部变量，捕捉任何非此作用域或者 非局部变量都  会导致编译报错。 
+> - lambda表达式之间不能相互赋值，即使看起来类型相同
+>
+> ~~~C++
+> void (*PF)();
+> int main()
+> {
+>      auto f1 = []{cout << "hello world" << endl; };
+>      auto f2 = []{cout << "hello world" << endl; };
+>         // 此处先不解释原因，等lambda表达式底层实现原理看完后，大家就清楚了
+>      //f1 = f2;   // 编译失败--->提示找不到operator=()
+>         // 允许使用一个lambda表达式拷贝构造一个新的副本
+>      auto f3(f2);
+>      f3();
+>      // 可以将lambda表达式赋值给相同类型的函数指针
+>      PF = f2;
+>      PF();
+>      return 0;
+> }
+> 
+> ~~~
+>
+> 
+
+#### 函数对象与lanbda表达式
+
+> 函数对象，又称为仿函数，即可以想函数一样使用的对象，就是在类中重载了operator()运算符的 类对象。
+>
+> ~~~C++
+> class Rate
+> {
+> public:
+>      Rate(double rate): _rate(rate)
+>      {}
+>      double operator()(double money, int year)
+>      { return money * _rate * year;}
+> private:
+>  	double _rate;
+> };
+> int main()
+> {
+>     // 函数对象
+>      double rate = 0.49;
+>      Rate r1(rate);
+>      r1(10000, 2);
+>     // lamber
+>      auto r2 = [=](double monty, int year)->double{return monty*rate*year; 
+>      };
+>      r2(10000, 2);
+>      return 0;
+> }
+> ~~~
+>
+> 从使用方式上来看，函数对象与lambda表达式完全一样。 
+>
+> 函数对象将rate作为其成员变量，在定义对象时给出初始值即可，lambda表达式通过捕获列表可 以直接将该变量捕获到。
+>
+> ![image-20221121162001217](%E5%9B%BE%E7%89%87/README/image-20221121162001217.png)
+>
+> 实际在底层编译器对于lambda表达式的处理方式，完全就是按照函数对象的方式处理的，即：如 果定义了一个lambda表达式，编译器会自动生成一个类，在该类中重载了operator()。
+
+#### 包装器与绑定
+
+##### **function包装器** 
+
+> function包装器 也叫作适配器。
+>
+> C++中的function本质是一个类模板，也是一个包装器。 那么我们来看看，我们为什么需要function呢？
+>
+> ~~~C++
+> ret = func(x);
+> // 上面func可能是什么呢？那么func可能是函数名？函数指针？函数对象(仿函数对象)？也有可能
+> 是lamber表达式对象？所以这些都是可调用的类型！如此丰富的类型，可能会导致模板的效率低下！
+> 为什么呢？我们继续往下看
+> template<class F, class T>
+> T useF(F f, T x)
+> {
+>      static int count = 0;
+>      cout << "count:" << ++count << endl;
+>      cout << "count:" << &count << endl;
+>      return f(x);
+> }
+> double f(double i)
+> {
+>  	return i / 2;
+> }
+> struct Functor
+> {
+>      double operator()(double d)
+>      {
+>      	return d / 3;
+>      }
+> };
+> int main()
+> {
+>      // 函数名
+>      cout << useF(f, 11.11) << endl;
+>      // 函数对象
+>      cout << useF(Functor(), 11.11) << endl;
+>      // lamber表达式
+>      cout << useF([](double d)->double{ return d/4; }, 11.11) << endl;
+>      return 0;
+> }
+> ~~~
+>
+> **通过上面的程序验证，我们会发现useF函数模板实例化了三份。** 
+>
+> **包装器可以很好的解决上面的问题**
+>
+> ~~~C++
+> std::function在头文件<functional>
+> // 类模板原型如下
+> template <class T> function;     // undefined
+> template <class Ret, class... Args>
+> class function<Ret(Args...)>;
+> 模板参数说明：
+> Ret: 被调用函数的返回类型
+> Args…：被调用函数的形参
+> ~~~
+>
+> ~~~C++
+> // 使用方法如下：
+> #include <functional>
+> int f(int a, int b)
+> {
+>  	return a + b;
+> }
+> struct Functor
+> {
+> public:
+>      int operator() (int a, int b)
+>      {
+>      	return a + b;
+>      }
+> };
+> class Plus
+> {
+> public:
+>      static int plusi(int a, int b)
+>      {
+>      	return a + b;
+>      }
+>      double plusd(double a, double b)
+>      {
+>      	return a + b;
+>      }
+> };
+> int main()
+> {
+>      // 函数名(函数指针)
+>      std::function<int(int, int)> func1 = f;
+>      cout << func1(1, 2) << endl;
+>      // 函数对象
+>      std::function<int(int, int)> func2 = Functor();
+>      cout << func2(1, 2) << endl;
+>      // lamber表达式
+>      std::function<int(int, int)> func3 = [](const int a, const int b) 
+>      {return a + b; };
+>      cout << func3(1, 2) << endl;
+> 
+>      // 类的成员函数
+>      std::function<int(int, int)> func4 = &Plus::plusi;
+>      cout << func4(1, 2) << endl;
+>      std::function<double(Plus, double, double)> func5 = &Plus::plusd;
+>      cout << func5(Plus(), 1.1, 2.2) << endl;
+>      return 0;
+> }
+> ~~~
+>
+> **有了包装器，如何解决模板的效率低下，实例化多份的问题呢？**
+>
+> ~~~C++
+> #include <functional>
+> template<class F, class T>
+> T useF(F f, T x)
+> {
+>      static int count = 0;
+>      cout << "count:" << ++count << endl;
+>      cout << "count:" << &count << endl;
+>      return f(x);
+> }
+> double f(double i)
+> {
+>  	return i / 2;
+> }
+> struct Functor
+> {
+>      double operator()(double d)
+>      {
+>     	 return d / 3;
+>      }
+> };
+> int main()
+> {
+>      // 函数名
+>      std::function<double(double)> func1 = f;
+>      cout << useF(func1, 11.11) << endl;
+>      // 函数对象
+>      std::function<double(double)> func2 = Functor();
+>      cout << useF(func2, 11.11) << endl;
+>      // lamber表达式
+>      std::function<double(double)> func3 = [](double d)->double{ return d /
+>      4; };
+>      cout << useF(func3, 11.11) << endl;
+>      return 0;
+> }
+> ~~~
+>
+> 
+
+##### bind--绑定
+
+> std::bind函数定义在头文件中，**是一个函数模板，它就像一个函数包装器(适配器)，接受一个可 调用对象（callable object），生成一个新的可调用对象来“适应”原对象的参数列表。**一般而 言，我们用它可以把一个原本接收N个参数的函数fn，通过绑定一些参数，返回一个接收M个（M 可以大于N，但这么做没什么意义）参数的新函数。同时，使用std::bind函数还可以实现参数顺 序调整等操作。
+>
+> ~~~C++
+> // 原型如下：
+> template <class Fn, class... Args>
+> /* unspecified */ bind (Fn&& fn, Args&&... args);
+> // with return type (2) 
+> template <class Ret, class Fn, class... Args>
+> /* unspecified */ bind (Fn&& fn, Args&&... args);
+> ~~~
+>
+> 可以将bind函数看作是一个通用的函数适配器，它接受一个可调用对象，生成一个新的可调用对 象来“适应”原对象的参数列表。 
+>
+> 调用bind的一般形式：auto newCallable = bind(callable,arg_list); 
+>
+> 其中，newCallable本身是一个可调用对象，arg_list是一个逗号分隔的参数列表，对应给定的 callable的参数。**当我们调用newCallable时，newCallable会调用callable,并传给它arg_list中 的参数。** 
+>
+> arg_list中的参数可能包含形如_n的名字，其中n是一个整数，这些参数是“占位符”，表示 newCallable的参数，它们占据了传递给newCallable的参数的“位置”。数值n表示生成的可调用对 象中参数的位置：_1为newCallable的第一个参数，_2为第二个参数，以此类推。
+>
+> ~~~C++
+> // 使用举例
+> #include <functional>
+> int Plus(int a, int b)
+> {
+>  	return a + b;
+> }
+> class Sub
+> {
+> public:
+>      int sub(int a, int b)
+>      {
+>      	return a - b;
+>      }
+> };
+> int main()
+> {
+>      //表示绑定函数plus 参数分别由调用 func1 的第一，二个参数指定
+>      std::function<int(int, int)> func1 = std::bind(Plus, placeholders::_1, 
+>      placeholders::_2);
+>      //auto func1 = std::bind(Plus, placeholders::_1, placeholders::_2);
+>      //func2的类型为 function<void(int, int, int)> 与func1类型一样
+>      //表示绑定函数 plus 的第一，二为： 1， 2
+>      auto  func2 = std::bind(Plus, 1, 2);   
+>      cout << func1(1, 2) << endl;
+>      cout << func2() << endl;
+>      Sub s;
+>      // 绑定成员函数
+>      std::function<int(int, int)> func3 = std::bind(&Sub::sub, s, 
+>      placeholders::_1, placeholders::_2);
+>      // 参数调换顺序
+>         std::function<int(int, int)> func4 = std::bind(&Sub::sub, s, 
+>      placeholders::_2, placeholders::_1);
+>      cout << func3(1, 2) << endl; 
+>      cout << func4(1, 2) << endl;
+>      return 0;
+> }
+> ~~~
+>
+> 
+
+### 线程库
+
+
+
+
+
+### 异常▲
+
+#### C语言传统的处理错误的方式
+
+> 传统的错误处理机制： 
+>
+> 1. 终止程序，如assert，缺陷：用户难以接受。如发生内存错误，除0错误时就会终止程序。
+> 2.  返回错误码，缺陷：需要程序员自己去查找对应的错误。如系统的很多库的接口函数都是通 过把错误码放到errno中，表示错误 
+>
+> 实际中C语言基本都是使用返回错误码的方式处理错误，部分情况下使用终止程序处理非常严重的 错误。
+
+#### C++异常概念
+
+> 异常是一种处理错误的方式，**当一个函数发现自己无法处理的错误时就可以抛出异常，让函数的 直接或间接的调用者处理这个错误。** 
+>
+> - throw: 当问题出现时，程序会抛出一个异常。这是通过使用 throw 关键字来完成的。 
+> - catch: 在您想要处理问题的地方，通过异常处理程序捕获异常.catch 关键字用于捕获异 常，可以有多个catch进行捕获。 
+> - try: try 块中的代码标识将被激活的特定异常,它后面通常跟着一个或多个 catch 块。
+>
+> 如果有一个块抛出一个异常，捕获异常的方法会使用 try 和 catch 关键字。try 块中放置可能抛 出异常的代码，try 块中的代码被称为保护代码。使用 try/catch 语句的语法如下所示：
+>
+> ~~~C++
+> try
+> {
+>   // 保护的标识代码
+> }catch( ExceptionName e1 )
+> {
+>   // catch 块
+> }catch( ExceptionName e2 )
+> {
+>   // catch 块
+> }catch( ExceptionName eN )
+> {
+>   // catch 块
+> }
+> ~~~
+>
+> 
+
+####  异常的使用
+
+##### 异常的抛出和捕获
+
+###### 异常的抛出和匹配原则
+
+> 1. 异常是通过抛出对象而引发的，该**对象的类型决定了**应该激活哪个catch的处理代码。
+> 2. 被**选中的处理代码**是调用链中**与该对象类型匹配且离抛出异常位置最近**的那一个。 
+> 3. 抛出异常对象后，会生成一个**异常对象的拷贝**，因为抛出的异常对象可能是一个临时对象， 所以会生成一个拷贝对象，这个拷贝的临时对象会在被catch以后销毁。（这里的处理类似 于函数的传值返回） 
+> 4. catch(...)可以捕获**任意类型的异常**，问题是不知道异常错误是什么。 
+> 5. 实际中抛出和捕获的匹配原则有个**例外**，并不都是类型完全匹配，可以**抛出的派生类对象， 使用基类捕获**，这个在实际中非常实用，我们后面会详细讲解这个（继承+多态）。
+
+###### 在函数调用链中异常栈展开匹配原则
+
+> 1. 首先检查throw本身是否在try块内部，如果是再查找匹配的catch语句。如果有匹配的，则 调到catch的地方进行处理。 
+> 2. 没有匹配的catch则退出当前函数栈，继续在调用函数的栈中进行查找匹配的catch。 
+> 3. 如果到达main函数的栈，依旧没有匹配的，则终止程序。上述这个沿着调用链查找匹配的 catch子句的过程称为栈展开。所以实际中我们最后都要加一个catch(...)捕获任意类型的异 常，否则当有异常没捕获，程序就会直接终止。 
+> 4. 找到匹配的catch子句并处理以后，会继续沿着catch子句后面继续执行。
+>
+> ![image-20221121170158156](%E5%9B%BE%E7%89%87/README/image-20221121170158156.png)
+>
+> ~~~C++
+> double Division(int a, int b)
+> {
+>     // 当b == 0时抛出异常
+>  if (b == 0)
+>    throw "Division by zero condition!";
+>     else
+>         return ((double)a / (double)b);
+> }
+> void Func()
+> {
+>      int len, time;
+>      cin >> len >> time;
+>      cout << Division(len, time) << endl;
+> }
+> int main()
+> {
+>      try 
+>      {
+>      	Func();
+>      }
+>      catch (const char* errmsg） 
+>      {
+>      	cout << errmsg << endl;
+>      }
+>      catch(...){
+>         cout<<"unkown exception"<<endl;           
+>      }
+>      return 0;
+> }
+> ~~~
+>
+> 
+
+##### 异常的重新抛出
+
+> 有可能单个的catch不能完全处理一个异常，在进行一些校正处理以后，希望再交给更外层的调用 链函数来处理，catch则可以通过重新抛出将异常传递给更上层的函数进行处理。
+>
+> ~~~C++
+> double Division(int a, int b)
+> {
+>  // 当b == 0时抛出异常
+>  if (b == 0)
+>  {
+> 	 throw "Division by zero condition!";
+>  }
+>  return (double)a / (double)b;
+> }
+> void Func()
+> {
+>      // 这里可以看到如果发生除0错误抛出异常，另外下面的array没有得到释放。
+>      // 所以这里捕获异常后并不处理异常，异常还是交给外面处理，这里捕获了再
+>      // 重新抛出去。
+>      int* array = new int[10];
+>      try 
+>      {
+>          int len, time;
+>          cin >> len >> time;
+>          cout << Division(len, time) << endl;
+>      }
+>      catch (...)
+>      {
+>          cout << "delete []" << array << endl;
+>          delete[] array;
+>          throw;
+>      }
+>      // ...
+>      cout << "delete []" << array << endl;
+>      delete[] array;
+> }
+> int main()
+> {
+>      try
+>      {
+>      	Func();
+>      }
+>      catch (const char* errmsg)
+>      {
+>      	cout << errmsg << endl;
+>      }
+>      return 0;
+> }
+> ~~~
+>
+> **非 常 地 抽 象**
+
+#### 异常安全
+
+> - **构造函数完成对象的构造和初始化**，**最好不要**在构造函数中抛出异常，否则**可能导致对象不 完整或没有完全初始化** 
+> - **析构函数主要完成资源的清理，最好不要**在析构函数内抛出异常，否则可能导致资源泄漏(内 存泄漏、句柄未关闭等) 
+> - C++中异常经常会导致资源泄漏的问题，比如在new和delete中抛出了异常，导致内存泄 漏，在lock和unlock之间抛出了异常导致死锁，C++经常使用RAII来解决以上问题，关于RAII 我们智能指针这节进行讲解。
+
+#### 异常规范
+
+> 1. 异常规格说明的目的是为了让函数使用者知道该函数可能抛出的异常有哪些。 可以在函数的 后面接throw(类型)，列出这个函数可能抛掷的所有异常类型。 
+> 2. 函数的后面接throw()，表示函数不抛异常。 
+> 3. 若无异常接口声明，则此函数可以抛掷任何类型的异常。
+>
+> ~~~C++
+> // 这里表示这个函数会抛出A/B/C/D中的某种类型的异常
+> void fun() throw(A，B，C，D);
+> // 这里表示这个函数只会抛出bad_alloc的异常
+> void* operator new (std::size_t size) throw (std::bad_alloc);
+> // 这里表示这个函数不会抛出异常
+> void* operator delete (std::size_t size, void* ptr) throw();
+> // C++11 中新增的noexcept，表示不会抛异常
+> thread() noexcept;
+> thread (thread&& x) noexcept;
+> ~~~
+>
+> 
+
+#### 自定义异常体系
+
+> 实际使用中很多公司都会自定义自己的异常体系进行规范的异常管理，因为一个项目中如果大家 随意抛异常，那么外层的调用者基本就没办法玩了，所以实际中都会定义一套继承的规范体系。 这样大家抛出的都是继承的派生类对象，捕获一个基类就可以了
+>
+> ![image-20221121203926757](%E5%9B%BE%E7%89%87/README/image-20221121203926757.png)
+>
+> ~~~C++
+> // 服务器开发中通常使用的异常继承体系
+> class Exception
+> {
+> public:
+>      Exception(const string& errmsg, int id)
+>      :_errmsg(errmsg)
+>      ,_id(id)
+>      {}
+>      virtual string what() const
+>      {
+>          return _errmsg;
+>      }
+> protected:
+>      string _errmsg;
+>      int _id;
+> };
+> class SqlException : public Exception
+> {
+> public:
+>      SqlException(const string& errmsg, int id, const string& sql)
+>      :Exception(errmsg, id)
+>      , _sql(sql)
+>      {}
+>      virtual string what() const
+>      {
+>          string str = "SqlException:";
+>          str += _errmsg;
+>          str += "->";
+>          str += _sql;
+>          return str;
+>      }
+> private:
+>  	const string _sql;
+> };
+> class CacheException : public Exception
+> {
+> public:
+>      CacheException(const string& errmsg, int id)
+>      :Exception(errmsg, id)
+>      {}
+>      virtual string what() const
+>      {
+>          string str = "CacheException:";
+>          str += _errmsg;
+>          return str;
+>      }
+> };
+> class HttpServerException : public Exception
+> {
+> public:
+>      HttpServerException(const string& errmsg, int id, const string& type)
+>      :Exception(errmsg, id)
+>      , _type(type)
+>      {}
+>      virtual string what() const
+>      {
+>          string str = "HttpServerException:";
+>          str += _type;
+>          str += ":";
+>          str += _errmsg;
+>          return str;
+>      }
+> private:
+>  	const string _type;
+> };
+> void SQLMgr()
+> {
+>  srand(time(0));
+>  if (rand() % 7 == 0)
+>  {
+>  	throw SqlException("权限不足", 100, "select * from name = '张三'");
+>  }
+>  //throw "xxxxxx";
+> }
+> void CacheMgr()
+> {
+>      srand(time(0));
+>      if (rand() % 5 == 0)
+>      {
+>      	throw CacheException("权限不足", 100);
+>      }
+>      else if (rand() % 6 == 0)
+>      {
+>      	throw CacheException("数据不存在", 101);
+>      }
+>      SQLMgr();
+> }
+> void HttpServer()
+> {
+>      // ...
+>      srand(time(0));
+>      if (rand() % 3 == 0)
+>      {
+>      	throw HttpServerException("请求资源不存在", 100, "get");
+>      }
+>      else if (rand() % 4 == 0)
+>      {
+>      	throw HttpServerException("权限不足", 101, "post");
+>      }
+>      CacheMgr();
+> }
+> int main()
+> {
+>      while (1)
+>      {
+>          this_thread::sleep_for(chrono::seconds(1));
+>          try
+>          {
+>              HttpServer();
+>          }
+>          catch (const Exception& e) // 这里捕获父类对象就可以
+>          {
+>              // 多态
+>              cout << e.what() << endl;
+>          }
+>          catch (...)
+>          {
+>              cout << "Unkown Exception" << endl;
+>          }
+>      }
+>      return 0;
+> }
+> ~~~
+>
+> 
+
+#### C++标准库的异常体系
+
+> C++ 提供了一系列标准的异常，定义在 中，我们可以在程序中使用这些标准的异常。它们是以父 子类层次结构组织起来的，如下所示：
+>
+> ![image-20221121204319127](%E5%9B%BE%E7%89%87/README/image-20221121204319127.png)
+>
+> ![image-20221121204338057](%E5%9B%BE%E7%89%87/README/image-20221121204338057.png)
+>
+> **说明：**实际中我们可以可以去继承exception类实现自己的异常类。但是实际中很多公司像上面一 样自己定义一套异常继承体系。因为C++标准库设计的不够好用。
+>
+> ~~~C++
+> int main()
+> {
+>      try
+>      {
+>          vector<int> v(10, 5);
+>          // 这里如果系统内存不够也会抛异常
+>          v.reserve(1000000000);
+>          // 这里越界会抛异常
+>          v.at(10) = 100; 
+>      }
+>      catch (const exception& e) // 这里捕获父类对象就可以
+>      {
+>      	cout << e.what() << endl;
+>      }
+>      catch (...)
+>      {
+>      	cout << "Unkown Exception" << endl;
+>      }
+>      return 0;
+> }
+> ~~~
+>
+> 
+
+#### 异常的优缺点▲
+
+##### C++异常的优点：
+
+> 1. 异常对象定义好了，相比错误码的方式可以清晰准确的展示出错误的各种信息，甚至可以包 含堆栈调用的信息，这样可以帮助更好的定位程序的bug。
+>
+> 2. 返回错误码的传统方式有个很大的问题就是，在函数调用链中，深层的函数返回了错误，那 么我们得层层返回错误，最外层才能拿到错误，具体看下面的详细解释。
+>
+>     ~~~C++
+>     // 1.下面这段伪代码我们可以看到ConnnectSql中出错了，先返回给ServerStart，ServerStart再返回给main函数，main函数再针对问题处理具体的错误。
+>       // 2.如果是异常体系，不管是ConnnectSql还是ServerStart及调用函数出错，都不用检查，因为抛出的异常异常会直接跳到main函数中catch捕获的地方，main函数直接处理错误。
+>     int ConnnectSql()
+>     {
+>         // 用户名密码错误
+>         if (...)
+>             return 1;
+>     
+>         // 权限不足
+>         if (...)
+>             return 2;
+>     }
+>     
+>     int ServerStart() 
+>     {
+>         if (int ret = ConnnectSql() < 0)
+>             return ret;
+>         int fd = socket();
+>         if（fd < 0）
+>             return errno;
+>     }
+>       
+>     int main()
+>     {
+>         if(ServerStart()<0)
+>             ...
+>     
+>          return 0;
+>     }
+>     ~~~
+>
+> 3. 很多的第三方库都包含异常，比如boost、gtest、gmock等等常用的库，那么我们使用它们 也需要使用异常。 
+>
+> 4. 部分函数使用异常更好处理，比如构造函数没有返回值，不方便使用错误码方式处理。比如 T& operator这样的函数，如果pos越界了只能使用异常或者终止程序处理，没办法通过返回 值表示错误。
+
+##### C++异常的缺点：
+
+> 1. 异常会导致程序的执行流乱跳，并且非常的混乱，并且是运行时出错抛异常就会乱跳。这会 导致我们跟踪调试时以及分析程序时，比较困难。
+> 2. 异常会有一些性能的开销。当然在现代硬件速度很快的情况下，这个影响基本忽略不计。
+> 3.  C++没有垃圾回收机制，资源需要自己管理。有了异常非常容易导致内存泄漏、死锁等异常 安全问题。这个需要使用RAII来处理资源的管理问题。学习成本较高。
+> 4.  C++标准库的异常体系定义得不好，导致大家各自定义各自的异常体系，非常的混乱。 
+> 5. 异常尽量规范使用，否则后果不堪设想，随意抛异常，外层捕获的用户苦不堪言。所以异常 规范有两点 
+>     - 抛出异常类型都继承自一个基类。
+>     - 函数是否抛异常、抛什么异常，都 使用 func()，throw();的方式规范化。
+
+**总结：**异常总体而言，利大于弊，所以工程中我们还是鼓励使用异常的。另外OO的语言基本都是 用异常处理错误，这也可以看出这是大势所趋。
+
+------
+
+### 智能指针▲▲▲
+
+#### 智能指针的产生原因
+
+> 下面我们先分析一下下面这段程序有没有什么内存方面的问题？提示一下：注意分析MergeSort 函数中的问题。
+>
+> ~~~C++
+> int div()
+> {
+>      int a, b;
+>      cin >> a >> b;
+>      if (b == 0)
+>      throw invalid_argument("除0错误");
+>      return a / b;
+> }
+> void Func()
+> {
+>     // 1、如果p1这里new 抛异常会如何？
+>     // 2、如果p2这里new 抛异常会如何？
+>     // 3、如果div调用这里又会抛异常会如何？
+>      int* p1 = new int;
+>     int* p2 = new int;
+>      cout << div() << endl;
+>      delete p1;
+>     delete p2;
+> }
+> int main()
+> {
+>      try
+>      {
+>      	Func();
+>      }
+>      catch (exception& e)
+>      {
+>      	cout << e.what() << endl;
+>     }
+>      return 0;
+> }
+> ~~~
+>
+> 问题分析：上面的问题分析出来我们发现有什么问题？
+>
+> ~~~
+> p1，p2申请的资源未能正常是否
+> ~~~
+>
+> **智能指针就是用来解决此类问题的**
+
+#### 智能指针思想
+
+##### RAII思想
+
+> RAII（Resource Acquisition Is Initialization）是一种利用对象生命周期来控制程序资源（如内存、文件句柄、网络连接、互斥量等等）的简单技术。
+> 在对象构造时获取资源，接着控制对资源的访问使之在对象的生命周期内始终保持有效，**最后在对象析构的时候释放资源**。借此，我们实际上把管理一份资源的责任托管给了一个对象。这种做法有两大好处：
+>
+> - 不需要显式地释放资源。
+> - 采用这种方式，对象所需的资源在其生命期内始终保持有效。
+>
+> ~~~C++
+> // 使用RAII思想设计的SmartPtr类
+> template<class T>
+> class SmartPtr {
+> public:
+>     SmartPtr(T* ptr = nullptr)
+>        : _ptr(ptr)
+>    {}
+>     ~SmartPtr()
+>    {
+>         if(_ptr)
+>             delete _ptr;
+>    }
+>     
+> private:
+>     T* _ptr;
+> };
+> int div()
+> {
+>  int a, b;
+>  cin >> a >> b;
+>  if (b == 0)
+>  throw invalid_argument("除0错误");
+>  return a / b;
+> }
+> void Func()
+> {
+>  ShardPtr<int> sp1(new int);
+>     ShardPtr<int> sp2(new int);
+>  cout << div() << endl;
+> }
+> int main()
+> {
+>     try {
+>  Func();
+>    }
+>     catch(const exception& e)
+>    {
+>         cout<<e.what()<<endl;
+>    }
+>  return 0;
+> }
+> ~~~
+>
+> 
+
+##### 智能指针原理
+
+> 上述的SmartPtr还不能将其称为智能指针，因为它还不具有指针的行为。指针可以解引用，也可 以通过->去访问所指空间中的内容，因此：**AutoPtr模板类中还得需要将* 、->重载下，才可让其 像指针一样去使用。**
+>
+> ~~~C++
+> template<class T>
+> class SmartPtr {
+> public:
+> SmartPtr(T* ptr = nullptr)
+>      : _ptr(ptr)
+>  {}
+> ~SmartPtr()
+>  {
+>      if(_ptr)
+>          delete _ptr;
+>  }
+> T& operator*() {return *_ptr;}
+> T* operator->() {return _ptr;}
+> private:
+> T* _ptr;
+> };
+> struct Date
+> {
+>     int _year;
+>  int _month;
+>  int _day;
+> };
+> int main()
+> {
+> SmartPtr<int> sp1(new int);
+> *sp1 = 10
+> cout<<*sp1<<endl;
+> SmartPtr<int> sparray(new Date);
+> // 需要注意的是这里应该是sparray.operator->()->_year = 2018;
+> // 本来应该是sparray->->_year这里语法上为了可读性，省略了一个->
+> sparray->_year = 2018;
+> sparray->_month = 1;
+> sparray->_day = 1;
+> }
+> ~~~
+>
+> **总结一下智能指针的原理：** 
+>
+> 1. RAII特性 
+> 2. 重载operator*和opertaor->，具有像指针一样的行为。
+
+#### 智能指针的使用
+
+##### std::auto_ptr
+
+> https://cplusplus.com/reference/memory/auto_ptr/
+>
+> C++98版本的库中就提供了auto_ptr的智能指针。下面演示的auto_ptr的使用及问题。
+>
+> auto_ptr的实现原理：管理权转移的思想，下面简化模拟实现了一份bit::auto_ptr来了解它的原理
+>
+> ~~~C++
+> // C++98 管理权转移 auto_ptr
+> namespace bit
+> {
+>  template<class T>
+>  class auto_ptr
+>  {
+>  public:
+>  auto_ptr(T* ptr)
+>  :_ptr(ptr)
+>  {}
+>  auto_ptr(auto_ptr<T>& sp)
+>  :_ptr(sp._ptr)
+>  {
+>  // 管理权转移
+>  sp._ptr = nullptr;
+>  }
+>  auto_ptr<T>& operator=(auto_ptr<T>& ap)
+>  {
+>  // 检测是否为自己给自己赋值
+>  if (this != &ap)
+>  {
+>  // 释放当前对象中资源
+>  if (_ptr)
+>  delete _ptr;
+>  // 转移ap中资源到当前对象中
+>  _ptr = ap._ptr;
+>  ap._ptr = NULL;
+>  }
+>  return *this;
+>  }
+>  ~auto_ptr()
+>  {
+>  if (_ptr)
+>  {
+>  cout << "delete:" << _ptr << endl;
+>  delete _ptr;
+>       }
+>  }
+>  // 像指针一样使用
+>  T& operator*()
+>  {
+>  return *_ptr;
+>  }
+>  T* operator->()
+>  {
+>  return _ptr;
+>  }
+>  private:
+>  T* _ptr;
+>  };
+> }
+> // 结论：auto_ptr是一个失败设计，很多公司明确要求不能使用auto_ptr
+> //int main()
+> //{
+> // std::auto_ptr<int> sp1(new int);
+> // std::auto_ptr<int> sp2(sp1); // 管理权转移
+> //
+> // // sp1悬空
+> // *sp2 = 10;
+> // cout << *sp2 << endl;
+> // cout << *sp1 << endl;
+> // return 0;
+> //}
+> 
+> ~~~
+>
+> 
+
+##### std::unique_ptr
+
+> C++11中开始提供更靠谱的unique_ptr 
+>
+> https://cplusplus.com/reference/memory/unique_ptr/
+>
+> unique_ptr的实现原理：**简单粗暴的防拷贝，下面简化模拟实现了一份UniquePtr来了解它的原 理**
+>
+> ~~~C++
+> // C++11库才更新智能指针实现
+> // C++11出来之前，boost搞除了更好用的scoped_ptr/shared_ptr/weak_ptr
+> // C++11将boost库中智能指针精华部分吸收了过来
+> // C++11->unique_ptr/shared_ptr/weak_ptr
+> // unique_ptr/scoped_ptr
+> // 原理：简单粗暴 -- 防拷贝
+> namespace bit
+> {
+>  template<class T>
+>  class unique_ptr
+>  {
+>  public:
+>  unique_ptr(T* ptr)
+>  :_ptr(ptr)
+>  {}
+>  ~unique_ptr()
+>      {
+>  if (_ptr)
+>  {
+>  cout << "delete:" << _ptr << endl;
+>  delete _ptr;
+>  }
+>  }
+>  // 像指针一样使用
+>  T& operator*()
+>  {
+>  return *_ptr;
+>  }
+>  T* operator->()
+>  {
+>  return _ptr;
+>  }
+>  unique_ptr(const unique_ptr<T>& sp) = delete;
+>  unique_ptr<T>& operator=(const unique_ptr<T>& sp) = delete;
+>  private:
+>  T* _ptr;
+>  };
+> }
+> //int main()
+> //{
+> // /*bit::unique_ptr<int> sp1(new int);
+> // bit::unique_ptr<int> sp2(sp1);*/
+> //
+> // std::unique_ptr<int> sp1(new int);
+> // //std::unique_ptr<int> sp2(sp1);
+> //
+> // return 0;
+> //}
+> 
+> ~~~
+>
+> 
+
+##### shared_ptr
+
+###### 使用
+
+> C++11中开始提供更靠谱的并且支持拷贝的shared_ptr 
+>
+> https://cplusplus.com/reference/memory/shared_ptr/
+>
+> shared_ptr的原理：是通过引用计数的方式来实现多个shared_ptr对象之间共享资源。
+>
+> 例如： 比特老师晚上在下班之前都会通知，让最后走的学生记得把门锁下。 
+>
+> 1. shared_ptr在其内部，给每个资源都维护了着一份计数，用来记录该份资源被几个对象共 享。 
+> 2. 在对象被销毁时(也就是析构函数调用)，就说明自己不使用该资源了，对象的引用计数减 一。
+> 3. 如果引用计数是0，就说明自己是最后一个使用该资源的对象，必须释放该资源； 
+> 4. 如果不是0，就说明除了自己还有其他对象在使用该份资源，不能释放该资源，否则其他对 象就成野指针了。
+>
+> ~~~C++
+> // 引用计数支持多个拷贝管理同一个资源，最后一个析构对象释放资源
+> namespace bit
+> {
+>  template<class T>
+>  class shared_ptr
+>  {
+>  public:
+>  shared_ptr(T* ptr = nullptr)
+>  :_ptr(ptr)
+>  , _pRefCount(new int(1))
+>  , _pmtx(new mutex)
+>  {}
+>  shared_ptr(const shared_ptr<T>& sp)
+>  :_ptr(sp._ptr)
+>  , _pRefCount(sp._pRefCount)
+>  , _pmtx(sp._pmtx)
+>  {
+>  AddRef();
+>  }
+>  void Release()
+>  {
+>  _pmtx->lock();
+>  bool flag = false;
+>  if (--(*_pRefCount) == 0 && _ptr)
+>  {
+>  cout << "delete:" << _ptr << endl;
+>  delete _ptr;
+>  delete _pRefCount;
+>  flag = true;
+>  }
+>  _pmtx->unlock();
+>  if (flag == true)
+>  {
+>  delete _pmtx;
+>  }
+>  }
+>  void AddRef()
+>  {
+>  _pmtx->lock();
+>  ++(*_pRefCount);
+>  _pmtx->unlock();
+>  }
+>  shared_ptr<T>& operator=(const shared_ptr<T>& sp)
+>  {
+>  //if (this != &sp)
+>  if (_ptr != sp._ptr)
+>  {
+>  Release();
+>      _ptr = sp._ptr;
+>  _pRefCount = sp._pRefCount;
+>  _pmtx = sp._pmtx;
+>  AddRef();
+>  }
+>  return *this;
+>  }
+>  int use_count()
+>  {
+>  return *_pRefCount;
+>  }
+>  ~shared_ptr()
+>  {
+>  Release();
+>  }
+>  // 像指针一样使用
+>  T& operator*()
+>  {
+>  return *_ptr;
+>  }
+>  T* operator->()
+>  {
+>  return _ptr;
+>  }
+>  T* get() const
+>  {
+>  return _ptr;
+>  }
+>  private:
+>  T* _ptr;
+>  int* _pRefCount;
+>  mutex* _pmtx;
+>  };
+>     
+>     // 简化版本的weak_ptr实现
+>  template<class T>
+>  class weak_ptr
+>  {
+>  public:
+>  weak_ptr()
+>  :_ptr(nullptr)
+>  {}
+>  weak_ptr(const shared_ptr<T>& sp)
+>  :_ptr(sp.get())
+>  {}
+>  weak_ptr<T>& operator=(const shared_ptr<T>& sp)
+>  {
+>  _ptr = sp.get();
+>  return *this;
+> }
+>  T& operator*()
+>  {
+>  return *_ptr;
+>  }
+>  T* operator->()
+>  {
+>  return _ptr;
+>  }
+>  private:
+>  T* _ptr;
+>  };
+> }
+> // shared_ptr智能指针是线程安全的吗？
+> // 是的，引用计数的加减是加锁保护的。但是指向资源不是线程安全的
+> // 指向堆上资源的线程安全问题是访问的人处理的，智能指针不管，也管不了
+> // 引用计数的线程安全问题，是智能指针要处理的
+> //int main()
+> //{
+> // bit::shared_ptr<int> sp1(new int);
+> // bit::shared_ptr<int> sp2(sp1);
+> // bit::shared_ptr<int> sp3(sp1);
+> //
+> // bit::shared_ptr<int> sp4(new int);
+> // bit::shared_ptr<int> sp5(sp4);
+> //
+> // //sp1 = sp1;
+> // //sp1 = sp2;
+> //
+> // //sp1 = sp4;
+> // //sp2 = sp4;
+> // //sp3 = sp4;
+> //
+> // *sp1 = 2;
+> // *sp2 = 3;
+> //
+> // return 0;
+> //}
+> 
+> ~~~
+
+
+
+###### std::shared_ptr的线程安全问题 
+
+> 通过下面的程序我们来测试shared_ptr的线程安全问题。需要注意的是shared_ptr的线程安全分 为两方面： 
+>
+> 1. 智能指针对象中引用计数是多个智能指针对象共享的，两个线程中智能指针的引用计数同时 ++或--，这个操作不是原子的，引用计数原来是1，++了两次，可能还是2。这样引用计数就错 乱了。会导致资源未释放或者程序崩溃的问题。所以只能指针中引用计数++、--是需要加锁 的，也就是说引用计数的操作是线程安全的。 
+> 2. 智能指针管理的对象存放在堆上，两个线程中同时去访问，会导致线程安全问题。
+>
+> ~~~C++
+> // 1.演示引用计数线程安全问题，就把AddRefCount和SubRefCount中的锁去掉
+> // 2.演示可能不出现线程安全问题，因为线程安全问题是偶现性问题，main函数的n改大一些概率就
+> 变大了，就容易出现了。
+> // 3.下面代码我们使用SharedPtr演示，是为了方便演示引用计数的线程安全问题，将代码中的
+> SharedPtr换成shared_ptr进行测试，可以验证库的shared_ptr，发现结论是一样的。
+> struct Date
+> {
+>  int _year = 0;
+>  int _month = 0;
+>  int _day = 0;
+> };
+> void SharePtrFunc(bit::shared_ptr<Date>& sp, size_t n, mutex& mtx)
+> {
+>  cout << sp.get() << endl;
+>  for (size_t i = 0; i < n; ++i)
+>  {
+>  // 这里智能指针拷贝会++计数，智能指针析构会--计数，这里是线程安全的。
+>  bit::shared_ptr<Date> copy(sp);
+>  // 这里智能指针访问管理的资源，不是线程安全的。所以我们看看这些值两个线程++了2n
+> 次，但是最终看到的结果，并一定是加了2n
+>  {
+>  unique_lock<mutex> lk(mtx);
+>  copy->_year++;
+>  copy->_month++;
+>  copy->_day++;
+>  }
+>  }
+> }
+> int main()
+> {
+>  bit::shared_ptr<Date> p(new Date);
+>  cout << p.get() << endl;
+>  const size_t n = 100000;
+>  mutex mtx;
+>  thread t1(SharePtrFunc, std::ref(p), n, std::ref(mtx));
+>  thread t2(SharePtrFunc, std::ref(p), n, std::ref(mtx));
+>  t1.join();
+>  t2.join();
+>  cout << p->_year << endl;
+>  cout << p->_month << endl;
+>  cout << p->_day << endl;
+>  cout << p.use_count() << endl;
+>  return 0;
+> }
+> ~~~
+
+###### std::shared_ptr的循环引用
+
+> ~~~C++
+> struct ListNode
+> {
+>  int _data;
+>     shared_ptr<ListNode> _prev;
+>  shared_ptr<ListNode> _next;
+>  ~ListNode(){ cout << "~ListNode()" << endl; }
+> };
+> int main()
+> {
+>  shared_ptr<ListNode> node1(new ListNode);
+>  shared_ptr<ListNode> node2(new ListNode);
+>  cout << node1.use_count() << endl;
+>  cout << node2.use_count() << endl;
+>  node1->_next = node2;
+>  node2->_prev = node1;
+>  cout << node1.use_count() << endl;
+>  cout << node2.use_count() << endl;
+>  return 0;
+> }
+> ~~~
+>
+> 循环引用分析： 
+>
+> 1. node1和node2两个智能指针对象指向两个节点，引用计数变成1，我们不需要手动 delete。
+> 2.  node1的_next指向node2，node2的_prev指向node1，引用计数变成2。 
+> 3.  node1和node2析构，引用计数减到1，但是_next还指向下一个节点。但是_prev还指向上 一个节点。 
+> 4. 也就是说_next析构了，node2就释放了。 _
+> 5. _也就是说_prev析构了，node1就释放了。 
+> 6. 但是_next属于node的成员，node1释放了，_next才会析构，而node1由_prev管理，_prev 属于node2成员，所以这就叫循环引用，谁也不会释放。
+>
+> ![image-20221206215000656](%E5%9B%BE%E7%89%87/README/image-20221206215000656.png)
+>
+> ![image-20221203212218744](%E5%9B%BE%E7%89%87/README/image-20221203212218744.png)
+>
+> ~~~C++
+> // 解决方案：在引用计数的场景下，把节点中的_prev和_next改成weak_ptr就可以了
+> // 原理就是，node1->_next = node2;和node2->_prev = node1;时weak_ptr的_next和
+> _prev不会增加node1和node2的引用计数。
+> struct ListNode
+>     {
+>  int _data;
+>  weak_ptr<ListNode> _prev;
+>  weak_ptr<ListNode> _next;
+>  ~ListNode(){ cout << "~ListNode()" << endl; }
+> };
+> int main()
+> {
+>  shared_ptr<ListNode> node1(new ListNode);
+>  shared_ptr<ListNode> node2(new ListNode);
+>  cout << node1.use_count() << endl;
+>  cout << node2.use_count() << endl;
+>  node1->_next = node2;
+>  node2->_prev = node1;
+>  cout << node1.use_count() << endl;
+>  cout << node2.use_count() << endl;
+>  return 0;
+> }
+> 
+> ~~~
+
+###### 定制删除器
+
+> **如果不是new出来的对象如何通过智能指针管理呢？其实shared_ptr设计了一个删除器来解决这 个问题（ps：删除器这个问题我们了解一下**）
+>
+> ~~~C++
+> // 仿函数的删除器
+> template<class T>
+> struct FreeFunc {
+>  void operator()(T* ptr)
+>  {
+>  cout << "free:" << ptr << endl;
+>  free(ptr);
+>  }
+> };
+> template<class T>
+> struct DeleteArrayFunc {
+>  void operator()(T* ptr)
+>  { 
+>  cout << "delete[]" << ptr << endl;
+>  delete[] ptr; 
+>  }
+> };
+> int main()
+> {
+>  FreeFunc<int> freeFunc;
+>  std::shared_ptr<int> sp1((int*)malloc(4), freeFunc);
+>  DeleteArrayFunc<int> deleteArrayFunc;
+>  std::shared_ptr<int> sp2((int*)malloc(4), deleteArrayFunc);
+>     
+>     
+>  std::shared_ptr<A> sp4(new A[10], [](A* p){delete[] p; });
+> std::shared_ptr<FILE> sp5(fopen("test.txt", "w"), [](FILE* p)
+> {fclose(p); });
+>  
+>  return 0;
+> }
+> ~~~
+>
+> **定制删除器即构造智能指针对象时，指定析构资源的方式**
+
+###### 其他
+
+> ~~~C++
+> 为什么不能使用静态变量计数
+>  因为，静态成员属于整个类，但计数是相对于资源即变量来说的，而静态成员是相对于类型来说的，同类型的不同资源使用的是同一个计数变量，不符合不同资源不同计数变量的要求
+> ~~~
+>
+> ![image-20221203212726997](%E5%9B%BE%E7%89%87/README/image-20221203212726997.png)
+>
+> weak_ptr和shared_ptr可以互相引用，weak_ptr作为辅助型指针使用，没有使用PAII思想
+
+###### 再谈new与delete
+
+> ![image-20221203223921978](%E5%9B%BE%E7%89%87/README/image-20221203223921978.png)
+>
+> ~~~
+> delete和delete[] 底层都是调用 op delete(), 而op delete()是调用析构函数 + free， 若不存在析构函数，delete 和 delete[] 都只是调用 free， 所以对于内置类型， vs平台(以下都是vs平台)new和delete不匹配不会报错 。
+> 但对于自定义类型，是需要析构函数的，对于new[]，调用op new时， op new知道[]中的参数，因此调用参数次的构造函数，但对于析构函数，delete[]中并不存在参数，不知道调用几次析构函数。所以，nwe[]在申请空间时，会在实际空间的头部额外申请四个字节空间用来保存变量个数，new[]返回的是实际需要的空间的地址，delete[]时，会找到存放个数的空间，读取内容后正确调用够析构函数。
+> 也就是说，new申请的是实际大小的空间，返回实际需要空间的地址，一次析构函数
+>         new[]申请的是实际大小 + 4的空间，返回的也是实际需要空间的地址，n次析构函数
+>     	delete会直接调用一次西沟啊还能输，释放ptr的空间
+>        而delete[]会先去头部读取个数，再调用实际次数的析构函数，再释放实际大小+4的空间
+> ~~~
+>
+> 
+
+#### C++11和boost中智能指针的关系
+
+> 1. C++ 98 中产生了第一个智能指针auto_ptr. 
+> 2. C++ boost给出了更实用的scoped_ptr和shared_ptr和weak_ptr. 
+> 3. C++ TR1，引入了shared_ptr等。不过注意的是TR1并不是标准版。 
+> 4. C++ 11，引入了unique_ptr和shared_ptr和weak_ptr。需要注意的是unique_ptr对应boost 的scoped_ptr。并且这些智能指针的实现原理是参考boost中的实现的。
+
+#### 智能指针面试问题
+
+![image-20221204095024459](%E5%9B%BE%E7%89%87/README/image-20221204095024459.png)
+
+### 内存泄漏
+
+####  什么是内存泄漏，内存泄漏的危害
+
+> 什么是内存泄漏：内存泄漏指因为疏忽或错误造成程序未能释放已经不再使用的内存的情况。内 存泄漏并不是指内存在物理上的消失，而是应用程序分配某段内存后，因为设计错误，失去了对 该段内存的控制，因而造成了内存的浪费。 
+>
+> 内存泄漏的危害：长期运行的程序出现内存泄漏，影响很大，如操作系统、后台服务等等，出现 内存泄漏会导致响应越来越慢，最终卡死。
+>
+> ~~~C++
+> void MemoryLeaks()
+> {
+>    // 1.内存申请了忘记释放
+>   int* p1 = (int*)malloc(sizeof(int));
+>   int* p2 = new int;
+>   
+>   // 2.异常安全问题
+>   int* p3 = new int[10];
+>   
+>   Func(); // 这里Func函数抛异常导致 delete[] p3未执行，p3没被释放.
+>   
+>   delete[] p3;
+> }
+> ~~~
+
+#### 内存泄漏分类（了解）
+
+> C/C++程序中一般我们关心两种方面的内存泄漏：
+>
+> **堆内存泄漏(Heap leak)** 
+>
+> ~~~c++
+> 堆内存指的是程序执行中依据须要分配通过malloc / calloc / realloc / new等从堆中分配的一 块内存，用完后必须通过调用相应的 free或者delete 删掉。假设程序的设计错误导致这部分 内存没有被释放，那么以后这部分空间将无法再被使用，就会产生Heap Leak。
+> ~~~
+>
+> 系统资源泄漏 
+>
+> ~~~C++
+> 指程序使用系统分配的资源，比方套接字、文件描述符、管道等没有使用对应的函数释放 掉，导致系统资源的浪费，严重可导致系统效能减少，系统执行不稳定。
+> ~~~
+
+#### 如何检测内存泄漏（了解）
+
+> - 在linux下内存泄漏检测：[(15条消息) Linux下几款C++程序中的内存泄露检查工具_CHENG Jian的博客-CSDN博客](https://blog.csdn.net/gatieme/article/details/51959654)
+> - 在windows下使用第三方工具：[(15条消息) VS编程内存泄漏：VLD(Visual LeakDetector)内存泄露库_波波在学习的博客-CSDN博客](https://blog.csdn.net/GZrhaunt/article/details/56839765)
+> - 其他工具：[内存泄露检测工具比较 - 默默淡然 - 博客园 (cnblogs.com)](https://www.cnblogs.com/liangxiaofeng/p/4318499.html)
+
+#### 如何避免内存泄漏
+
+> - 工程前期良好的设计规范，养成良好的编码规范，申请的内存空间记着匹配的去释放。ps： 这个理想状态。但是如果碰上异常时，就算注意释放了，还是可能会出问题。需要下一条智 能指针来管理才有保证。
+> -  采用RAII思想或者智能指针来管理资源。
+> - 有些公司内部规范使用内部实现的私有内存管理库。这套库自带内存泄漏检测的功能选项。 
+> - 出问题了使用内存泄漏工具检测。ps：不过很多工具都不够靠谱，或者收费昂贵。
+> - 总结一下: 内存泄漏非常常见，解决方案分为两种：1、事前预防型。如智能指针等。2、事后查错型。如泄 漏检测工具。
+
+### 特殊类设计
+
+
+
+#### 只能在堆上创建对象
+
+~~~c++
+1. 将析构函数私有化，栈上创建对象时，对象是由函数调用析构函数对对象进行析构的，若私有化析构函数，则函数无法去调用析构函数，就无法在栈上创建对象。而在堆上创建后，可以提供一个封装了析构函数的public函数，手动释放动态申请的资源。
+2. 将构造函数私有化，则函数里创建栈上对象和new创建堆上对象都无法创建，因为他们都需要调用构造函数。 创建一个静态的公有的Create函数，Create函数里去new对象，此时这个new可以调用构造函数，返回这个对象的地址，用这个静态类成员函数去创建堆上对象，需要把拷贝构造函数给私有。
+~~~
+
+#### 只能在栈上创建对象
+
+~~~
+1. 将构造函数私有化，则函数里创建栈上对象和new创建堆上对象都无法创建，因为他们都需要调用构造函数。 创建一个静态的公有的Create函数，Create函数里去创建对象，此时这个栈上对象可以调用构造函数，传值返回。用这个静态类成员函数去创建栈上对象，需要把禁止op new 和 op delete，即把它俩私有化，是new和delete调不到底层的op。
+~~~
+
+#### 不能被继承
+
+~~~
+1. c++98， 将构造函数私有化，因为子类在构造时需要调用父类的构造函数，无法调用，就会语法错误
+2. c++11， final关键字
+~~~
+
+#### 单例模式：设计一个类，只能创建一个对象
+
+> **设计模式：** 设计模式（Design Pattern）是一套被反复使用、多数人知晓的、经过分类的、代码设计经验的 总结。为什么会产生设计模式这样的东西呢？就像人类历史发展会产生兵法。最开始部落之间打 仗时都是人拼人的对砍。后来春秋战国时期，七国之间经常打仗，就发现打仗也是有套路的，后 来孙子就总结出了《孙子兵法》。孙子兵法也是类似。 
+>
+> 使用设计模式的目的：为了代码可重用性、让代码更容易被他人理解、保证代码可靠性。 设计模 式使代码编写真正工程化；设计模式是软件工程的基石脉络，如同大厦的结构一样。 
+>
+> **单例模式：** 一个类只能创建一个对象，即单例模式，该模式可以保证系统中该类只有一个实例，并提供一个 访问它的全局访问点，该实例被所有程序模块共享。比如在某个服务器程序中，该服务器的配置 信息存放在一个文件中，这些配置数据由一个单例对象统一读取，然后服务进程中的其他对象再 通过这个单例对象获取这些配置信息，这种方式简化了在复杂环境下的配置管理。 
+>
+> 单例模式有两种实现模式：
+
+##### 饿汉模式
+
+> 就是说不管你将来用不用，程序启动时就创建一个唯一的实例对象。
+>
+> ~~~C++
+> // 饿汉模式
+> // 优点：简单
+> // 缺点：可能会导致进程启动慢，且如果有多个单例类对象实例启动顺序不确定。
+>   class Singleton
+>  {
+>   public:
+>       static Singleton* GetInstance()
+>      {
+>           return &m_instance;
+>      }
+>         
+>   private:
+>      // 构造函数私有
+>     Singleton(){};
+>     
+>     // C++98 防拷贝
+>     Singleton(Singleton const&); 
+>     Singleton& operator=(Singleton const&); 
+>       
+>     // or
+>       
+>     // C++11
+>     Singleton(Singleton const&) = delete; 
+>     Singleton& operator=(Singleton const&) = delete; 
+>   
+>     static Singleton m_instance;
+>  };
+>   
+>   Singleton Singleton::m_instance;  // 在程序入口之前就完成单例对象的初始化
+> ~~~
+>
+> 如果这个单例对象在多线程高并发环境下频繁使用，性能要求较高，那么显然使用饿汉模式来避 免资源竞争，提高响应速度更好。
+
+##### 懒汉模式
+
+> 如果单例对象构造十分耗时或者占用很多资源，比如加载插件啊， 初始化网络连接啊，读取 文件啊等等，而有可能该对象程序运行时不会用到，那么也要在程序一开始就进行初始化， 就会导致程序启动时非常的缓慢。 所以这种情况使用懒汉模式（**延迟加载**）更好。
+>
+> ~~~C++
+> // 懒汉
+> // 优点：第一次使用实例对象时，创建对象。进程启动无负载。多个单例实例启动顺序自由控
+> 制。
+> // 缺点：复杂
+> #include <iostream>
+> #include <mutex>
+> #include <thread>
+> using namespace std;
+> class Singleton
+> {
+> public:
+>  static Singleton* GetInstance() {
+>  // 注意这里一定要使用Double-Check的方式加锁，才能保证效率和线程安全
+>  if (nullptr == m_pInstance) {
+>  m_mtx.lock();
+>  if (nullptr == m_pInstance) {
+>  m_pInstance = new Singleton();
+>  }
+>  m_mtx.unlock();
+>  }
+>  return m_pInstance;
+>  }
+>  // 实现一个内嵌垃圾回收类    
+>  class CGarbo {
+>  public:
+>      ~CGarbo(){
+>  if (Singleton::m_pInstance)
+>  delete Singleton::m_pInstance;
+>  }
+>  };
+>  // 定义一个静态成员变量，程序结束时，系统会自动调用它的析构函数从而释放单例对象
+>  static CGarbo Garbo;
+> private:
+>  // 构造函数私有
+>  Singleton(){};
+>  // 防拷贝
+>  Singleton(Singleton const&);
+>  Singleton& operator=(Singleton const&);
+>  static Singleton* m_pInstance; // 单例对象指针
+>  static mutex m_mtx;   //互斥锁
+> };
+> Singleton* Singleton::m_pInstance = nullptr;
+> Singleton::CGarbo Garbo;
+> mutex Singleton::m_mtx;
+> int main()
+> {
+>  thread t1([]{cout << &Singleton::GetInstance() << endl; });
+>  thread t2([]{cout << &Singleton::GetInstance() << endl; });
+>  t1.join();
+>  t2.join();
+>  cout << &Singleton::GetInstance() << endl;
+>  cout << &Singleton::GetInstance() << endl;
+>  return 0;
+> }
+> 
+> ~~~
+>
+> 
+
+### C++类型转换
+
+#### 隐式类型转换
+
+意义相近的类型，可以隐式类型转换，如 int -》 double -》int
+
+#### 显式强制类型转换
+
+意义不相近，但转换后具有一定的意义
+
+#### C++的类型转换
+
+###### 1. static_cast\<type> (value)
+
+替代隐式类型转换，可转换意义相近的类型
+
+###### 2. reinterpret_cast\<type>(value)
+
+替代显式强制类型转换，适用于意义不相干的类型转换，但转换后仍有一定意义
+
+###### 3. const_cast\<type>(value)
+
+转换const属性的 value;
+
+拾遗
+
+![image-20221204175423406](%E5%9B%BE%E7%89%87/README/image-20221204175423406.png)
+
+~~~
+c++中， const int a 属于常变量， 不存放在常量区，而是在栈上，因为按语法来说，a不能再改变， 所以编译器会使程序中存在a的代码，不去调用a，而是以宏的方式替代，或保存在寄存器中。所以*p的内容是真的a的地址的内容，a是之前的内容
+使用volatile 修饰a， 可以禁止编译器优化， 两个都是3
+~~~
+
+###### dynamic_cast\<type>(value)
+
+![image-20221204220230262](%E5%9B%BE%E7%89%87/README/image-20221204220230262.png)
+
+适用与继承体系中的，对于子类转父类，成功转换，父类转子类，返回nullptr，不允许父类转子类。
+
+关于2.   …………
+
+ptr转为父类指针时，偏移到了正确位置。
+
+![image-20221204222335917](%E5%9B%BE%E7%89%87/README/image-20221204222335917.png)
+
+
+
+###### RTTI
+
+![image-20221204223241926](%E5%9B%BE%E7%89%87/README/image-20221204223241926.png)
+
+
+
+
+
+### IO流
+
+#### 格式控制
+
+C语言格式控制
+
+C++格式控制
+
+![image-20221205170833607](%E5%9B%BE%E7%89%87/README/image-20221205170833607.png)
+
+![image-20221205172401237](%E5%9B%BE%E7%89%87/README/image-20221205172401237.png)
+
+**自定义类型转内置类型**
+
+![image-20221205172921981](%E5%9B%BE%E7%89%87/README/image-20221205172921981.png)
+
+![image-20221205172858078](%E5%9B%BE%E7%89%87/README/image-20221205172858078.png)
+
+![image-20221205173622830](%E5%9B%BE%E7%89%87/README/image-20221205173622830.png)
+
+#### 文件流
+
+
+
