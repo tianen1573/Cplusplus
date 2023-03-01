@@ -1535,7 +1535,7 @@ free的实现
 
 
 
-### STL
+### 泛型编程
 
 #### 泛型编程:
 
@@ -1568,14 +1568,15 @@ void Swap(char& left, char& right)
 
 使用函数重载虽然可以实现，但是有一下几个不好的地方： 
 
-1. 重载的函数仅仅是类型不同，代码复用率比较低，只要有新类型出现时，就需要用户自己增加对应的函数 
-2. 代码的可维护性比较低，一个出错可能所有的重载均出错 
+1. 重载的函数仅仅是类型不同，代码**复用率比较低**，只要有新类型出现时，就需要用户自己增加对应的函数 
+
+2. 代码的可**维护性比较低**，一个出错可能所有的重载均出错 
 
 **那能否告诉编译器一个模子，让编译器根据不同的类型利用该模子来生成代码呢？**
 
 在C++中，存在这样一个模具，通过给这个模具中填充类型，生成具体类型的代码，那将会节省许多头发。这就是泛型编程。
 
-**泛型编程：**编写与类型无关的通用代码，是代码复用的一种手段。模板是泛型编程的基础。
+> **泛型编程：**编写与类型无关的通用代码，是代码复用的一种手段。模板是泛型编程的基础。
 
 ![image-20221003163649554](%E5%9B%BE%E7%89%87/README/image-20221003163649554.png)
 
@@ -1588,34 +1589,31 @@ void Swap(char& left, char& right)
 
 ##### 函数模板:
 
-###### 概念
-
 > 函数模板代表了一个函数家族，该函数模板与类型无关，在**使用时被参数化**，根据实参类型产生函数的特定 类型版本。
 
 ###### 格式
 
-> ```c++
-> 关键字: template, typename
-> 格式: template<typename 模板类型名字>
-> eg: 
-> 	template<typename T>
-> 	void Swap(T& left, T& rig)
-> 	{
-> 		T temp = left;
-> 		left = rig;
-> 		rig = tmep;
-> 	}
-> //一个模板类型列表和一个函数模板严格地一一对应
-> ```
->
+```c++
+关键字: template, typename
+格式: template<typename 模板类型名字>
+eg: 
+	template<typename T>
+	void Swap(T& left, T& rig)
+	{
+		T temp = left;
+		left = rig;
+		rig = tmep;
+	}
+//一个模板类型列表和一个函数模板严格地一一对应
+```
 
 ###### 原理
 
-> 函数模板是一个蓝图，它本身并不是函数，是编译器用使用方式产生特定具体类型函数的模具。所以其实模板就是将本来应该我们做的重复的事情交给了编译器
->
-> 在**编译器编译阶段**，对于模板函数的使用，编译器需要根据传入的实参类型来推演生成对应类型的函数以供调用。
->
-> 比如：当用double类型使用函数模板时，编译器通过对实参类型的推演，将T确定为double类型，然后产生一份专门处理double类型的代码，对于字符类型也是如此--**推断在传参前。**
+- 函数模板是一个蓝图，它**本身并不是函数**，是编译器用来产生特定具体类型函数的模具。所以其实模板就是将本来应该我们做的重复的事情交给了编译器
+
+- 在**编译器编译阶段**，对于模板函数的使用，编译器需要根据传入的实参类型来推演生成对应类型的函数以供调用。
+
+- 比如：当用double类型使用函数模板时，编译器通过对实参类型的推演，将T确定为double类型，然后产生一份专门处理double类型的代码，对于字符类型也是如此--推断在传参前。
 
 ------
 
@@ -1623,3618 +1621,3647 @@ void Swap(char& left, char& right)
 
 > 用不同类型的参数使用函数模板时，称为函数模板的实例化。模板参数实例化分为：隐式实例化和显式实例化。
 >
-> 1. 隐式实例化：让编译器根据实参推演模板参数的实际类型
->
->     ~~~C++
->     template<class T>
->     T Add(const T& left, const T& right)
->     {
->         return left + right;
->     }
->     int main()
->     {
->         int a1 = 10, a2 = 20;
->         double d1 = 10.0, d2 = 20.0;
->         Add(a1, a2);
->         Add(d1, d2);
->     
->         /*
->      该语句不能通过编译，因为在编译期间，当编译器看到该实例化时，需要推演其实参类型
->      通过实参a1将T推演为int，通过实参d1将T推演为double类型，但模板参数列表中只有一个T，
->      编译器无法确定此处到底该将T确定为int 或者 double类型而报错
->      注意：在模板中，编译器一般不会进行类型转换操作，因为一旦转化出问题，编译器就需要背黑锅
->      Add(a1, d1);
->      */
->     
->         // 此时有两种处理方式：1. 用户自己来强制转化 2. 使用显式实例化
->         Add(a, (int)d);
->     	return 0;
->     }
->     ~~~
->
-> 2. 显式实例化：在函数名后的<>中指定模板参数的实际类型
->
->     ~~~C++
->     int main(void)
->     {
->         int a = 10;
->         double b = 20.0;
->                                                                                                                                                                                                                                                 
->         // 显式实例化
->         Add<int>(a, b);
->         return 0;
->     }
->     ~~~
->
->     **如果类型不匹配，编译器会尝试进行隐式类型转换，如果无法转换成功编译器将会报错。**
+
+1. 隐式实例化：让编译器根据实参推演模板参数的实际类型
+
+    ~~~C++
+    template<class T>
+    T Add(const T& left, const T& right)
+    {
+        return left + right;
+    }
+    int main()
+    {
+        int a1 = 10, a2 = 20;
+        double d1 = 10.0, d2 = 20.0;
+        Add(a1, a2);
+        Add(d1, d2);
+
+        /*
+     该语句不能通过编译，因为在编译期间，当编译器看到该实例化时，需要推演其实参类型
+     通过实参a1将T推演为int，通过实参d1将T推演为double类型，但模板参数列表中只有一个T，
+     编译器无法确定此处到底该将T确定为int 或者 double类型而报错
+     注意：在模板中，编译器一般不会进行类型转换操作，因为一旦转化出问题，编译器就需要背黑锅
+     Add(a1, d1);
+     */
+
+        // 此时有两种处理方式：1. 用户自己来强制转化 2. 使用显式实例化
+        Add(a, (int)d);
+    	return 0;
+    }
+    ~~~
+
+2. 显式实例化：在函数名后的<>中指定模板参数的实际类型
+
+    ~~~C++
+    int main(void)
+    {
+        int a = 10;
+        double b = 20.0;
+    
+        // 显式实例化
+        Add<int>(a, b);
+        return 0;
+    }
+    ~~~
+
+    > **如果类型不匹配，编译器会尝试进行隐式类型转换，如果无法转换成功编译器将会报错。**
 
 ##### 模板参数的匹配原则
 
-> 1. 一个非模板函数可以和一个同名的函数模板同时存在，而且该函数模板还可以被实例化为这个非模板函 数
->
->     ~~~c++
->     // 专门处理int的加法函数
->     int Add(int left, int right)
->     {
->         return left + right;
->     }
->     // 通用加法函数
->     template<class T>
->         T Add(T left, T right)
->     {
->         return left + right;
->     }
->     void Test()
->     {
->         Add(1, 2); // 与非模板函数匹配，编译器不需要特化
->         Add<int>(1, 2); // 调用编译器特化的Add版本
->     }
->
-> 2. 对于非模板函数和同名函数模板，如果其他条件都相同，在调动时会优先调用非模板函数而不会从该模 板产生出一个实例。如果模板可以产生一个具有更好匹配的函数， 那么将选择模板
->
->     ~~~C++
->     // 专门处理int的加法函数
->     int Add(int left, int right)
->     {
->         return left + right;
->     }
->     // 通用加法函数
->     template<class T1, class T2>
->     T1 Add(T1 left, T2 right)
->     {
->         return left + right;
->     }
->     void Test()
->     {
->         Add(1, 2); // 与非函数模板类型完全匹配，不需要函数模板实例化
->         Add(1, 2.0); // 模板函数可以生成更加匹配的版本，编译器根据实参生成更加匹配的Add函数
->     }
->     ~~~
->
-> 3. 模板函数不允许自动类型转换，但普通函数可以进行自动类型转换
->
->     ```
->     模板中不允许使用auto
->     typedef与模板，取决于编译顺序
->     ```
-> 
->
+1. **一个非模板函数可以和一个同名的函数模板同时存在，而且该函数模板还可以被实例化为这个非模板函 数**
+
+    ~~~c++
+    // 专门处理int的加法函数
+    int Add(int left, int right)
+    {
+        return left + right;
+    }
+    // 通用加法函数
+    template<class T>
+        T Add(T left, T right)
+    {
+        return left + right;
+    }
+    void Test()
+    {
+        Add(1, 2); // 与非模板函数匹配，编译器不需要特化
+        Add<int>(1, 2); // 调用编译器特化的Add版本
+    }
+
+2. 对于非模板函数和同名函数模板，如果其他条件都相同，在调动时会**优先调用非模板函数**而不会从该模 板产生出一个实例。如果模板可以产生一个具有更好匹配的函数， 那么将选择模板
+
+    ~~~C++
+    // 专门处理int的加法函数
+    int Add(int left, int right)
+    {
+        return left + right;
+    }
+    // 通用加法函数
+    template<class T1, class T2>
+    T1 Add(T1 left, T2 right)
+    {
+        return left + right;
+    }
+    void Test()
+    {
+        Add(1, 2); // 与非函数模板类型完全匹配，不需要函数模板实例化
+        Add(1, 2.0); // 模板函数可以生成更加匹配的版本，编译器根据实参生成更加匹配的Add函数
+    }
+    ~~~
+
+3. 模板函数不允许自动类型转换，但普通函数可以进行自动类型转换
+
+    ```
+    模板中不允许使用auto
+    typedef与模板，取决于编译顺序
+    ```
+
+
 
 ##### 类模板:
 
 ###### 格式
 
-> ```c++
-> template<class T1, class T2, ..., class Tn>
-> class 类模板名
-> {
->  // 类内成员定义--存在模板类型成员
-> }; 
-> 1. 在类中使用模板类型, 就是类模板
-> 2. 类模板都是显示实例化
-> 3. 模板类不支持分离编译, 即声明和定义必须在同一个文件
-> ```
->
+```c++
+template<class T1, class T2, ..., class Tn>
+class 类模板名
+{
+// 类内成员定义--存在模板类型成员
+}; 
+
+```
+
+1. 在类中使用模板类型, 就是类模板
+2. 类模板都是**显示实例化**
+3. 模板类**不支持分离编译**, 即声明和定义必须在同一个文件
 
 ###### 实例化
 
 > 类模板实例化与函数模板实例化不同，类模板实例化需要在类模板名字后**强制跟<>**，然后将实例化的类型放在<>中
 >
-> ~~~c++
-> // Vector类模板的名字，Vector<int>才是类
-> Vector<int> s1;
-> Vector<double> s2;
+
+~~~c++
+// Vector类模板的名字，Vector<int>才是类
+Vector<int> s1;
+Vector<double> s2;
+~~~
+
+
 
 ###### 注意注意注意注意注意注意注意注意注
 
-> 1. 模板参数列表, 和其函数模板, 类模板是一一对应的
->
-> 2. 类模板/函数模板 只是一种声明, 并不是定义, 由编译器在编译阶段推导出来的模板函数/模板类才是定义
->
-> 3. **类模板实例化只会实例化需要的部分**，若存在未用到函数，则不会实例化改函数
+1. 模板参数列表, 和其函数模板, 类模板是一一对应的
+
+2. 类模板/函数模板 只是一种声明, 并不是定义, 由编译器在编译阶段推导出来的**模板函数/模板类才是定义**
+
+3. **类模板实例化只会实例化需要的部分**，若存在未用到函数，则不会实例化改函数
 
 ------
 
 ##### 模板的特化
 
+
+
+
+
 ------
 
 #### STL容器
 
-##### string类:
+##### string
 
-> **新思想**
-> ```
-> 深拷贝原理
-> 深现代写法原理
-> 复用思想
-> 初识原生迭代器
-> ```
->
-> ###### vs和g++下string结构的说明
-> ```
-> 注意：下述结构是在32位平台下进行验证，32位平台下指针占4个字节。
-> --vs下string的结构:
-> string总共占28个字节，内部结构稍微复杂一点，先是有一个联合体，联合体用来定义string中字符串的存储空间：当字符串长度小于16时，使用内部固定的字符数组来存放;当字符串长度大于等于16时，从堆上开辟空间.
-> 这种设计也是有一定道理的，大多数情况下字符串的长度都小于16，那string对象创建好之后，内部已经有了16个字符数组的固定空间，不需要通过堆创建，效率高。 其次：还有一个size_t字段保存字符串长度，一个size_t字段保存从堆上开辟空间总的容量 最后：还有一个指针做一些其他事情。 故总共占16+4+4+4=28个字节。
-> --g++下string的结构 
-> G++下，string是通过写时拷贝实现的，string对象总共占4个字节，内部只包含了一个指针，该指 针将来指向一块堆空间，内部包含了如下字段： 
-> 1. 空间总大小 
-> 2. 字符串有效长度 
-> 3. 引用计数
-> 4. 指向堆空间的指针，用来存储字符串。
-> struct _Rep_base
-> {
-> 	size_type _M_length; 
-> 	size_type _M_capacity; 
-> 	_Atomic_word _M_refcount; 
-> };
-> ```
->
-> ###### 浅拷贝/深拷贝/写时拷贝
->
-> ```
-> --浅拷贝:
-> 值拷贝, 仅仅按字节拷贝内容, 而不考虑实际[也称位拷贝，编译器只是将对象中的值拷贝过来。如果对象中管理资源，最后就会导致多个对象共 享同一份资源，当一个对象销毁时就会将该资源释放掉，而此时另一些对象不知道该资源已经被释放，以为 还有效，所以当继续对资源进项操作时，就会发生发生了访问违规。]
-> --深拷贝:
-> 自写拷贝, 按真实逻辑拷贝内容, 比如申请到堆上的空间[如果一个类中涉及到资源的管理，其拷贝构造函数、赋值运算符重载以及析构函数必须要显式给出。一般情 况都是按照深拷贝方式提供。]
-> --写时拷贝:
-> 延迟拷贝奇数, 当构造对象只进行读操作时, 和被拷贝对象共享空间, 当需要进行写操作时, 才进行拷贝[写时拷贝就是一种拖延症，是在浅拷贝的基础之上增加了引用计数的方式来实现的。 引用计数：用来记录资源使用者的个数。在构造时，将资源的计数给成1，每增加一个对象使用该资源，就给 计数增加1，当某个对象被销毁时，先给该计数减1，然后再检查是否需要释放资源，如果计数为1，说明该 对象时资源的最后一个使用者，将该资源释放；否则就不能释放，因为还有其他对象在使用该资源。]
-> ```
->
-> ###### 全代码
->
-> [String模拟实现参考](https://gitee.com/ailiangshilove/cpp-class/blob/master/%E8%AF%BE%E4%BB%B6%E4%BB%A3%E7%A0%81/C++%E8%AF%BE%E4%BB%B6V6/string%E7%9A%84%E6%A8%A1%E6%8B%9F%E5%AE%9E%E7%8E%B0/String.h)
->
-> ```c++
-> #pragma once
-> 
-> #include<iostream>
-> #include<assert.h>
-> #include<string>
-> #include<algorithm>
-> using namespace std;
-> 
-> namespace Bit
-> {
-> 
-> 	/*using std::cout;
-> 	using std::cin;
-> 	using std::endl;*/
-> 
-> 	class string
-> 	{
-> 
-> 		typedef char* iterator;
-> 		typedef const char* const_iterator;
-> 	public:
-> 
-> #pragma region 其他
-> 		//swap
-> 		void swap(string& str)
-> 		{
-> 			std::swap(_str, str._str);
-> 			std::swap(_size, str._size);
-> 			std::swap(_capacity, str._capacity);
-> 		}
-> 
-> 		//c指针
-> 		const char* c_str() const
-> 		{
-> 			return _str;
-> 		}	 
-> #pragma endregion
-> 
-> #pragma region 构造函数
-> 		//无参
-> 		// _str(nullptr) 错误: 转换成c指针 用cout输出的结束条件为 *p = '\0', 解引用了空指针
-> 		// _str("\0") 错误: 常量字符串默认存在'\0'
-> 		string()
-> 			: _str(new char[1])
-> 			, _size(0)
-> 			, _capacity(0)
-> 		{
-> 			_str[0] = '\0';
-> 		}
-> 
-> 		//常量字符串
-> 		string(const char* str)
-> 		{
-> 			size_t len = strlen(str);
-> 			_size = len;
-> 			_capacity = len;
-> 			_str = new char[len + 1];
-> 
-> 			strcpy(_str, str);
-> 		}
-> 		////常量字符串全缺省默认构造
-> 		//string(const char* str = "")
-> 		//{
-> 		//	size_t len = strlen(str);
-> 		//	_size = len;
-> 		//	_capacity = len;
-> 		//	_str = new char[len + 1];
-> 		//	
-> 		//	strcpy(_str, str);
-> 		//}
-> 
-> 		//常量字符串前n个字符
-> 		string(const char* str, size_t n)
-> 		{
-> 			size_t len = strlen(str);
-> 			len = len > n ? n : len;
-> 
-> 			_size = _capacity = len;
-> 			_str = new char[_capacity + 1];
-> 
-> 			//strcpy 遇到\0结束, 不支持此前结束
-> 			for (size_t i = 0; i < _size; i++)
-> 			{
-> 				_str[i] = str[i];
-> 			}
-> 			_str[_size] = '\0';
-> 
-> 		}
-> 
-> 		//n个字符 ch
-> 		string(size_t n, char ch)
-> 			:_str(new char[n + 1])
-> 			, _size(n)
-> 			, _capacity(n)
-> 		{
-> 			for (size_t i = 0; i < _size; i++)
-> 			{
-> 				_str[i] = ch;
-> 			}
-> 			_str[_size] = '\0';
-> 		}
-> 
-> 		/*拷贝构造*/
-> 		////传统写法
-> 		//string(const string& str)
-> 		//	:_str(new char[str._capacity + 1])
-> 		//	, _size(str._size)
-> 		//	, _capacity(str._capacity)
-> 		//{
-> 		//	//string对象可包含'\0', 而strcpy无法copy'\0'
-> 		//	memcpy(_str, str._str, _capacity + 1);
-> 		//}
-> 		//
-> 		//现代写法
-> 		string(const string& str)
-> 			: _str(nullptr)
-> 			, _size(0)
-> 			, _capacity(0)
-> 		{
-> 			string tmp(str._str);//C指针构造
-> 			swap(tmp);
-> 		}
-> 
-> 		//sting对象 第 pos位置的 后n个字符
-> 		string(const string& str, size_t pos, size_t n = npos)
-> 
-> 		{
-> 			assert(pos < str._size);//合法下标
-> 			*this = str.substr(pos, n);
-> 
-> 			//*this += str.substr(pos, n);
-> 
-> 			//错误语句
-> 			// substr的返回值具有const属性, 无法修改, 不能作为swap的实参传递
-> 			//swap(str.substr(pos, n));
-> 		}  
-> 
-> 		//析构函数
-> 		~string()
-> 		{
-> 			delete[] _str;
-> 			_str = nullptr;
-> 			_size = _capacity = 0;
-> 		}
-> #pragma endregion
-> 
-> #pragma region 空间操作
-> 		//reserve
-> 		void reserve(size_t n)
-> 		{
-> 			if (n <= _size) return;
-> 
-> 			char* tmp = new char[n + 1];
-> 
-> 			memcpy(tmp, _str, _capacity + 1);
-> 
-> 			delete[] _str;
-> 			_str = tmp;
-> 			tmp = nullptr;
-> 			_capacity = n;
-> 		}
-> 		//resize
-> 		void resize(size_t n, char ch = '\0')
-> 		{
-> 			if (n > _size)
-> 			{
-> 				reserve(n);
-> 				for (_size; _size < n; _size++)
-> 				{
-> 					_str[_size] = ch;
-> 				}
-> 				_str[_size] = '\0';
-> 			}
-> 			else
-> 			{
-> 				_str[n] = '\0';
-> 				_size = n;
-> 			}
-> 		}
-> 
-> 		//size
-> 		size_t size() const
-> 		{
-> 			return _size;
-> 		}
-> 		//capacity
-> 		size_t capacity() const
-> 		{
-> 			return _capacity;
-> 		}
-> 
-> 		//clear()
-> 		void clear()
-> 		{
-> 			_str[0] = '\0';
-> 			_size = 0;
-> 		}
-> #pragma endregion
-> 
-> #pragma region 增删改查
-> 
-> 		//push_back
-> 		void push_back(char ch)
-> 		{
-> 			//是否扩容
-> 			if (_size == _capacity)
-> 			{
-> 				reserve(_capacity == 0 ? 4 : _capacity * 2);
-> 			}
-> 
-> 			_str[_size] = ch;
-> 			_size++;
-> 			_str[_size] = '\0';
-> 		}
-> 		//append
-> 		void append(const char* str)
-> 		{
-> 			size_t len = strlen(str);
-> 
-> 			if (len + _size > _capacity)
-> 			{
-> 				reserve(len + _size);
-> 			}
-> 
-> 			strcpy(_str + _size, str);
-> 			//strcat(_str + _size, str);
-> 
-> 			_size += len;
-> 		}
-> 		void append(const string& str)
-> 		{
-> 			size_t len = str._size;
-> 
-> 			if (len + _size > _capacity)
-> 			{
-> 				reserve(len + _size);
-> 			}
-> 
-> 			memcpy(_str + _size, str._str, str._size + 1);
-> 
-> 			_size += len;
-> 		}
-> 
-> 		//substr
-> 		string substr(size_t pos, size_t len = npos) const
-> 		{
-> 			assert(pos < _size);//合法下标
-> 			size_t realLen = len;
-> 			//len = 1, 对应的是 提取pos位置的元素
-> 			if (len == npos || pos + len > _size)
-> 			{
-> 				realLen = _size - pos;
-> 			}
-> 
-> 			string tmp;
-> 			for (size_t i = 0; i < realLen; i++)
-> 			{
-> 				tmp += _str[pos + i];
-> 			}
-> 
-> 			return tmp;
-> 		}
-> 
-> 		//instert -- 引用返回值 可作为 右值或参数
-> 		string& insert(size_t pos, char ch)
-> 		{
-> 			assert(pos < _size);
-> 
-> 			if (_size == _capacity)
-> 			{
-> 				reserve(_capacity == 0 ? 4 : _capacity * 2);
-> 			}
-> 
-> 			size_t end = ++_size;
-> 
-> 			while (end > pos)
-> 			{
-> 				_str[end] = _str[end - 1];
-> 				end--;
-> 			}
-> 
-> 			_str[pos] = ch;
-> 
-> 			return *this;
-> 		}
-> 		string& insert(size_t pos, const char* str)
-> 		{
-> 			assert(pos < _size);
-> 
-> 			size_t len = strlen(str);
-> 
-> 			if (_size + len > _capacity)
-> 			{
-> 				reserve(_size + len);
-> 			}
-> 
-> 			size_t end = _size + len;
-> 
-> 			while (end >= pos + len)
-> 			{
-> 				_str[end] = _str[end - len];
-> 				end--;
-> 			}
-> 
-> 			strncpy(_str + pos, str, len);//不拷贝'\0', 只拷贝有效字符
-> 			//memcpy(_str + pos, str, len);
-> 			_size += len;
-> 
-> 			return *this;
-> 		}
-> 		string& insert(size_t pos, const string& str)
-> 		{
-> 			assert(pos < _size);
-> 
-> 			size_t len = str._size;
-> 
-> 			if (_size + len > _capacity)
-> 			{
-> 				reserve(_size + len);
-> 			}
-> 
-> 			size_t end = _size + len;
-> 
-> 			while (end >= pos + len)
-> 			{
-> 				_str[end] = _str[end - len];
-> 				end--;
-> 			}
-> 
-> 			//strncpy(_str + pos, str._str, len);//不拷贝'\0', 只拷贝有效字符
-> 			memcpy(_str + pos, str._str, len);
-> 			_size += len;
-> 
-> 			return *this;
-> 		}
-> 		/*
-> 		* 复用
-> 		* 对于substring 和 buffer 可以通过 (转换成string)截断 + substr 实现
-> 		*/
-> 
-> 		//find
-> 		size_t find(char ch, size_t pos = 0) const
-> 		{
-> 			assert(pos < _size);
-> 
-> 			for (size_t i = pos; i < _size; ++i)
-> 			{
-> 				if (ch == _str[i])
-> 				{
-> 					return i;
-> 				}
-> 			}
-> 
-> 			return npos;
-> 		}
-> 		size_t find(const char* sub, size_t pos = 0) const
-> 		{
-> 			assert(sub);
-> 			assert(pos < _size);
-> 
-> 			const char* ptr = strstr(_str + pos, sub);//cstrig库函数, 返回匹配的第一个字符的地址
-> 			if (ptr == nullptr)
-> 			{
-> 				return npos;
-> 			}
-> 			else
-> 			{
-> 				return ptr - _str;
-> 			}
-> 		}
-> 
-> 		//erase
-> 		string& erase(size_t pos = 0, size_t len = npos)
-> 		{
-> 			assert(pos < _size);
-> 
-> 			if (len == npos || pos + len >= _size)
-> 			{
-> 				_str[pos] = '\0';
-> 				_size = pos;
-> 			}
-> 			else
-> 			{
-> 				memcpy(_str + pos, _str + pos + len, _size - pos - len + 1);
-> 				_size -= len;
-> 			}
-> 
-> 			return *this;
-> 		}
-> #pragma endregion
-> 
-> #pragma region 操作符重载
-> 
-> 		//逻辑操作符
-> 		bool operator>(const string& str) const
-> 		{
-> 			return strcmp(_str, str._str) > 0;
-> 		}
-> 		bool operator==(const string& str) const
-> 		{
-> 			return strcmp(_str, str._str) == 0;
-> 		}
-> 		bool operator>=(const string& str) const
-> 		{
-> 			return *this > str || *this == str;
-> 		}
-> 		bool operator<=(const string& str) const
-> 		{
-> 			return !(*this > str);
-> 		}
-> 		bool operator<(const string& str) const
-> 		{
-> 			return !(*this >= str);
-> 		}
-> 		bool operator!=(const string& str) const
-> 		{
-> 			return !(*this == str);
-> 		}
-> 
-> 		//运算操作符
-> 		string& operator=(string str)
-> 		{
-> 			swap(str);
-> 			return *this;
-> 		}
-> 
-> 		string& operator+=(const char ch)
-> 		{
-> 			push_back(ch);
-> 			return *this;
-> 		}
-> 		string operator+(const char ch)
-> 		{
-> 			string tmp(*this);
-> 			tmp += ch;
-> 			return tmp;
-> 		}
-> 		string& operator+=(const string& str)
-> 		{
-> 			append(str);
-> 			return *this;
-> 		}
-> 		string operator+(const string& str)
-> 		{
-> 			string tmp(*this);
-> 			tmp.append(str);
-> 			return tmp;
-> 		}
-> 		string& operator+=(const char* str)
-> 		{
-> 			append(str);
-> 			return *this;
-> 		}
-> 		string operator+(const char* str)
-> 		{
-> 			string tmp(*this);
-> 			tmp.append(str);
-> 			return tmp;
-> 		}
-> 
-> 		//[]
-> 		char& operator[](size_t pos)
-> 		{
-> 			assert(pos < _size);
-> 			return _str[pos];
-> 		}
-> 		const char& operator[](size_t pos) const
-> 		{
-> 			assert(pos < _size);
-> 			return _str[pos];
-> 		}		
-> #pragma endregion
-> 
-> #pragma region 迭代器
-> 
-> 		iterator begin()
-> 		{
-> 			return _str;
-> 		}
-> 
-> 		iterator end()
-> 		{
-> 			return _str + _size;
-> 		}
-> 
-> 
-> 		const_iterator begin() const
-> 		{
-> 			return _str;
-> 		}
-> 
-> 		const_iterator end() const
-> 		{
-> 			return _str + _size;
-> 		}
-> #pragma endregion
-> 
-> #pragma region 成员变量
-> 	private:
-> 		size_t _capacity;//最大有效存储长度
-> 		size_t _size;//实际长度
-> 		char* _str;//字符串地址
-> 	public:
-> 
-> 		//静态成员变量 : 声明定义分离
-> 		static size_t npos;
-> 		//C++11特性 : 加上const可直接在类内定义静态变量
-> 		//const static size_t npos = -1;  
-> #pragma endregion
-> 
-> 	};
-> 
-> 	size_t string::npos = -1;
-> 
-> #pragma region 输入输出
-> 	//<<
-> 	ostream& operator<<(std::ostream& out, const string& str)
-> 	{
-> 		for (size_t i = 0; i < str.size(); ++i)
-> 		{
-> 			out << str[i];
-> 		}
-> 		return out;
-> 	}
-> 
-> 	////>> -- 基础版本
-> 	//istream& operator>>(istream& in, string& str)
-> 	//{
-> 	//	//清理并设置初始容量
-> 	//	str.clear();
-> 	//	str.reserve(64);
-> 	//
-> 	//	char ch;
-> 	//
-> 	//	ch = in.get();
-> 	//	while (ch != ' ' && ch != '\n')
-> 	//	{
-> 	//		str += ch;
-> 	//		ch = in.get();
-> 	//	}
-> 	//
-> 	//	return in;
-> 	//}
-> 
-> 	//升级版--减少扩容操作
-> 	istream& operator>>(istream& in, string& str)
-> 	{
-> 		//清理并设置初始容量
-> 		str.clear();
-> 		str.reserve(64);
-> 
-> 		const int N = 32;
-> 		char buff[N];
-> 		size_t i = 0;
-> 
-> 		char ch;
-> 
-> 		ch = in.get();
-> 		while (ch != ' ' && ch != '\n')
-> 		{
-> 			buff[i++] = ch;
-> 
-> 			if (i == N - 1)
-> 			{
-> 				buff[i] = '\0';
-> 				str += buff;
-> 				i = 0;
-> 			}
-> 
-> 			ch = in.get();
-> 		}
-> 
-> 		buff[i] = '\0';
-> 		str += buff;
-> 
-> 		return in;
-> 	}
-> #pragma endregion
-> 
-> 	//构造
-> 	void test1()
-> 	{
-> 		cout << "MyString" << endl;
-> 		string s1;
-> 		string s2("String");
-> 		string s3("HelloSTL", 5);
-> 		string s4(20, 'o');
-> 		string s5(s2);
-> 		string s6(s4, 10);
-> 
-> 		cout << s1 << endl;
-> 		cout << s2 << endl;
-> 		cout << s3 << endl;
-> 		cout << s4 << endl;
-> 		cout << s5 << endl;
-> 		cout << s6 << endl;
-> 
-> 	}
-> 	//操作符
-> 	void test2()
-> 	{
-> 		string s1("helloSTl");
-> 		string s2;
-> 
-> 		cin >> s1 >> s2;
-> 		cout << s1 << endl << s2 << endl;
-> 		s2 = s1;
-> 		cout << s1 << endl << s2 << endl;
-> 	}
-> 	void test3()
-> 	{
-> 		string s1("Hello");
-> 		string s2("Mystring");
-> 
-> 		cout << s1 + '!' << endl;
-> 		cout << s1 + " Bit" << endl;
-> 		cout << s1 + s2 << endl;
-> 
-> 
-> 		cout << (s1 += '!') << endl;
-> 		cout << (s1 += " Bit") << endl;
-> 		cout << (s1 += s2) << endl;
-> 	}
-> 	//增删改查
-> 	void DealUrl(const string& url)
-> 	{
-> 		size_t pos1 = url.find("://");
-> 		if (pos1 == string::npos)
-> 		{
-> 			cout << "非法url" << endl;
-> 			return;
-> 		}
-> 		// 休息到16:08继续
-> 		string protocol = url.substr(0, pos1);
-> 		cout << protocol << endl;
-> 
-> 		size_t pos2 = url.find('/', pos1 + 3);
-> 		if (pos2 == string::npos)
-> 		{
-> 			cout << "非法url" << endl;
-> 			return;
-> 		}
-> 		string domain = url.substr(pos1 + 3, pos2 - pos1 - 3);
-> 		cout << domain << endl;
-> 
-> 		string uri = url.substr(pos2 + 1);
-> 		cout << uri << endl << endl;
-> 	}
-> 	void test4()
-> 	{
-> 		string url1 = "https://cplusplus.com/reference/string/string/";
-> 		string url2 = "https://image.baidu.com/search/detail?ct=503316480&z=0&ipn=d&word=ascall&step_word=&hs=0&pn=0&spn=0&di=7108135681917976577&pi=0&rn=1&tn=baiduimagedetail&is=0%2C0&istype=0&ie=utf-8&oe=utf-8&in=&cl=2&lm=-1&st=undefined&cs=2613959014%2C543572025&os=2740573600%2C1059518451&simid=2613959014%2C543572025&adpicid=0&lpn=0&ln=179&fr=&fmq=1660115697093_R&fm=&ic=undefined&s=undefined&hd=undefined&latest=undefined&copyright=undefined&se=&sme=&tab=0&width=undefined&height=undefined&face=undefined&ist=&jit=&cg=&bdtype=0&oriquery=&objurl=https%3A%2F%2Fgimg2.baidu.com%2Fimage_search%2Fsrc%3Dhttp%3A%2F%2Fimg.php.cn%2Fupload%2Fimage%2F147%2F157%2F796%2F1593765739620093.png%26refer%3Dhttp%3A%2F%2Fimg.php.cn%26app%3D2002%26size%3Df9999%2C10000%26q%3Da80%26n%3D0%26g%3D0n%26fmt%3Dauto%3Fsec%3D1662707704%26t%3Da68cb238bbb3f99d0554098c785d526e&fromurl=ippr_z2C%24qAzdH3FAzdH3Fooo_z%26e3Brir_z%26e3BvgAzdH3FuwqAzdH3F9c9amd_z%26e3Bip4s&gsm=1&rpstart=0&rpnum=0&islist=&querylist=&nojc=undefined&dyTabStr=MCwzLDIsNCw2LDEsNSw3LDgsOQ%3D%3D";
-> 		string url3 = "ftp://ftp.cs.umd.edu/pub/skipLists/skiplists.pdf";
-> 
-> 		DealUrl(url1);
-> 		DealUrl(url2);
-> 		DealUrl(url3);
-> 	}
-> 	void test5()
-> 	{
-> 		string s1;
-> 		s1.resize(20);
-> 		cout << s1 << endl;
-> 
-> 		string s2("hello");
-> 		s2.resize(20, 'x');
-> 		cout << s2 << endl;
-> 		s2.resize(10);
-> 		cout << s2 << endl;
-> 
-> 	}
-> 	void test6()
-> 	{
-> 		string s("12345678");
-> 		string s1("12345678");
-> 
-> 		cout << s.erase(0, 5) << endl;
-> 		cout << s1.erase(6, 9) << endl;
-> 		cout << string("123456").erase();
-> 
-> 	}
-> 
-> }
-> 
-> 
-> 
-> 
-> ```
->
-> ###### 构造函数
-> ```c++
-> //无参
-> 	//---------注意
-> 	// _str(nullptr) 错误: 转换成c指针 用cout输出的结束条件为 *p = '\0', 解引用了空指针
-> 	// _str("\0") 错误: 常量字符串默认存在'\0'
-> 	string()
-> 		: _str(new char[1])
-> 		, _size(0)
-> 		, _capacity(0)
-> 	{
-> 		_str[0] = '\0';
-> 	}
-> 
-> //常量字符串
-> 	string(const char* str)
-> 	{
-> 		size_t len = strlen(str);
-> 		_size = len;
-> 		_capacity = len;
-> 		_str = new char[len + 1];
-> 		//使用strcpy拷贝, 符合常量字符串以'\0'结尾的规范
-> 		strcpy(_str, str);
-> 	}
-> 	////常量字符串全缺省默认构造
-> 	//string(const char* str = "")
-> 	//{
-> 	//	size_t len = strlen(str);
-> 	//	_size = len;
-> 	//	_capacity = len;
-> 	//	_str = new char[len + 1];
-> 	//	
-> 	//	strcpy(_str, str);
-> 	//}
-> 
-> //常量字符串前n个字符
-> 	string(const char* str, size_t n)
-> 	{
-> 		//确定实际长度
-> 		size_t len = strlen(str);
-> 		len = len > n ? n : len;
-> 
-> 		_size = _capacity = len;
-> 		_str = new char[_capacity + 1];
-> 
-> 		//strcpy 遇到\0结束, 不支持提前结束
-> 		for (size_t i = 0; i < _size; i++)
-> 		{
-> 			_str[i] = str[i];
-> 		}
-> 		_str[_size] = '\0';
-> 
-> 	}
-> 
-> //n个字符 ch
-> 	string(size_t n, char ch)
-> 		:_str(new char[n + 1])//初始化列表初始化
-> 		, _size(n)
-> 		, _capacity(n)
-> 	{
-> 		for (size_t i = 0; i < _size; i++)
-> 		{
-> 			_str[i] = ch;
-> 		}
-> 		_str[_size] = '\0';
-> 	}
-> 
-> /*拷贝构造*/
-> 	////传统写法
-> 	//string(const string& str)
-> 	//	:_str(new char[str._capacity + 1])
-> 	//	, _size(str._size)
-> 	//	, _capacity(str._capacity)
-> 	//{
-> 	//	//string对象可包含'\0', 而strcpy无法copy'\0'
-> 	//	memcpy(_str, str._str, _capacity + 1);
-> 	//}
-> 	//
-> 
-> 	//现代写法
-> 	string(const string& str)
-> 		: _str(nullptr)
-> 		, _size(0)
-> 		, _capacity(0)
-> 	{
-> 		string tmp(str._str);//调用常量字符串构造, 复用代码
-> 		swap(tmp);//交换
-> 	}
-> 
-> //sting对象 第 pos位置的 后n个字符
-> 	string(const string& str, size_t pos, size_t n = npos)
-> 
-> 	{
-> 		assert(pos < str._size);//合法下标
-> 
-> 		*this = str.substr(pos, n);//调用substr, 此处偷懒
-> 
-> 		//*this += str.substr(pos, n);
-> 
-> 		//错误语句
-> 		// substr的返回值具有const属性, 无法修改, 不能作为swap的实参传递
-> 		//swap(str.substr(pos, n));
-> 	}  
-> 
-> //析构函数
-> 	~string()
-> 	{
-> 		delete[] _str;
-> 		_str = nullptr;
-> 		_size = _capacity = 0;
-> 	}
-> ```
->
-> ###### 空间操作
-> ```c++
-> //reserve
-> 	//仅扩充空间大小
-> 	void reserve(size_t n)
-> 	{
-> 		//仅扩充, 不缩小
-> 		if (n <= _size) return;
-> 
-> 		char* tmp = new char[n + 1];
-> 
-> 		//string中可包含'\0', strcpy遇到'\0', 可能发生截断,应该按字节拷贝
-> 		memcpy(tmp, _str, _capacity + 1);
-> 
-> 		delete[] _str;
-> 		_str = tmp;
-> 		tmp = nullptr;
-> 		_capacity = n;
-> 	}
-> //resize
-> 	//扩充/缩减长度 ---> 扩充空间
-> 	void resize(size_t n, char ch = '\0')
-> 	{
-> 		if (n > _size)
-> 		{
-> 			//判断扩容
-> 			reserve(n);
-> 			//填充字符
-> 			for (_size; _size < n; _size++)
-> 			{
-> 				_str[_size] = ch;
-> 			}
-> 			_str[_size] = '\0';
-> 		}
-> 		else//缩减长度
-> 		{
-> 			_str[n] = '\0';
-> 			_size = n;
-> 		}
-> 	}
-> //size
-> 	size_t size() const
-> 	{
-> 		return _size;
-> 	}
-> //capacity
-> 	size_t capacity() const
-> 	{
-> 		return _capacity;
-> 	}
-> //clear()
-> 	//仅改变字符串长度
-> 	void clear()
-> 	{
-> 		_str[0] = '\0';
-> 		_size = 0;
-> 	}
-> ```
->
-> ###### 增删改查
-> ```c++	
-> //push_back
-> 	void push_back(char ch)
-> 	{
-> 		//是否扩容
-> 		if (_size == _capacity)
-> 		{
-> 			reserve(_capacity == 0 ? 4 : _capacity * 2);
-> 		}
-> 
-> 		_str[_size] = ch;
-> 		_size++;
-> 		_str[_size] = '\0';
-> 	}
-> //append
-> 	void append(const char* str)
-> 	{
-> 		size_t len = strlen(str);
-> 
-> 		//是否扩容
-> 		if (len + _size > _capacity)
-> 		{
-> 			reserve(len + _size);
-> 		}
-> 
-> 		strcpy(_str + _size, str);
-> 		//strcat(_str + _size, str);
-> 
-> 		_size += len;
-> 	}
-> 	void append(const string& str)
-> 	{
-> 		size_t len = str._size;
-> 
-> 		if (len + _size > _capacity)
-> 		{
-> 			reserve(len + _size);
-> 		}
-> 
-> 		memcpy(_str + _size, str._str, str._size + 1);
-> 
-> 		_size += len;
-> 	}
-> //substr
-> 	string substr(size_t pos, size_t len = npos) const
-> 	{
-> 		assert(pos < _size);//合法下标
-> 		size_t realLen = len;
-> 
-> 		//判断是否超出string长度
-> 		//len = 1, 对应的是 提取pos位置的元素
-> 		if (len == npos || pos + len > _size)
-> 		{
-> 			realLen = _size - pos;
-> 		}
-> 
-> 		string tmp;
-> 		for (size_t i = 0; i < realLen; i++)
-> 		{
-> 			tmp += _str[pos + i];
-> 		}
-> 
-> 		return tmp;//返回的临时对象为const属性
-> 	}
-> //instert -- 引用返回值 可作为 右值或参数
-> 	string& insert(size_t pos, char ch)
-> 	{
-> 		assert(pos < _size);
-> 
-> 		if (_size == _capacity)
-> 		{
-> 			reserve(_capacity == 0 ? 4 : _capacity * 2);
-> 		}
-> 
-> 		size_t end = ++_size;
-> 
-> 		while (end > pos)
-> 		{
-> 			_str[end] = _str[end - 1];
-> 			end--;
-> 		}
-> 
-> 		_str[pos] = ch;
-> 
-> 		return *this;
-> 	}
-> 	string& insert(size_t pos, const char* str)
-> 	{
-> 		assert(pos < _size);
-> 
-> 		size_t len = strlen(str);
-> 
-> 		if (_size + len > _capacity)
-> 		{
-> 			reserve(_size + len);
-> 		}
-> 
-> 		size_t end = _size + len;
-> 
-> 		while (end >= pos + len)
-> 		{
-> 			_str[end] = _str[end - len];
-> 			end--;
-> 		}
-> 
-> 		strncpy(_str + pos, str, len);//不拷贝'\0', 只拷贝有效字符
-> 		//memcpy(_str + pos, str, len);
-> 		_size += len;
-> 
-> 		return *this;
-> 	}
-> 	string& insert(size_t pos, const string& str)
-> 	{
-> 		assert(pos < _size);
-> 
-> 		size_t len = str._size;
-> 
-> 		if (_size + len > _capacity)
-> 		{
-> 			reserve(_size + len);
-> 		}
-> 
-> 		size_t end = _size + len;
-> 
-> 		while (end >= pos + len)
-> 		{
-> 			_str[end] = _str[end - len];
-> 			end--;
-> 		}
-> 
-> 		memcpy(_str + pos, str._str, len);
-> 		_size += len;
-> 
-> 		return *this;
-> 	}
-> 	/*
-> 	* 复用
-> 	* 对于substring 和 buffer 可以通过 (转换成string)截断 + substr 实现
-> 	*/
-> 
-> //find
-> 	size_t find(char ch, size_t pos = 0) const
-> 	{
-> 		assert(pos < _size);
-> 
-> 		for (size_t i = pos; i < _size; ++i)
-> 		{
-> 			if (ch == _str[i])
-> 			{
-> 				return i;
-> 			}
-> 		}
-> 
-> 		return npos;
-> 	}
-> 	size_t find(const char* sub, size_t pos = 0) const
-> 	{
-> 		assert(sub);
-> 		assert(pos < _size);
-> 
-> 		const char* ptr = strstr(_str + pos, sub);//cstrig库函数, 返回匹配的第一个字符的地址
-> 		if (ptr == nullptr)
-> 		{
-> 			return npos;
-> 		}
-> 		else
-> 		{
-> 			return ptr - _str;
-> 		}
-> 	}
-> 
-> //erase
-> 	string& erase(size_t pos = 0, size_t len = npos)
-> 	{
-> 		assert(pos < _size);
-> 
-> 		if (len == npos || pos + len >= _size)
-> 		{
-> 			_str[pos] = '\0';
-> 			_size = pos;
-> 		}
-> 		else
-> 		{
-> 			memcpy(_str + pos, _str + pos + len, _size - pos - len + 1);
-> 			_size -= len;
-> 		}
-> 
-> 		return *this;
-> 	}
-> ```
->
-> ###### 操作符重载
-> ```c++	
-> //逻辑操作符
-> 	bool operator>(const string& str) const
-> 	{
-> 		return strcmp(_str, str._str) > 0;
-> 	}
-> 	bool operator==(const string& str) const
-> 	{
-> 		return strcmp(_str, str._str) == 0;
-> 	}
-> 	bool operator>=(const string& str) const
-> 	{
-> 		return *this > str || *this == str;
-> 	}
-> 	bool operator<=(const string& str) const
-> 	{
-> 		return !(*this > str);
-> 	}
-> 	bool operator<(const string& str) const
-> 	{
-> 		return !(*this >= str);
-> 	}
-> 	bool operator!=(const string& str) const
-> 	{
-> 		return !(*this == str);
-> 	}
-> 
-> //运算操作符
-> 	string& operator=(string str)
-> 	{
-> 		swap(str);
-> 		return *this;
-> 	}
-> 
-> 	string& operator+=(const char ch)
-> 	{
-> 		push_back(ch);
-> 		return *this;
-> 	}
-> 	string operator+(const char ch)
-> 	{
-> 		string tmp(*this);
-> 		tmp += ch;
-> 		return tmp;
-> 	}
-> 
-> 	string& operator+=(const string& str)
-> 	{
-> 		append(str);
-> 		return *this;
-> 	}
-> 	string operator+(const string& str)
-> 	{
-> 		string tmp(*this);
-> 		tmp.append(str);
-> 		return tmp;
-> 	}
-> 
-> 	string& operator+=(const char* str)
-> 	{
-> 		append(str);
-> 		return *this;
-> 	}
-> 	string operator+(const char* str)
-> 	{
-> 		string tmp(*this);
-> 		tmp.append(str);
-> 		return tmp;
-> 	}
-> 
-> //[]
-> 	char& operator[](size_t pos)
-> 	{
-> 		assert(pos < _size);
-> 		return _str[pos];
-> 	}
-> 	const char& operator[](size_t pos) const
-> 	{
-> 		assert(pos < _size);
-> 		return _str[pos];
-> 	}		
-> ```
->
-> ###### 迭代器/其他
-> ```c++
-> //迭代器	
-> 	iterator begin()
-> 	{
-> 		return _str;
-> 	}
-> 
-> 	iterator end()
-> 	{
-> 		return _str + _size;
-> 	}
-> 
-> 
-> 	const_iterator begin() const
-> 	{
-> 		return _str;
-> 	}
-> 
-> 	const_iterator end() const
-> 	{
-> 		return _str + _size;
-> 	}
-> //其他
-> 	//swap
-> 	void swap(string& str)
-> 	{
-> 		std::swap(_str, str._str);
-> 		std::swap(_size, str._size);
-> 		std::swap(_capacity, str._capacity);
-> 	}
-> 
-> 	//c指针
-> 	const char* c_str() const
-> 	{
-> 		return _str;
-> 	}	 
-> ```
->
-> ###### 输入输出
-> ```c++
-> //<<
-> 	ostream& operator<<(std::ostream& out, const string& str)
-> 	{
-> 		for (size_t i = 0; i < str.size(); ++i)
-> 		{
-> 			out << str[i];
-> 		}
-> 		return out;
-> 	}
-> 
-> //>> 
-> 	//基础版本
-> 	//istream& operator>>(istream& in, string& str)
-> 	//{
-> 	//	//清理并设置初始容量
-> 	//	str.clear();
-> 	//	str.reserve(64);
-> 	//
-> 	//	char ch;
-> 	//
-> 	//	ch = in.get();
-> 	//	while (ch != ' ' && ch != '\n')
-> 	//	{
-> 	//		str += ch;
-> 	//		ch = in.get();
-> 	//	}
-> 	//
-> 	//	return in;
-> 	//}
-> 
-> 	//升级版--减少前期扩容操作
-> 	istream& operator>>(istream& in, string& str)
-> 	{
-> 		//清理并设置初始容量
-> 		str.clear();
-> 		str.reserve(64);
-> 
-> 		const int N = 32;
-> 		char buff[N];
-> 		size_t i = 0;
-> 
-> 		char ch;
-> 
-> 		ch = in.get();
-> 		while (ch != ' ' && ch != '\n')
-> 		{
-> 			buff[i++] = ch;
-> 
-> 			if (i == N - 1)
-> 			{
-> 				buff[i] = '\0';
-> 				str += buff;
-> 				i = 0;
-> 			}
-> 
-> 			ch = in.get();
-> 		}
-> 
-> 		buff[i] = '\0';
-> 		str += buff;
-> 
-> 		return in;
-> 	}
-> ```
->
-> ###### 阅读推荐
-> <a href = "https://coolshell.cn/articles/10478.html">酷壳-陈浩-C++面试中string类的一种正确写法</a>
-> <a href = "https://blog.csdn.net/haoel/article/details/1491219?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166368282316782414956992%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=166368282316782414956992&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-1491219-null-null.nonecase&utm_term=string%E7%B1%BB%E5%88%B0%E5%BA%95%E6%80%8E%E4%B9%88%E5%95%A6&spm=1018.2226.3001.4450">strig类到底怎么啦</a>
-> [C++ STL string的Copy-On-Write技术](https://coolshell.cn/articles/12199.html) 
-> [C++的std::string的“读时也拷贝”技术](https://coolshell.cn/articles/1443.html)
+###### 新思想
+
+```
+深拷贝原理
+深拷贝现代写法
+复用思想
+初识原生迭代器
+```
+
+###### vs和g++下string结构的说明
+
+```
+注意：下述结构是在32位平台下进行验证，32位平台下指针占4个字节。
+--vs下string的结构:
+string总共占28个字节，内部结构稍微复杂一点，先是有一个联合体，联合体用来定义string中字符串的存储空间：当字符串长度小于16时，使用内部固定的字符数组来存放;当字符串长度大于等于16时，从堆上开辟空间.
+这种设计也是有一定道理的，大多数情况下字符串的长度都小于16，那string对象创建好之后，内部已经有了16个字符数组的固定空间，不需要通过堆创建，效率高。 其次：还有一个size_t字段保存字符串长度，一个size_t字段保存从堆上开辟空间总的容量 最后：还有一个指针做一些其他事情。 故总共占16+4+4+4=28个字节。
+--g++下string的结构 
+G++下，string是通过写时拷贝实现的，string对象总共占4个字节，内部只包含了一个指针，该指 针将来指向一块堆空间，内部包含了如下字段： 
+1. 空间总大小 
+2. 字符串有效长度 
+3. 引用计数
+4. 指向堆空间的指针，用来存储字符串。
+struct _Rep_base
+{
+	size_type _M_length; 
+	size_type _M_capacity; 
+	_Atomic_word _M_refcount; 
+};
+```
+
+###### 浅拷贝/深拷贝/写时拷贝
+
+```
+--浅拷贝:
+值拷贝, 仅仅按字节拷贝内容, 而不考虑实际[也称位拷贝，编译器只是将对象中的值拷贝过来。如果对象中管理资源，最后就会导致多个对象共 享同一份资源，当一个对象销毁时就会将该资源释放掉，而此时另一些对象不知道该资源已经被释放，以为 还有效，所以当继续对资源进项操作时，就会发生发生了访问违规。]
+--深拷贝:
+自写拷贝, 按真实逻辑拷贝内容, 比如申请到堆上的空间[如果一个类中涉及到资源的管理，其拷贝构造函数、赋值运算符重载以及析构函数必须要显式给出。一般情 况都是按照深拷贝方式提供。]
+--写时拷贝:
+延迟拷贝奇数, 当构造对象只进行读操作时, 和被拷贝对象共享空间, 当需要进行写操作时, 才进行拷贝[写时拷贝就是一种拖延症，是在浅拷贝的基础之上增加了引用计数的方式来实现的。 引用计数：用来记录资源使用者的个数。在构造时，将资源的计数给成1，每增加一个对象使用该资源，就给 计数增加1，当某个对象被销毁时，先给该计数减1，然后再检查是否需要释放资源，如果计数为1，说明该 对象时资源的最后一个使用者，将该资源释放；否则就不能释放，因为还有其他对象在使用该资源。]
+```
+
+###### 全代码
+
+[String模拟实现参考](https://gitee.com/ailiangshilove/cpp-class/blob/master/%E8%AF%BE%E4%BB%B6%E4%BB%A3%E7%A0%81/C++%E8%AF%BE%E4%BB%B6V6/string%E7%9A%84%E6%A8%A1%E6%8B%9F%E5%AE%9E%E7%8E%B0/String.h)
+
+```c++
+#pragma once
+
+#include<iostream>
+#include<assert.h>
+#include<string>
+#include<algorithm>
+using namespace std;
+
+namespace Bit
+{
+
+	/*using std::cout;
+	using std::cin;
+	using std::endl;*/
+
+	class string
+	{
+
+		typedef char* iterator;
+		typedef const char* const_iterator;
+	public:
+
+#pragma region 其他
+		//swap
+		void swap(string& str)
+		{
+			std::swap(_str, str._str);
+			std::swap(_size, str._size);
+			std::swap(_capacity, str._capacity);
+		}
+
+		//c指针
+		const char* c_str() const
+		{
+			return _str;
+		}	 
+#pragma endregion
+
+#pragma region 构造函数
+		//无参
+		// _str(nullptr) 错误: 转换成c指针 用cout输出的结束条件为 *p = '\0', 解引用了空指针
+		// _str("\0") 错误: 常量字符串默认存在'\0'
+		string()
+			: _str(new char[1])
+			, _size(0)
+			, _capacity(0)
+		{
+			_str[0] = '\0';
+		}
+
+		//常量字符串
+		string(const char* str)
+		{
+			size_t len = strlen(str);
+			_size = len;
+			_capacity = len;
+			_str = new char[len + 1];
+
+			strcpy(_str, str);
+		}
+		////常量字符串全缺省默认构造
+		//string(const char* str = "")
+		//{
+		//	size_t len = strlen(str);
+		//	_size = len;
+		//	_capacity = len;
+		//	_str = new char[len + 1];
+		//	
+		//	strcpy(_str, str);
+		//}
+
+		//常量字符串前n个字符
+		string(const char* str, size_t n)
+		{
+			size_t len = strlen(str);
+			len = len > n ? n : len;
+
+			_size = _capacity = len;
+			_str = new char[_capacity + 1];
+
+			//strcpy 遇到\0结束, 不支持此前结束
+			for (size_t i = 0; i < _size; i++)
+			{
+				_str[i] = str[i];
+			}
+			_str[_size] = '\0';
+
+		}
+
+		//n个字符 ch
+		string(size_t n, char ch)
+			:_str(new char[n + 1])
+			, _size(n)
+			, _capacity(n)
+		{
+			for (size_t i = 0; i < _size; i++)
+			{
+				_str[i] = ch;
+			}
+			_str[_size] = '\0';
+		}
+
+		/*拷贝构造*/
+		////传统写法
+		//string(const string& str)
+		//	:_str(new char[str._capacity + 1])
+		//	, _size(str._size)
+		//	, _capacity(str._capacity)
+		//{
+		//	//string对象可包含'\0', 而strcpy无法copy'\0'
+		//	memcpy(_str, str._str, _capacity + 1);
+		//}
+		//
+		//现代写法
+		string(const string& str)
+			: _str(nullptr)
+			, _size(0)
+			, _capacity(0)
+		{
+			string tmp(str._str);//C指针构造
+			swap(tmp);
+		}
+
+		//sting对象 第 pos位置的 后n个字符
+		string(const string& str, size_t pos, size_t n = npos)
+
+		{
+			assert(pos < str._size);//合法下标
+			*this = str.substr(pos, n);
+
+			//*this += str.substr(pos, n);
+
+			//错误语句
+			// substr的返回值具有const属性, 无法修改, 不能作为swap的实参传递
+			//swap(str.substr(pos, n));
+		}  
+
+		//析构函数
+		~string()
+		{
+			delete[] _str;
+			_str = nullptr;
+			_size = _capacity = 0;
+		}
+#pragma endregion
+
+#pragma region 空间操作
+		//reserve
+		void reserve(size_t n)
+		{
+			if (n <= _size) return;
+
+			char* tmp = new char[n + 1];
+
+			memcpy(tmp, _str, _capacity + 1);
+
+			delete[] _str;
+			_str = tmp;
+			tmp = nullptr;
+			_capacity = n;
+		}
+		//resize
+		void resize(size_t n, char ch = '\0')
+		{
+			if (n > _size)
+			{
+				reserve(n);
+				for (_size; _size < n; _size++)
+				{
+					_str[_size] = ch;
+				}
+				_str[_size] = '\0';
+			}
+			else
+			{
+				_str[n] = '\0';
+				_size = n;
+			}
+		}
+
+		//size
+		size_t size() const
+		{
+			return _size;
+		}
+		//capacity
+		size_t capacity() const
+		{
+			return _capacity;
+		}
+
+		//clear()
+		void clear()
+		{
+			_str[0] = '\0';
+			_size = 0;
+		}
+#pragma endregion
+
+#pragma region 增删改查
+
+		//push_back
+		void push_back(char ch)
+		{
+			//是否扩容
+			if (_size == _capacity)
+			{
+				reserve(_capacity == 0 ? 4 : _capacity * 2);
+			}
+
+			_str[_size] = ch;
+			_size++;
+			_str[_size] = '\0';
+		}
+		//append
+		void append(const char* str)
+		{
+			size_t len = strlen(str);
+
+			if (len + _size > _capacity)
+			{
+				reserve(len + _size);
+			}
+
+			strcpy(_str + _size, str);
+			//strcat(_str + _size, str);
+
+			_size += len;
+		}
+		void append(const string& str)
+		{
+			size_t len = str._size;
+
+			if (len + _size > _capacity)
+			{
+				reserve(len + _size);
+			}
+
+			memcpy(_str + _size, str._str, str._size + 1);
+
+			_size += len;
+		}
+
+		//substr
+		string substr(size_t pos, size_t len = npos) const
+		{
+			assert(pos < _size);//合法下标
+			size_t realLen = len;
+			//len = 1, 对应的是 提取pos位置的元素
+			if (len == npos || pos + len > _size)
+			{
+				realLen = _size - pos;
+			}
+
+			string tmp;
+			for (size_t i = 0; i < realLen; i++)
+			{
+				tmp += _str[pos + i];
+			}
+
+			return tmp;
+		}
+
+		//instert -- 引用返回值 可作为 右值或参数
+		string& insert(size_t pos, char ch)
+		{
+			assert(pos < _size);
+
+			if (_size == _capacity)
+			{
+				reserve(_capacity == 0 ? 4 : _capacity * 2);
+			}
+
+			size_t end = ++_size;
+
+			while (end > pos)
+			{
+				_str[end] = _str[end - 1];
+				end--;
+			}
+
+			_str[pos] = ch;
+
+			return *this;
+		}
+		string& insert(size_t pos, const char* str)
+		{
+			assert(pos < _size);
+
+			size_t len = strlen(str);
+
+			if (_size + len > _capacity)
+			{
+				reserve(_size + len);
+			}
+
+			size_t end = _size + len;
+
+			while (end >= pos + len)
+			{
+				_str[end] = _str[end - len];
+				end--;
+			}
+
+			strncpy(_str + pos, str, len);//不拷贝'\0', 只拷贝有效字符
+			//memcpy(_str + pos, str, len);
+			_size += len;
+
+			return *this;
+		}
+		string& insert(size_t pos, const string& str)
+		{
+			assert(pos < _size);
+
+			size_t len = str._size;
+
+			if (_size + len > _capacity)
+			{
+				reserve(_size + len);
+			}
+
+			size_t end = _size + len;
+
+			while (end >= pos + len)
+			{
+				_str[end] = _str[end - len];
+				end--;
+			}
+
+			//strncpy(_str + pos, str._str, len);//不拷贝'\0', 只拷贝有效字符
+			memcpy(_str + pos, str._str, len);
+			_size += len;
+
+			return *this;
+		}
+		/*
+		* 复用
+		* 对于substring 和 buffer 可以通过 (转换成string)截断 + substr 实现
+		*/
+
+		//find
+		size_t find(char ch, size_t pos = 0) const
+		{
+			assert(pos < _size);
+
+			for (size_t i = pos; i < _size; ++i)
+			{
+				if (ch == _str[i])
+				{
+					return i;
+				}
+			}
+
+			return npos;
+		}
+		size_t find(const char* sub, size_t pos = 0) const
+		{
+			assert(sub);
+			assert(pos < _size);
+
+			const char* ptr = strstr(_str + pos, sub);//cstrig库函数, 返回匹配的第一个字符的地址
+			if (ptr == nullptr)
+			{
+				return npos;
+			}
+			else
+			{
+				return ptr - _str;
+			}
+		}
+
+		//erase
+		string& erase(size_t pos = 0, size_t len = npos)
+		{
+			assert(pos < _size);
+
+			if (len == npos || pos + len >= _size)
+			{
+				_str[pos] = '\0';
+				_size = pos;
+			}
+			else
+			{
+				memcpy(_str + pos, _str + pos + len, _size - pos - len + 1);
+				_size -= len;
+			}
+
+			return *this;
+		}
+#pragma endregion
+
+#pragma region 操作符重载
+
+		//逻辑操作符
+		bool operator>(const string& str) const
+		{
+			return strcmp(_str, str._str) > 0;
+		}
+		bool operator==(const string& str) const
+		{
+			return strcmp(_str, str._str) == 0;
+		}
+		bool operator>=(const string& str) const
+		{
+			return *this > str || *this == str;
+		}
+		bool operator<=(const string& str) const
+		{
+			return !(*this > str);
+		}
+		bool operator<(const string& str) const
+		{
+			return !(*this >= str);
+		}
+		bool operator!=(const string& str) const
+		{
+			return !(*this == str);
+		}
+
+		//运算操作符
+		string& operator=(string str)
+		{
+			swap(str);
+			return *this;
+		}
+
+		string& operator+=(const char ch)
+		{
+			push_back(ch);
+			return *this;
+		}
+		string operator+(const char ch)
+		{
+			string tmp(*this);
+			tmp += ch;
+			return tmp;
+		}
+		string& operator+=(const string& str)
+		{
+			append(str);
+			return *this;
+		}
+		string operator+(const string& str)
+		{
+			string tmp(*this);
+			tmp.append(str);
+			return tmp;
+		}
+		string& operator+=(const char* str)
+		{
+			append(str);
+			return *this;
+		}
+		string operator+(const char* str)
+		{
+			string tmp(*this);
+			tmp.append(str);
+			return tmp;
+		}
+
+		//[]
+		char& operator[](size_t pos)
+		{
+			assert(pos < _size);
+			return _str[pos];
+		}
+		const char& operator[](size_t pos) const
+		{
+			assert(pos < _size);
+			return _str[pos];
+		}		
+#pragma endregion
+
+#pragma region 迭代器
+
+		iterator begin()
+		{
+			return _str;
+		}
+
+		iterator end()
+		{
+			return _str + _size;
+		}
+
+
+		const_iterator begin() const
+		{
+			return _str;
+		}
+
+		const_iterator end() const
+		{
+			return _str + _size;
+		}
+#pragma endregion
+
+#pragma region 成员变量
+	private:
+		size_t _capacity;//最大有效存储长度
+		size_t _size;//实际长度
+		char* _str;//字符串地址
+	public:
+
+		//静态成员变量 : 声明定义分离
+		static size_t npos;
+		//C++11特性 : 加上const可直接在类内定义静态变量
+		//const static size_t npos = -1;  
+#pragma endregion
+
+	};
+
+	size_t string::npos = -1;
+
+#pragma region 输入输出
+	//<<
+	ostream& operator<<(std::ostream& out, const string& str)
+	{
+		for (size_t i = 0; i < str.size(); ++i)
+		{
+			out << str[i];
+		}
+		return out;
+	}
+
+	////>> -- 基础版本
+	//istream& operator>>(istream& in, string& str)
+	//{
+	//	//清理并设置初始容量
+	//	str.clear();
+	//	str.reserve(64);
+	//
+	//	char ch;
+	//
+	//	ch = in.get();
+	//	while (ch != ' ' && ch != '\n')
+	//	{
+	//		str += ch;
+	//		ch = in.get();
+	//	}
+	//
+	//	return in;
+	//}
+
+	//升级版--减少扩容操作
+	istream& operator>>(istream& in, string& str)
+	{
+		//清理并设置初始容量
+		str.clear();
+		str.reserve(64);
+
+		const int N = 32;
+		char buff[N];
+		size_t i = 0;
+
+		char ch;
+
+		ch = in.get();
+		while (ch != ' ' && ch != '\n')
+		{
+			buff[i++] = ch;
+
+			if (i == N - 1)
+			{
+				buff[i] = '\0';
+				str += buff;
+				i = 0;
+			}
+
+			ch = in.get();
+		}
+
+		buff[i] = '\0';
+		str += buff;
+
+		return in;
+	}
+#pragma endregion
+
+	//构造
+	void test1()
+	{
+		cout << "MyString" << endl;
+		string s1;
+		string s2("String");
+		string s3("HelloSTL", 5);
+		string s4(20, 'o');
+		string s5(s2);
+		string s6(s4, 10);
+
+		cout << s1 << endl;
+		cout << s2 << endl;
+		cout << s3 << endl;
+		cout << s4 << endl;
+		cout << s5 << endl;
+		cout << s6 << endl;
+
+	}
+	//操作符
+	void test2()
+	{
+		string s1("helloSTl");
+		string s2;
+
+		cin >> s1 >> s2;
+		cout << s1 << endl << s2 << endl;
+		s2 = s1;
+		cout << s1 << endl << s2 << endl;
+	}
+	void test3()
+	{
+		string s1("Hello");
+		string s2("Mystring");
+
+		cout << s1 + '!' << endl;
+		cout << s1 + " Bit" << endl;
+		cout << s1 + s2 << endl;
+
+
+		cout << (s1 += '!') << endl;
+		cout << (s1 += " Bit") << endl;
+		cout << (s1 += s2) << endl;
+	}
+	//增删改查
+	void DealUrl(const string& url)
+	{
+		size_t pos1 = url.find("://");
+		if (pos1 == string::npos)
+		{
+			cout << "非法url" << endl;
+			return;
+		}
+		// 休息到16:08继续
+		string protocol = url.substr(0, pos1);
+		cout << protocol << endl;
+
+		size_t pos2 = url.find('/', pos1 + 3);
+		if (pos2 == string::npos)
+		{
+			cout << "非法url" << endl;
+			return;
+		}
+		string domain = url.substr(pos1 + 3, pos2 - pos1 - 3);
+		cout << domain << endl;
+
+		string uri = url.substr(pos2 + 1);
+		cout << uri << endl << endl;
+	}
+	void test4()
+	{
+		string url1 = "https://cplusplus.com/reference/string/string/";
+		string url2 = "https://image.baidu.com/search/detail?ct=503316480&z=0&ipn=d&word=ascall&step_word=&hs=0&pn=0&spn=0&di=7108135681917976577&pi=0&rn=1&tn=baiduimagedetail&is=0%2C0&istype=0&ie=utf-8&oe=utf-8&in=&cl=2&lm=-1&st=undefined&cs=2613959014%2C543572025&os=2740573600%2C1059518451&simid=2613959014%2C543572025&adpicid=0&lpn=0&ln=179&fr=&fmq=1660115697093_R&fm=&ic=undefined&s=undefined&hd=undefined&latest=undefined&copyright=undefined&se=&sme=&tab=0&width=undefined&height=undefined&face=undefined&ist=&jit=&cg=&bdtype=0&oriquery=&objurl=https%3A%2F%2Fgimg2.baidu.com%2Fimage_search%2Fsrc%3Dhttp%3A%2F%2Fimg.php.cn%2Fupload%2Fimage%2F147%2F157%2F796%2F1593765739620093.png%26refer%3Dhttp%3A%2F%2Fimg.php.cn%26app%3D2002%26size%3Df9999%2C10000%26q%3Da80%26n%3D0%26g%3D0n%26fmt%3Dauto%3Fsec%3D1662707704%26t%3Da68cb238bbb3f99d0554098c785d526e&fromurl=ippr_z2C%24qAzdH3FAzdH3Fooo_z%26e3Brir_z%26e3BvgAzdH3FuwqAzdH3F9c9amd_z%26e3Bip4s&gsm=1&rpstart=0&rpnum=0&islist=&querylist=&nojc=undefined&dyTabStr=MCwzLDIsNCw2LDEsNSw3LDgsOQ%3D%3D";
+		string url3 = "ftp://ftp.cs.umd.edu/pub/skipLists/skiplists.pdf";
+
+		DealUrl(url1);
+		DealUrl(url2);
+		DealUrl(url3);
+	}
+	void test5()
+	{
+		string s1;
+		s1.resize(20);
+		cout << s1 << endl;
+
+		string s2("hello");
+		s2.resize(20, 'x');
+		cout << s2 << endl;
+		s2.resize(10);
+		cout << s2 << endl;
+
+	}
+	void test6()
+	{
+		string s("12345678");
+		string s1("12345678");
+
+		cout << s.erase(0, 5) << endl;
+		cout << s1.erase(6, 9) << endl;
+		cout << string("123456").erase();
+
+	}
+
+}
 
 
 
-##### vector类
 
-> **新思想**
-> ```
-> 泛型编程--模板成员变量
-> 迭代器失效问题
-> 深拷贝嵌套问题
-> ```
->
-> **自写模板--迭代器失效**
-> ```
-> 迭代器失效问题: insert(), erase()
-> insert: 发生扩容 使pos指向的空间非法, 野指针; 插入后, pos不再指向原来的 [逻辑位置], 运行结果不符合逻辑, std::insert()返回插入的元素的迭代器
-> erase: 发生缩容, 使pos指向的空间非法, 野指针; 逻辑问题. erase()根据编译器规则不同, 会有不同的结果. 不建议erase后立即访问, std::erase()返回删除元素的后一个元素的迭代器
-> ```
->
-> **其他**
-> ```
-> capacity的代码在vs和g++下分别运行会发现，vs下capacity是按1.5倍增长的，g++是按2倍增长的。 这个问题经常会考察，不要固化的认为，vector增容都是2倍，具体增长多少是根据具体的需求定义 的。vs是PJ版本STL，g++是SGI版本STL。 reserve只负责开辟空间，如果确定知道需要用多少空间，reserve可以缓解vector增容的代价缺陷问 题。 resize在开空间的同时还会进行初始化，影响size。
-> ```
->
-> ###### 全代码
->
-> [Vector模拟实现](https://gitee.com/ailiangshilove/cpp-class/blob/master/%E8%AF%BE%E4%BB%B6%E4%BB%A3%E7%A0%81/C++%E8%AF%BE%E4%BB%B6V6/vector%E7%9A%84%E6%A8%A1%E6%8B%9F%E5%AE%9E%E7%8E%B0/Vector.h)
->
-> ```c++
-> #pragma once
-> 
-> #include<iostream>
-> #include<vector>
-> #include<assert.h>
-> 
-> using namespace std;
-> 
-> namespace qlz
-> {
-> 	template<class T>//模板类型
-> 
-> 	class vector
-> 	{
-> 	public:
-> #pragma region TypedefAndIterator
-> 		//vector迭代器是原生指针, 我们声明两个迭代器, 类型为模板类型指针;
-> 		typedef T* iterator;
-> 		typedef const T* const_iterator;
-> 
-> 		iterator begin()
-> 		{
-> 			return _start;
-> 		}
-> 		iterator end()
-> 		{
-> 			return _finish;
-> 		}
-> 		//const_iterator begin() const, 构成函数重载
-> 		//因为第一个形参, 即对象的指针是不同类型, 一个是非const指针, 一个是const指针
-> 		const_iterator cbegin() const
-> 		{
-> 			return _start;
-> 		}
-> 		const_iterator cend() const
-> 		{
-> 			return _finish;
-> 		}
-> 
-> #pragma endregion
-> 
-> #pragma region 构造函数
-> 
-> 		//无参默认构造
-> 		vector()
-> 			:_start(nullptr)
-> 			, _finish(nullptr)
-> 			, _endOfStorage(nullptr)
-> 		{}
-> 
-> 		//拷贝构造
-> 		vector(const vector<T>& vec)
-> 			:_start(nullptr)
-> 			, _finish(nullptr)
-> 			, _endOfStorage(nullptr)
-> 		{
-> 			reverse(vec.capacity());
-> 
-> 			/*for (size_t i = 0; i < vec.size(); i++)
-> 			{
-> 				_start[i] = vec._start[i];
-> 			}
-> 
-> 			_finish = _start + vec.size();
-> 			_endOfStorage = _start + vec.capacity();*/
-> 
-> 			//迭代器实现
-> 			iterator it = begin();
-> 			const_iterator vit = vec.cbegin();
-> 			while (vit != vec.cend())
-> 			{
-> 				//已设置容量
-> 				*it++ = *vit++;
-> 			}
-> 			_finish = it;
-> 
-> 		}
-> 
-> 		//n个元素
-> 		vector(size_t n, const T& val = T())
-> 			//注意成员变量声明顺序
-> 			:_start(new T[n])
-> 			, _finish(_start + n)
-> 			, _endOfStorage(_start + n)
-> 		{
-> 			for (size_t i = 0; i < n; i++)
-> 			{
-> 				//已设置容量
-> 				_start[i] = val;
-> 			}
-> 		}
-> 		/*
-> 		* 理论上将，提供了vector(size_t n, const T& value = T())之后
-> 		* vector(int n, const T& value = T())就不需要提供了，但是对于：
-> 		* vector<int> v(10, 10);
-> 		* 编译器在编译时，认为T已经被实例化为int，而10和5编译器会默认其为int类型
-> 		* 就不会走vector(size_t n, const T& value = T())这个构造方法，
-> 		* 因为 vector(InputIterator first, InputIterator last) 模板Inpu实例化为int时, 形参列表更符合
-> 		* 但是10 和 10根本不是一个区间，编译时就报错了
-> 		* 故需要该构造方法, 防止跑到迭代器构造函数
-> 		*/
-> 		vector(int n, const T& val = T())
-> 			//注意成员变量声明顺序
-> 			:_start(new T[n])
-> 			, _finish(_start + n)
-> 			, _endOfStorage(_start + n)
-> 		{
-> 			for (int i = 0; i < n; i++)
-> 			{
-> 				//已设置容量
-> 				_start[i] = val;
-> 			}
-> 		}
-> 
-> 		//迭代器构造
-> 		template<class InputIterator>//迭代器模板
-> 		vector(InputIterator first, InputIterator last)
-> 		{
-> 			//复用push_back
-> 			while (first != last)
-> 			{
-> 				//未确定容量, 调用push_back, 每次询问是否需要扩容
-> 				push_back(*first);
-> 				++first;
-> 			}
-> 		}
-> 
-> 		~vector()
-> 		{
-> 			delete[] _start;
-> 			_start = _finish = _endOfStorage = nullptr;
-> 		}
-> 
-> 
-> #pragma endregion
-> 
-> #pragma region 空间
-> 
-> 	private:
-> 		bool Full()
-> 		{
-> 			if (_finish == _endOfStorage)
-> 			{
-> 				return true;
-> 			}
-> 
-> 			return false;
-> 		}
-> 	public:
-> 		size_t capacity() const
-> 		{
-> 			return _endOfStorage - _start;
-> 		}
-> 
-> 		size_t size() const
-> 		{
-> 			return _finish - _start;
-> 		}
-> 
-> 		bool empty() const
-> 		{
-> 			if (_finish == _start)
-> 			{
-> 				return true;
-> 			}
-> 
-> 			return false;
-> 		}
-> 
-> 		void reverse(size_t n)
-> 		{
-> 			if (n <= capacity())
-> 			{
-> 				return;
-> 			}
-> 
-> 			size_t oldSize = size();
-> 
-> 			T* tmp = new T[n];
-> 
-> 			for (size_t i = 0; i < oldSize; i++)
-> 			{
-> 				tmp[i] = _start[i];//模板类型T的赋值运算
-> 			}
-> 			delete[] _start;
-> 
-> 			_start = tmp;
-> 			tmp = nullptr;
-> 			_finish = _start + oldSize;
-> 			_endOfStorage = _start + n;
-> 
-> 		}
-> 
-> 		void resize(size_t n, const T& val = T())
-> 		{
-> 			if (n <= _finish - _start)
-> 			{
-> 				_finish = _start + n;
-> 			}
-> 			else
-> 			{
-> 				reverse(n);
-> 
-> 				iterator cur = _finish;
-> 				_finish = _start + n;
-> 				while (cur != _finish)
-> 				{
-> 					//已经确定容量到位, 直接使用赋值, 减少调用
-> 					*cur = val;
-> 					cur++;
-> 				}
-> 			}
-> 		}
-> 
-> #pragma endregion
-> 
-> #pragma region Other
-> 
-> 		//接受形参的引用, 将形参替换为空对象
-> 		void swap(vector<T>& vec)
-> 		{
-> 			::swap(_start, vec._start);
-> 			::swap(_finish, vec._finish);
-> 			::swap(_endOfStorage, vec._endOfStorage);
-> 		}
-> 
-> #pragma endregion
-> 
-> #pragma region 增删改查
-> 
-> 		//传元素引用, 防止无意义的深拷贝
-> 		iterator insert(iterator it, const T& val)
-> 		{
-> 			assert(it <= _finish);//合法插入
-> 
-> 			if (Full())
-> 			{
-> 				size_t pos = it - _start;
-> 
-> 				reverse(capacity() == 0 ? 2 : capacity() * 2);
-> 
-> 				it = _start + pos;//重置插入位置迭代器, 防止迭代器失效
-> 			}
-> 
-> 			iterator end = _finish - 1;//_finish所在地址, 为新的vector最后一个元素的位置
-> 
-> 			while (end >= it)
-> 			{
-> 				*(end + 1) = *end;
-> 				end--;
-> 			}
-> 
-> 			*it = val;
-> 			_finish++;
-> 			return it;//返回插入位置的迭代器
-> 		}
-> 
-> 		//复用insert
-> 		void push_back(const T& val)
-> 		{
-> 			insert(_finish, val);
-> 		}
-> 
-> 		//返回被删除的位置的迭代器
-> 		iterator erase(iterator it)
-> 		{
-> 			assert(!empty());//非空
-> 
-> 			// 挪动数据进行删除
-> 			iterator begin = it;
-> 			while (begin != _finish - 1) {
-> 				*begin = *(begin + 1);
-> 				++begin;
-> 			}
-> 
-> 			--_finish;
-> 			return it;
-> 		}
-> 
-> 		//复用erase
-> 		void pop_back()
-> 		{
-> 			erase(_finish - 1);
-> 		}
-> 
-> #pragma endregion
-> 
-> 
-> #pragma region 操作符AND访问
-> 
-> 		vector<T>& operator= (vector<T> vec)
-> 		{
-> 			swap(vec);
-> 			return *this;
-> 		}
-> 
-> 		T& operator[](size_t pos)
-> 		{
-> 			assert(pos < size());
-> 			return _start[pos];
-> 		}
-> 
-> 		const T& operator[](size_t pos)const
-> 		{
-> 			assert(pos < size());
-> 			return _start[pos];
-> 		}
-> 
-> 		T& front()
-> 		{
-> 			return *_start;
-> 		}
-> 
-> 		const T& front()const
-> 		{
-> 			return *_start;
-> 		}
-> 
-> 		T& back()
-> 		{
-> 			return *(_finish - 1);
-> 		}
-> 
-> 		const T& back()const
-> 		{
-> 			return *(_finish - 1);
-> 		}
-> 
-> #pragma endregion
-> 
-> 
-> 	private:
-> 
-> 		//左闭右开
-> 		//没必要设置初始值, 因为会频繁使用初始化列表
-> 		iterator _start;//头
-> 		iterator _finish;//尾 == 头指针 + 实际大小
-> 		iterator _endOfStorage;// == 头指针 + 最大容量
-> 	};
-> 
-> 	void Test1()
-> 	{
-> 		qlz::vector<int> v1;
-> 		qlz::vector<int> v2(10, 5);
-> 
-> 		int array[] = { 1,2,3,4,5 };
-> 		qlz::vector<int> v3(array, array + sizeof(array) / sizeof(array[0]));
-> 
-> 		qlz::vector<int> v4(v3);
-> 
-> 		for (size_t i = 0; i < v2.size(); ++i)
-> 		{
-> 			cout << v2[i] << " ";
-> 		}
-> 		cout << endl;
-> 
-> 		auto it = v3.begin();
-> 		while (it != v3.end())
-> 		{
-> 			cout << *it << " ";
-> 			++it;
-> 		}
-> 		cout << endl;
-> 
-> 		for (auto e : v4)
-> 		{
-> 			cout << e << " ";
-> 		}
-> 		cout << endl;
-> 	}
-> 
-> 	void Test2()
-> 	{
-> 		qlz::vector<int> v;
-> 		v.push_back(1);
-> 		v.push_back(2);
-> 		v.push_back(3);
-> 		v.push_back(4);
-> 		v.push_back(5);
-> 		cout << v.size() << endl;
-> 		cout << v.capacity() << endl;
-> 		cout << v.front() << endl;
-> 		cout << v.back() << endl;
-> 		cout << v[0] << endl;
-> 		for (auto e : v)
-> 		{
-> 			cout << e << " ";
-> 		}
-> 		cout << endl;
-> 
-> 		v.pop_back();
-> 		v.pop_back();
-> 		for (auto e : v)
-> 		{
-> 			cout << e << " ";
-> 		}
-> 		cout << endl;
-> 
-> 		v.insert(v.begin(), 0);
-> 		for (auto e : v)
-> 		{
-> 			cout << e << " ";
-> 		}
-> 		cout << endl;
-> 
-> 		v.erase(v.begin() + 1);
-> 		for (auto e : v)
-> 		{
-> 			cout << e << " ";
-> 		}
-> 		cout << endl;
-> 	}
-> 
-> 	void Test3()
-> 	{
-> 		vector<int*> vec;
-> 		int a = 1, b = 2, c = 3;
-> 		vec.push_back(&a);
-> 		vec.push_back(&c);
-> 		vec.push_back(&b);
-> 
-> 		for (auto& ptr : vec)
-> 		{
-> 			cout << *ptr << ' ';
-> 		}
-> 
-> 
-> 	}
-> }
-> ```
->
-> ###### 构造函数
-> ```c++
-> //无参默认构造
-> 	vector()
-> 		:_start(nullptr)
-> 		, _finish(nullptr)
-> 		, _endOfStorage(nullptr)
-> 	{}
-> 
-> //拷贝构造
-> 	vector(const vector<T>& vec)
-> 		:_start(nullptr)
-> 		, _finish(nullptr)
-> 		, _endOfStorage(nullptr)
-> 	{
-> 		reverse(vec.capacity());
-> 
-> 		/*for (size_t i = 0; i < vec.size(); i++)
-> 		{
-> 			_start[i] = vec._start[i];
-> 		}
-> 
-> 		_finish = _start + vec.size();
-> 		_endOfStorage = _start + vec.capacity();*/
-> 
-> 		//迭代器实现
-> 		iterator it = begin();
-> 		const_iterator vit = vec.cbegin();
-> 		while (vit != vec.cend())
-> 		{
-> 			//已设置容量
-> 			*it++ = *vit++;
-> 		}
-> 		_finish = it;
-> 
-> 	}
-> 
-> //n个元素
-> 	vector(size_t n, const T& val = T())
-> 		//注意成员变量声明顺序
-> 		:_start(new T[n])
-> 		, _finish(_start + n)
-> 		, _endOfStorage(_start + n)
-> 	{
-> 		for (size_t i = 0; i < n; i++)
-> 		{
-> 			//已设置容量
-> 			_start[i] = val;
-> 		}
-> 	}
-> 	/*
-> 	* 理论上将，提供了vector(size_t n, const T& value = T())之后
-> 	* vector(int n, const T& value = T())就不需要提供了，但是对于：
-> 	* vector<int> v(10, 10);
-> 	* 编译器在编译时，认为T已经被实例化为int，而10和5编译器会默认其为int类型
-> 	* 就不会走vector(size_t n, const T& value = T())这个构造方法，
-> 	* 因为 vector(InputIterator first, InputIterator last) 模板Inpu实例化为int时, 形参列表更符合
-> 	* 但是10 和 10根本不是一个区间，编译时就报错了
-> 	* 故需要该构造方法, 防止跑到迭代器构造函数
-> 	*/
-> 	vector(int n, const T& val = T())
-> 		//注意成员变量声明顺序
-> 		:_start(new T[n])
-> 		, _finish(_start + n)
-> 		, _endOfStorage(_start + n)
-> 	{
-> 		for (int i = 0; i < n; i++)
-> 		{
-> 			//已设置容量
-> 			_start[i] = val;
-> 		}
-> 	}
-> 
-> //迭代器构造
-> 	template<class InputIterator>//迭代器模板
-> 	vector(InputIterator first, InputIterator last)
-> 	{
-> 		//复用push_back
-> 		while (first != last)
-> 		{
-> 			//未确定容量, 调用push_back, 每次询问是否需要扩容
-> 			push_back(*first);
-> 			++first;
-> 		}
-> 	}
-> //析构
-> 	~vector()
-> 	{
-> 		delete[] _start;
-> 		_start = _finish = _endOfStorage = nullptr;
-> 	}
-> ```
->
-> ###### 空间操作
-> ```c++
-> private:
-> 	bool Full()//私有化
-> 	{
-> 		if (_finish == _endOfStorage)
-> 		{
-> 			return true;
-> 		}
-> 
-> 		return false;
-> 	}
-> public:
-> 	size_t capacity() const
-> 	{
-> 		return _endOfStorage - _start;
-> 	}
-> 
-> 	size_t size() const
-> 	{
-> 		return _finish - _start;
-> 	}
-> 
-> 	bool empty() const
-> 	{
-> 		if (_finish == _start)
-> 		{
-> 			return true;
-> 		}
-> 
-> 		return false;
-> 	}
-> 
-> 	void reverse(size_t n)
-> 	{
-> 		if (n <= capacity())
-> 		{
-> 			return;
-> 		}
-> 
-> 		size_t oldSize = size();
-> 
-> 		T* tmp = new T[n];
-> 
-> 		for (size_t i = 0; i < oldSize; i++)
-> 		{
-> 			tmp[i] = _start[i];//模板类型T的赋值运算
-> 		}
-> 		delete[] _start;
-> 
-> 		_start = tmp;
-> 		tmp = nullptr;
-> 		_finish = _start + oldSize;
-> 		_endOfStorage = _start + n;
-> 
-> 	}
-> 
-> 	void resize(size_t n, const T& val = T())
-> 	{
-> 		if (n <= _finish - _start)
-> 		{
-> 			_finish = _start + n;
-> 		}
-> 		else
-> 		{
-> 			reverse(n);
-> 
-> 			iterator cur = _finish;
-> 			_finish = _start + n;
-> 			while (cur != _finish)
-> 			{
-> 				//已经确定容量到位, 直接使用赋值, 减少调用
-> 				*cur = val;
-> 				cur++;
-> 			}
-> 		}
-> 	}
-> ```
->
-> ###### 增删改查
-> ```c++
-> //传元素引用, 防止无意义的深拷贝
-> 	iterator insert(iterator it, const T& val)
-> 	{
-> 		assert(it <= _finish);//合法插入
-> 
-> 		if (Full())
-> 		{
-> 			size_t pos = it - _start;
-> 
-> 			reverse(capacity() == 0 ? 2 : capacity() * 2);
-> 
-> 			it = _start + pos;//重置插入位置迭代器, 防止迭代器失效
-> 		}
-> 
-> 		iterator end = _finish - 1;//_finish所在地址, 为新的vector最后一个元素的位置
-> 
-> 		while (end >= it)
-> 		{
-> 			*(end + 1) = *end;
-> 			end--;
-> 		}
-> 
-> 		*it = val;
-> 		_finish++;
-> 		return it;//返回插入位置的迭代器
-> 	}
-> 
-> //复用insert
-> 	void push_back(const T& val)
-> 	{
-> 		insert(_finish, val);
-> 	}
-> 
-> //返回被删除的位置的迭代器
-> 	iterator erase(iterator it)
-> 	{
-> 		assert(!empty());//非空
-> 
-> 		// 挪动数据进行删除
-> 		iterator begin = it;
-> 		while (begin != _finish - 1) {
-> 			*begin = *(begin + 1);
-> 			++begin;
-> 		}
-> 
-> 		--_finish;
-> 		return it;
-> 	}
-> 
-> //复用erase
-> 	void pop_back()
-> 	{
-> 		erase(_finish - 1);
-> 	}
-> ```
->
-> ###### 操作符重载
-> ```c++
-> vector<T>& operator= (vector<T> vec)
-> 	{
-> 		swap(vec);
-> 		return *this;
-> 	}
-> 
-> 	T& operator[](size_t pos)
-> 	{
-> 		assert(pos < size());
-> 		return _start[pos];
-> 	}
-> 
-> 	const T& operator[](size_t pos)const
-> 	{
-> 		assert(pos < size());
-> 		return _start[pos];
-> 	}
-> 
-> 	T& front()
-> 	{
-> 		return *_start;
-> 	}
-> 
-> 	const T& front()const
-> 	{
-> 		return *_start;
-> 	}
-> 
-> 	T& back()
-> 	{
-> 		return *(_finish - 1);
-> 	}
-> 
-> 	const T& back()const
-> 	{
-> 		return *(_finish - 1);
-> 	}
-> ```
->
-> ###### 迭代器/其他
-> ```c++
-> //vector迭代器是原生指针, 我们声明两个迭代器, 类型为模板类型指针;
-> 	typedef T* iterator;
-> 	typedef const T* const_iterator;
-> 
-> 	iterator begin()
-> 	{
-> 		return _start;
-> 	}
-> 	iterator end()
-> 	{
-> 		return _finish;
-> 	}
-> 	//const_iterator begin() const, 构成函数重载
-> 	//因为第一个形参, 即对象的指针是不同类型, 一个是非const指针, 一个是const指针
-> 	const_iterator cbegin() const
-> 	{
-> 		return _start;
-> 	}
-> 	const_iterator cend() const
-> 	{
-> 		return _finish;
-> 	}
-> 
-> //接受形参的引用, 将形参替换为空对象
-> 	void swap(vector<T>& vec)
-> 	{
-> 		::swap(_start, vec._start);
-> 		::swap(_finish, vec._finish);
-> 		::swap(_endOfStorage, vec._endOfStorage);
-> 	}
-> ```
->
+```
+
+###### 构造函数
+```c++
+//无参
+	//---------注意
+	// _str(nullptr) 错误: 转换成c指针 用cout输出的结束条件为 *p = '\0', 解引用了空指针
+	// _str("\0") 错误: 常量字符串默认存在'\0'
+	string()
+		: _str(new char[1])
+		, _size(0)
+		, _capacity(0)
+	{
+		_str[0] = '\0';
+	}
+
+//常量字符串
+	string(const char* str)
+	{
+		size_t len = strlen(str);
+		_size = len;
+		_capacity = len;
+		_str = new char[len + 1];
+		//使用strcpy拷贝, 符合常量字符串以'\0'结尾的规范
+		strcpy(_str, str);
+	}
+	////常量字符串全缺省默认构造
+	//string(const char* str = "")
+	//{
+	//	size_t len = strlen(str);
+	//	_size = len;
+	//	_capacity = len;
+	//	_str = new char[len + 1];
+	//	
+	//	strcpy(_str, str);
+	//}
+
+//常量字符串前n个字符
+	string(const char* str, size_t n)
+	{
+		//确定实际长度
+		size_t len = strlen(str);
+		len = len > n ? n : len;
+
+		_size = _capacity = len;
+		_str = new char[_capacity + 1];
+
+		//strcpy 遇到\0结束, 不支持提前结束
+		for (size_t i = 0; i < _size; i++)
+		{
+			_str[i] = str[i];
+		}
+		_str[_size] = '\0';
+
+	}
+
+//n个字符 ch
+	string(size_t n, char ch)
+		:_str(new char[n + 1])//初始化列表初始化
+		, _size(n)
+		, _capacity(n)
+	{
+		for (size_t i = 0; i < _size; i++)
+		{
+			_str[i] = ch;
+		}
+		_str[_size] = '\0';
+	}
+
+/*拷贝构造*/
+	////传统写法
+	//string(const string& str)
+	//	:_str(new char[str._capacity + 1])
+	//	, _size(str._size)
+	//	, _capacity(str._capacity)
+	//{
+	//	//string对象可包含'\0', 而strcpy无法copy'\0'
+	//	memcpy(_str, str._str, _capacity + 1);
+	//}
+	//
+
+	//现代写法
+	string(const string& str)
+		: _str(nullptr)
+		, _size(0)
+		, _capacity(0)
+	{
+		string tmp(str._str);//调用常量字符串构造, 复用代码
+		swap(tmp);//交换
+	}
+
+//sting对象 第 pos位置的 后n个字符
+	string(const string& str, size_t pos, size_t n = npos)
+
+	{
+		assert(pos < str._size);//合法下标
+
+		*this = str.substr(pos, n);//调用substr, 此处偷懒
+
+		//*this += str.substr(pos, n);
+
+		//错误语句
+		// substr的返回值具有const属性, 无法修改, 不能作为swap的实参传递
+		//swap(str.substr(pos, n));
+	}  
+
+//析构函数
+	~string()
+	{
+		delete[] _str;
+		_str = nullptr;
+		_size = _capacity = 0;
+	}
+```
+
+###### 空间操作
+```c++
+//reserve
+	//仅扩充空间大小
+	void reserve(size_t n)
+	{
+		//仅扩充, 不缩小
+		if (n <= _size) return;
+
+		char* tmp = new char[n + 1];
+
+		//string中可包含'\0', strcpy遇到'\0', 可能发生截断,应该按字节拷贝
+		memcpy(tmp, _str, _capacity + 1);
+
+		delete[] _str;
+		_str = tmp;
+		tmp = nullptr;
+		_capacity = n;
+	}
+//resize
+	//扩充/缩减长度 ---> 扩充空间
+	void resize(size_t n, char ch = '\0')
+	{
+		if (n > _size)
+		{
+			//判断扩容
+			reserve(n);
+			//填充字符
+			for (_size; _size < n; _size++)
+			{
+				_str[_size] = ch;
+			}
+			_str[_size] = '\0';
+		}
+		else//缩减长度
+		{
+			_str[n] = '\0';
+			_size = n;
+		}
+	}
+//size
+	size_t size() const
+	{
+		return _size;
+	}
+//capacity
+	size_t capacity() const
+	{
+		return _capacity;
+	}
+//clear()
+	//仅改变字符串长度
+	void clear()
+	{
+		_str[0] = '\0';
+		_size = 0;
+	}
+```
+
+###### 增删改查
+```c++	
+//push_back
+	void push_back(char ch)
+	{
+		//是否扩容
+		if (_size == _capacity)
+		{
+			reserve(_capacity == 0 ? 4 : _capacity * 2);
+		}
+
+		_str[_size] = ch;
+		_size++;
+		_str[_size] = '\0';
+	}
+//append
+	void append(const char* str)
+	{
+		size_t len = strlen(str);
+
+		//是否扩容
+		if (len + _size > _capacity)
+		{
+			reserve(len + _size);
+		}
+
+		strcpy(_str + _size, str);
+		//strcat(_str + _size, str);
+
+		_size += len;
+	}
+	void append(const string& str)
+	{
+		size_t len = str._size;
+
+		if (len + _size > _capacity)
+		{
+			reserve(len + _size);
+		}
+
+		memcpy(_str + _size, str._str, str._size + 1);
+
+		_size += len;
+	}
+//substr
+	string substr(size_t pos, size_t len = npos) const
+	{
+		assert(pos < _size);//合法下标
+		size_t realLen = len;
+
+		//判断是否超出string长度
+		//len = 1, 对应的是 提取pos位置的元素
+		if (len == npos || pos + len > _size)
+		{
+			realLen = _size - pos;
+		}
+
+		string tmp;
+		for (size_t i = 0; i < realLen; i++)
+		{
+			tmp += _str[pos + i];
+		}
+
+		return tmp;//返回的临时对象为const属性
+	}
+//instert -- 引用返回值 可作为 右值或参数
+	string& insert(size_t pos, char ch)
+	{
+		assert(pos < _size);
+
+		if (_size == _capacity)
+		{
+			reserve(_capacity == 0 ? 4 : _capacity * 2);
+		}
+
+		size_t end = ++_size;
+
+		while (end > pos)
+		{
+			_str[end] = _str[end - 1];
+			end--;
+		}
+
+		_str[pos] = ch;
+
+		return *this;
+	}
+	string& insert(size_t pos, const char* str)
+	{
+		assert(pos < _size);
+
+		size_t len = strlen(str);
+
+		if (_size + len > _capacity)
+		{
+			reserve(_size + len);
+		}
+
+		size_t end = _size + len;
+
+		while (end >= pos + len)
+		{
+			_str[end] = _str[end - len];
+			end--;
+		}
+
+		strncpy(_str + pos, str, len);//不拷贝'\0', 只拷贝有效字符
+		//memcpy(_str + pos, str, len);
+		_size += len;
+
+		return *this;
+	}
+	string& insert(size_t pos, const string& str)
+	{
+		assert(pos < _size);
+
+		size_t len = str._size;
+
+		if (_size + len > _capacity)
+		{
+			reserve(_size + len);
+		}
+
+		size_t end = _size + len;
+
+		while (end >= pos + len)
+		{
+			_str[end] = _str[end - len];
+			end--;
+		}
+
+		memcpy(_str + pos, str._str, len);
+		_size += len;
+
+		return *this;
+	}
+	/*
+	* 复用
+	* 对于substring 和 buffer 可以通过 (转换成string)截断 + substr 实现
+	*/
+
+//find
+	size_t find(char ch, size_t pos = 0) const
+	{
+		assert(pos < _size);
+
+		for (size_t i = pos; i < _size; ++i)
+		{
+			if (ch == _str[i])
+			{
+				return i;
+			}
+		}
+
+		return npos;
+	}
+	size_t find(const char* sub, size_t pos = 0) const
+	{
+		assert(sub);
+		assert(pos < _size);
+
+		const char* ptr = strstr(_str + pos, sub);//cstrig库函数, 返回匹配的第一个字符的地址
+		if (ptr == nullptr)
+		{
+			return npos;
+		}
+		else
+		{
+			return ptr - _str;
+		}
+	}
+
+//erase
+	string& erase(size_t pos = 0, size_t len = npos)
+	{
+		assert(pos < _size);
+
+		if (len == npos || pos + len >= _size)
+		{
+			_str[pos] = '\0';
+			_size = pos;
+		}
+		else
+		{
+			memcpy(_str + pos, _str + pos + len, _size - pos - len + 1);
+			_size -= len;
+		}
+
+		return *this;
+	}
+```
+
+###### 操作符重载
+```c++	
+//逻辑操作符
+	bool operator>(const string& str) const
+	{
+		return strcmp(_str, str._str) > 0;
+	}
+	bool operator==(const string& str) const
+	{
+		return strcmp(_str, str._str) == 0;
+	}
+	bool operator>=(const string& str) const
+	{
+		return *this > str || *this == str;
+	}
+	bool operator<=(const string& str) const
+	{
+		return !(*this > str);
+	}
+	bool operator<(const string& str) const
+	{
+		return !(*this >= str);
+	}
+	bool operator!=(const string& str) const
+	{
+		return !(*this == str);
+	}
+
+//运算操作符
+	string& operator=(string str)
+	{
+		swap(str);
+		return *this;
+	}
+
+	string& operator+=(const char ch)
+	{
+		push_back(ch);
+		return *this;
+	}
+	string operator+(const char ch)
+	{
+		string tmp(*this);
+		tmp += ch;
+		return tmp;
+	}
+
+	string& operator+=(const string& str)
+	{
+		append(str);
+		return *this;
+	}
+	string operator+(const string& str)
+	{
+		string tmp(*this);
+		tmp.append(str);
+		return tmp;
+	}
+
+	string& operator+=(const char* str)
+	{
+		append(str);
+		return *this;
+	}
+	string operator+(const char* str)
+	{
+		string tmp(*this);
+		tmp.append(str);
+		return tmp;
+	}
+
+//[]
+	char& operator[](size_t pos)
+	{
+		assert(pos < _size);
+		return _str[pos];
+	}
+	const char& operator[](size_t pos) const
+	{
+		assert(pos < _size);
+		return _str[pos];
+	}		
+```
+
+###### 迭代器/其他
+```c++
+//迭代器	
+	iterator begin()
+	{
+		return _str;
+	}
+
+	iterator end()
+	{
+		return _str + _size;
+	}
+
+
+	const_iterator begin() const
+	{
+		return _str;
+	}
+
+	const_iterator end() const
+	{
+		return _str + _size;
+	}
+//其他
+	//swap
+	void swap(string& str)
+	{
+		std::swap(_str, str._str);
+		std::swap(_size, str._size);
+		std::swap(_capacity, str._capacity);
+	}
+
+	//c指针
+	const char* c_str() const
+	{
+		return _str;
+	}	 
+```
+
+###### 输入输出
+```c++
+//<<
+	ostream& operator<<(std::ostream& out, const string& str)
+	{
+		for (size_t i = 0; i < str.size(); ++i)
+		{
+			out << str[i];
+		}
+		return out;
+	}
+
+//>> 
+	//基础版本
+	//istream& operator>>(istream& in, string& str)
+	//{
+	//	//清理并设置初始容量
+	//	str.clear();
+	//	str.reserve(64);
+	//
+	//	char ch;
+	//
+	//	ch = in.get();
+	//	while (ch != ' ' && ch != '\n')
+	//	{
+	//		str += ch;
+	//		ch = in.get();
+	//	}
+	//
+	//	return in;
+	//}
+
+	//升级版--减少前期扩容操作
+	istream& operator>>(istream& in, string& str)
+	{
+		//清理并设置初始容量
+		str.clear();
+		str.reserve(64);
+
+		const int N = 32;
+		char buff[N];
+		size_t i = 0;
+
+		char ch;
+
+		ch = in.get();
+		while (ch != ' ' && ch != '\n')
+		{
+			buff[i++] = ch;
+
+			if (i == N - 1)
+			{
+				buff[i] = '\0';
+				str += buff;
+				i = 0;
+			}
+
+			ch = in.get();
+		}
+
+		buff[i] = '\0';
+		str += buff;
+
+		return in;
+	}
+```
+
+###### 阅读推荐
+<a href = "https://coolshell.cn/articles/10478.html">酷壳-陈浩-C++面试中string类的一种正确写法</a>
+<a href = "https://blog.csdn.net/haoel/article/details/1491219?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166368282316782414956992%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=166368282316782414956992&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-1491219-null-null.nonecase&utm_term=string%E7%B1%BB%E5%88%B0%E5%BA%95%E6%80%8E%E4%B9%88%E5%95%A6&spm=1018.2226.3001.4450">strig类到底怎么啦</a>
+[C++ STL string的Copy-On-Write技术](https://coolshell.cn/articles/12199.html) 
+[C++的std::string的“读时也拷贝”技术](https://coolshell.cn/articles/1443.html)
 
 
 
-##### list类
+##### vector
 
-> **新思想**
-> ```
-> 泛型编程
-> 
-> 泛型编程---通过模板类型列表的不同,形参实例化不同, 最终实现泛型编程
-> 复用思想---适配器
-> 非原生指针迭代器--封装原生指针, 形成迭代器类, 并重载运算符, 向原生指针靠拢
-> 
-> 重点迭代器
-> 
-> ```
->
-> ###### 全代码
->
-> [List的模拟实现](https://gitee.com/ailiangshilove/cpp-class/blob/master/%E8%AF%BE%E4%BB%B6%E4%BB%A3%E7%A0%81/C++%E8%AF%BE%E4%BB%B6V6/List%E7%9A%84%E6%A8%A1%E6%8B%9F%E5%AE%9E%E7%8E%B0/List.h)
->
-> ```
-> #pragma once
-> 
-> #include<assert.h>
-> #include<iostream>
-> #include<list>
-> 
-> using namespace std;
-> 
-> 
-> namespace qlz
-> {
-> 
-> 	template<typename T>//数据类型
-> 	//节点结构
-> 	struct list_node 
-> 	{
-> 		T _data;//元素
-> 		list_node<T>* _next;//后指针
-> 		list_node<T>* _prev;//前指针
-> 
-> 		list_node(const T& x = T())//默认构造
-> 			:_data(x)
-> 			, _next(nullptr)
-> 			, _prev(nullptr)
-> 		{}
-> 
-> 	};
-> 
-> 
-> 	/*
-> 	* 1. 以 函数重载的方式, 实现返回 成员变量的const引用 和 非const引用, 两种迭代器属于相同的类型
-> 	* 2. 通过实例化的区别, 生成const迭代器, 和非const迭代器, 两种迭代器属于不同的类型, 指定 引用返回, 指针返回的类型
-> 	* typedef _list_iterator<T, T&, T*>             iterator;
-> 	* typedef _list_iterator<T, const T&, const T*> const_iterator;
-> 	* 
-> 	* List 的迭代器
-> 	* 迭代器有两种实现方式，具体应根据容器底层数据结构实现：
-> 	*   1. 原生态指针，比如：vector
-> 	*   2. 将原生态指针进行封装，因迭代器使用形式与指针完全相同，因此在自定义的类中必须实现以下方法：
-> 	* 	 1. 指针可以解引用，迭代器的类中必须重载operator*()
-> 	* 	 2. 指针可以通过->访问其所指空间成员，迭代器类中必须重载oprator->()
-> 	* 	 3. 指针可以++向后移动，迭代器类中必须重载operator++()与operator++(int)
-> 	* 		至于operator--()/operator--(int)释放需要重载，根据具体的结构来抉择，双向链表可以向前             移动，所以需要重载，如果是forward_list就不需要重载--
-> 	* 	 4. 迭代器需要进行是否相等的比较，因此还需要重载operator==()与operator!=()
-> 	*/
-> 	//正向迭代器
-> 	template<typename T, typename Ref, typename Ptr>//数据类型, 数据类型的引用, 数据类型的指针
-> 	struct _list_iterator
-> 	{
-> 	public:
-> 		typedef list_node<T> Node;
-> 		typedef _list_iterator<T, Ref, Ptr> iterator;
-> 
-> 		//使用 std::find() 需要这些 
-> 		typedef bidirectional_iterator_tag iterator_category;
-> 		typedef T value_type;
-> 		typedef Ptr pointer;
-> 		typedef Ref reference;
-> 		typedef ptrdiff_t difference_type;
-> 
-> 		//反向迭代器需要这些
-> 		typedef Ref Ref;
-> 		typedef Ptr Ptr;
-> 
-> 		Node* _node;
-> 
-> 		//指针类型, 浅拷贝即可
-> 		_list_iterator(Node* node = nullptr)
-> 			:_node(node)
-> 		{}
-> 		//默认生成的拷贝构造为浅拷贝, 可使用
-> 		/*_list_iterator(const iterator& it)
-> 			:_node(it._node)
-> 		{}*/
-> 
-> 		//!=
-> 		bool operator!=(const iterator& it) const
-> 		{
-> 			return _node != it._node;
-> 		}
-> 
-> 		//==
-> 		bool operator==(const iterator& it) const
-> 		{
-> 			return _node == it._node;
-> 		}
-> 
-> 
-> 		/* 对于循环双向带头链表
-> 		* 在逻辑上, Node节点应该就是元素, 而实际上, Node节点 封装了元素和前后指针
-> 		* 逻辑上, 迭代器为元素的"指针", 若元素为结构体类型, 则可以通过 (*). / -> 访问元素的成员变量
-> 		* 但实际上, 迭代器为Node节点的指针, (*). / -> 访问的的是 Node节点的 元素和前后指针,
-> 		* 所以需要对 (*). / -> 重载
-> 		* ++, -- 同理
-> 		*/
-> 
-> 		//*
-> 		// 注意模板类型
-> 		// const T& operator*()
-> 		// T& operator*()
-> 		Ref operator*()
-> 		{
-> 			return (_node->_data);
-> 		}
-> 
-> 		//->, 注意, 若元素为结构体类型, 编译器进行了优化, it->(得到元素地址)->_val1 -----> it->_val
-> 		Ptr operator->()
-> 		{
-> 			return &(operator*());
-> 		}
-> 
-> 		// ++it
-> 		iterator& operator++()
-> 		{
-> 			_node = _node->_next;
-> 			return *this;
-> 		}
-> 
-> 		// it++
-> 		iterator operator++(int)
-> 		{
-> 			iterator tmp(*this);
-> 			_node = _node->_next;
-> 			return tmp;
-> 		}
-> 
-> 		// --it
-> 		iterator& operator--()
-> 		{
-> 			_node = _node->_prev;
-> 			return *this;
-> 		}
-> 
-> 		// it--
-> 		iterator operator--(int)
-> 		{
-> 			iterator tmp(*this);
-> 			_node = _node->_prev;
-> 			return tmp;
-> 		}
-> 
-> 	};
-> 
-> 	/*反向迭代器(重写逻辑)*/
-> 	//template<typename T, typename Ref, typename Ptr>//数据类型, 数据类型的引用, 数据类型的指针
-> 	//struct _reverse_list_iterator
-> 	//{
-> 	//	typedef list_node<T> Node;
-> 	//	typedef _reverse_list_iterator<T, Ref, Ptr> reverse_iterator;
-> 	//
-> 	//	Node* _node;
-> 	//
-> 	//	//指针类型, 浅拷贝即可
-> 	//	_reverse_list_iterator(Node* node = nullptr)
-> 	//		:_node(node)
-> 	//	{}
-> 	//
-> 	//	//!=
-> 	//	bool operator!=(const reverse_iterator& it) const
-> 	//	{
-> 	//		return _node != it._node;
-> 	//	}
-> 	//
-> 	//	//==
-> 	//	bool operator==(const reverse_iterator& it) const
-> 	//	{
-> 	//		return _node == it._node;
-> 	//	}
-> 	//
-> 	//
-> 	//	/* 对于循环双向带头链表
-> 	//	* 在逻辑上, Node节点应该就是元素, 而实际上, Node节点 封装了元素和前后指针
-> 	//	* 逻辑上, 迭代器为元素的"指针", 若元素为结构体类型, 则可以通过 (*). / -> 访问元素的成员变量
-> 	//	* 但实际上, 迭代器为Node节点的指针, (*). / -> 访问的的是 Node节点的 元素和前后指针,
-> 	//	* 所以需要对 (*). / -> 重载
-> 	//	* ++, -- 同理
-> 	//	*/
-> 	//
-> 	//	//*
-> 	//	// 注意模板类型
-> 	//	// const T& operator*()
-> 	//	// T& operator*()
-> 	//	Ref operator*()
-> 	//	{
-> 	//		Node* tmp= _node->_prev;
-> 	//		return (tmp->_data);
-> 	//	}
-> 	//
-> 	//	//->, 注意, 若元素为结构体类型, 编译器进行了优化, it->(得到元素地址)->_val1 -----> it->_val
-> 	//	Ptr operator->()
-> 	//	{
-> 	//		return &(operator*());
-> 	//	}
-> 	//
-> 	//	// ++it
-> 	//	reverse_iterator& operator++()
-> 	//	{
-> 	//		_node = _node->_prev;
-> 	//		return *this;
-> 	//	}
-> 	//
-> 	//	// it++
-> 	//	reverse_iterator operator++(int)
-> 	//	{
-> 	//		reverse_iterator tmp(*this);
-> 	//		_node = _node->_prev;
-> 	//		return tmp;
-> 	//	}
-> 	//
-> 	//	// --it
-> 	//	reverse_iterator& operator--()
-> 	//	{
-> 	//		_node = _node->_next;
-> 	//		return *this;
-> 	//	}
-> 	//
-> 	//	// it--
-> 	//	reverse_iterator operator--(int)
-> 	//	{
-> 	//		iterator tmp(*this);
-> 	//		_node = _node->_next;
-> 	//		return tmp;
-> 	//	}
-> 	//
-> 	//};
-> 	/*反向迭代器(适配器)*/
-> 	template<class iterator>
-> 	struct _reverse_list_iterator
-> 	{
-> 	public:
-> 		// 注意：此处typename的作用是明确告诉编译器，Ref是Iterator类中的一个类型，而不是静态成员变量
-> 		// 否则编译器编译时就不知道Ref是Iterator中的类型还是静态成员变量
-> 		// 因为静态成员变量也是按照 类名::静态成员变量名 的方式访问的
-> 		typedef typename iterator::Ref Ref;
-> 		typedef typename iterator::Ptr Ptr;
-> 		typedef _reverse_list_iterator<iterator> reverse_iterator;
-> 	public:
-> 		// 构造
-> 		_reverse_list_iterator(iterator it)
-> 			: _rit(it)
-> 		{}
-> 
-> 		//////////////////////////////////////////////
-> 		// 具有指针类似行为
-> 		Ref operator*()
-> 		{
-> 			iterator temp(_rit);
-> 			--temp;
-> 			return *temp;
-> 		}
-> 
-> 		Ptr operator->()
-> 		{
-> 			return &(operator*());
-> 		}
-> 
-> 		// 迭代器支持移动
-> 		reverse_iterator& operator++()
-> 		{
-> 			--_rit;
-> 			return *this;
-> 		}
-> 
-> 		reverse_iterator operator++(int)
-> 		{
-> 			reverse_iterator temp(*this);
-> 			--_rit;
-> 			return temp;
-> 		}
-> 
-> 		reverse_iterator& operator--()
-> 		{
-> 			++_rit;
-> 			return *this;
-> 		}
-> 
-> 		reverse_iterator operator--(int)
-> 		{
-> 			reverse_iterator temp(*this);
-> 			++_rit;
-> 			return temp;
-> 		}
-> 
-> 		// 迭代器支持比较
-> 		bool operator!=(const reverse_iterator& l)const
-> 		{
-> 			return _rit != l._rit;
-> 		}
-> 
-> 		bool operator==(const reverse_iterator& l)const
-> 		{
-> 			return _rit != l._rit;
-> 		}
-> 
-> 		iterator _rit;
-> 	};
-> 
-> 	//List
-> 	template<typename T>
-> 	class list//双向带头循环链表
-> 	{
-> 
-> 	public:
-> 		typedef list_node<T> Node;
-> 		//通过实例化的区别, 生成const迭代器, 和非const迭代器
-> 		typedef _list_iterator<T, T&, T*> iterator;
-> 		typedef _list_iterator<T, const T&, const T*> const_iterator;		
-> 		/*
-> 		* 仍然可以 以 函数重载的方式, 实现返回 成员变量的const引用 和 非const引用
-> 		* eg
-> 		* typedef const _list_iterator<T, T&, T*> const_iterator;
-> 		* 
-> 		* const iterator begin() const
-> 		* {
-> 		* 	return const iterator(_head->_next);
-> 		* }
-> 		*
-> 		* const iterator end() const
-> 		* {
-> 		* 	return const iterator(_head);
-> 		* }
-> 		* 
-> 		* T& operator*()
-> 		* {
-> 		* 	return (it->_data);
-> 		* }
-> 		* const T& operator*() const
-> 		* {
-> 		* 	return (it->_data);
-> 		* }
-> 		*/
-> 
-> 		/*反向迭代器(不复用)*/
-> 		/*typedef _reverse_list_iterator<T, T&, T*> reverse_iterator;
-> 		typedef _reverse_list_iterator<T, const T&, const T*> const_reverse_iterator;*/
-> 		/*反向迭代器(复用)*/
-> 		typedef _reverse_list_iterator<iterator> reverse_iterator;
-> 		typedef _reverse_list_iterator<const_iterator> const_reverse_iterator;
-> 
-> 
-> 
-> #pragma region 构造函数
-> 		list()
-> 		{
-> 			_head = new Node;
-> 			_head->_next = _head;
-> 			_head->_prev = _head;
-> 		}
-> 
-> 		list(size_t n, const T& value = T())
-> 		{
-> 			_head = new Node;
-> 			_head->_next = _head;
-> 			_head->_prev = _head;
-> 
-> 			for (int i = 0; i < n; ++i)
-> 				push_back(value);
-> 		}
-> 		list(int n, const T& value = T())
-> 		{
-> 			_head = new Node;
-> 			_head->_next = _head;
-> 			_head->_prev = _head;
-> 
-> 			for (int i = 0; i < n; ++i)
-> 				push_back(value);
-> 		}
-> 
-> 		template <class Iterator>
-> 		list(Iterator first, Iterator last)
-> 		{
-> 			_head = new Node;
-> 			_head->_next = _head;
-> 			_head->_prev = _head;
-> 
-> 			while (first != last)
-> 			{
-> 				push_back(*first);
-> 				++first;
-> 			}
-> 		}
-> 
-> 		list(const list<T>& l)
-> 		{
-> 			_head = new Node;
-> 			_head->_next = _head;
-> 			_head->_prev = _head;
-> 
-> 			// 用l中的元素构造临时的temp,然后与当前对象交换
-> 			list<T> temp(l.begin(), l.end());
-> 			this->swap(temp);
-> 		}
-> 
-> 		list<T>& operator=(list<T> l)
-> 		{
-> 			this->swap(l);
-> 			return *this;
-> 		}
-> 
-> #pragma endregion
-> 
-> #pragma region 空间
-> 
-> 		//内置交换
-> 		void swap(list<T>& l)
-> 		{
-> 			std::swap(_head, l._head);
-> 		}
-> 
-> 		//判空
-> 		bool empty()const
-> 		{
-> 			return _head->_next == _head;
-> 		}
-> 
-> 		//元素个数
-> 		size_t size()const
-> 		{
-> 			Node* cur = _head->_next;
-> 			size_t count = 0;
-> 			while (cur != _head)
-> 			{
-> 				count++;
-> 				cur = cur->_next;
-> 			}
-> 
-> 			return count;
-> 		}
-> 
-> 		//设置元素个数
-> 		void resize(size_t newsize, const T& val = T())
-> 		{
-> 			size_t oldsize = size();
-> 			if (newsize <= oldsize)
-> 			{
-> 				// 有效元素个数减少到newsize
-> 				while (newsize < oldsize)
-> 				{
-> 					pop_back();
-> 					oldsize--;
-> 				}
-> 			}
-> 			else
-> 			{
-> 				while (oldsize < newsize)
-> 				{
-> 					push_back(val);
-> 					oldsize++;
-> 				}
-> 			}
-> 		}
-> 
-> 		//清空
-> 		void clear()
-> 		{
-> 			Node* cur = _head->_next;
-> 
-> 			// 采用头删除删除
-> 			while (cur != _head)
-> 			{
-> 				_head->_next = cur->_next;
-> 				delete cur;
-> 				cur = _head->_next;
-> 			}
-> 			//只保留头节点
-> 			_head->_next = _head->_prev = _head;
-> 		}
-> 
-> #pragma endregion
-> 
-> #pragma region 迭代器
-> 		const_iterator begin() const//const对象
-> 		{
-> 			return const_iterator(_head->_next);
-> 		}
-> 
-> 		const_iterator end() const//const对象
-> 		{
-> 			return const_iterator(_head);
-> 		}
-> 
-> 		iterator begin()
-> 		{
-> 			return iterator(_head->_next);
-> 		}
-> 
-> 		iterator end()
-> 		{
-> 			return iterator(_head);
-> 		}
-> 
-> 
-> 		/*反向迭代器(不复用正向)*/
-> 		//const_reverse_iterator rbegin() const//const对象
-> 		//{
-> 		//	return const_reverse_iterator(_head);
-> 		//}
-> 		//const_reverse_iterator rend() const//const对象
-> 		//{
-> 		//	return const_reverse_iterator(_head->_next);
-> 		//}
-> 		//reverse_iterator rbegin()
-> 		//{
-> 		//	return reverse_iterator(_head);
-> 		//}
-> 		//reverse_iterator rend()
-> 		//{
-> 		//	return reverse_iterator(_head->_next);
-> 		//}
-> 		/*反向迭代器(复用正向)*/
-> 		const_reverse_iterator rbegin() const//const对象
-> 		{
-> 			return const_reverse_iterator(end());
-> 		}
-> 		const_reverse_iterator rend() const//const对象
-> 		{
-> 			return const_reverse_iterator(begin());
-> 		}
-> 		reverse_iterator rbegin()
-> 		{
-> 			return reverse_iterator(end());
-> 		}
-> 		reverse_iterator rend()
-> 		{
-> 			return reverse_iterator(begin());
-> 		}
-> #pragma endregion
-> 
-> #pragma region 增删
-> 		void push_back(const T& val)
-> 		{
-> 			Node* node = new Node(val);
-> 
-> 			Node* tail = _head->_prev;
-> 			tail->_next = node;
-> 			node->_prev = tail;
-> 			node->_next = _head;
-> 			_head->_prev = node;
-> 		}
-> 
-> 		//返回当前节点迭代器
-> 		iterator insert(iterator pos, const T& x)
-> 		{
-> 			Node* cur = pos._node;
-> 			Node* prev = cur->_prev;
-> 
-> 			Node* newnode = new Node(x);
-> 
-> 			// prev newnode cur
-> 			prev->_next = newnode;
-> 			newnode->_prev = prev;
-> 			newnode->_next = cur;
-> 			cur->_prev = newnode;
-> 
-> 			return iterator(newnode);
-> 		}
-> 
-> 		//返回下一个节点的迭代器
-> 		iterator erase(iterator pos)
-> 		{
-> 			assert(pos != end());
-> 
-> 			Node* cur = pos._node;
-> 			Node* prev = cur->_prev;
-> 			Node* next = cur->_next;
-> 
-> 			prev->_next = next;
-> 			next->_prev = prev;
-> 			delete cur;
-> 
-> 			return iterator(next);
-> 		}
-> 
-> 		void push_front(const T& x)
-> 		{
-> 			insert(begin(), x);
-> 		}
-> 
-> 		void pop_back()
-> 		{
-> 			erase(--end());
-> 		}
-> 
-> 		void pop_front()
-> 		{
-> 			erase(begin());
-> 		}
-> #pragma endregion
-> 
-> #pragma region 访问
-> 		//不支持[]
-> 		T& front()
-> 		{
-> 			return _head->_next->_val;
-> 		}
-> 		const T& front()const
-> 		{
-> 			return _head->_next->_val;
-> 		}
-> 		T& back()
-> 		{
-> 			return _head->_prev->_val;
-> 		}
-> 		const T& back()const
-> 		{
-> 			return _head->_prev->_val;
-> 		}
-> #pragma endregion
-> 
-> 
-> 	private:
-> 		Node* _head;//头节点
-> 	};
-> 
-> 
-> 
-> #pragma region 测试
-> 
-> 	/*void ttest1()
-> 		{
-> 			list<int> lis1;
-> 
-> 			lis1.push_back(1);
-> 			lis1.push_back(2);
-> 			lis1.push_back(3);
-> 
-> 
-> 		}
-> 
-> 		struct pPos
-> 		{
-> 			int _a1;
-> 			int _a2;
-> 
-> 			pPos(int a1 = 0, int a2 = 0)
-> 				:_a1(a1)
-> 				, _a2(a2)
-> 			{}
-> 		};
-> 
-> 		void ttest2()
-> 		{
-> 			int x = 10;
-> 			int* p1 = &x;
-> 
-> 			cout << *p1 << endl;
-> 
-> 			pPos aa;
-> 			pPos* p2 = &aa;
-> 			p2->_a1;
-> 			p2->_a2;
-> 
-> 			list<pPos> lt;
-> 			lt.push_back(pPos(10, 20));
-> 			lt.push_back(pPos(10, 21));
-> 
-> 			list<pPos>::iterator it = lt.begin();
-> 
-> 			cout << endl;
-> 		}
-> 
-> 		void FFunc(const list<int>& l)
-> 		{
-> 			list<int>::const_iterator it = l.begin();
-> 
-> 			*it;
-> 
-> 			cout << endl;
-> 		}*/
-> 
-> 	void test1()
-> 	{
-> 		list<int> lt;
-> 		lt.push_back(1);
-> 		lt.push_back(2);
-> 		lt.push_back(3);
-> 		lt.push_back(4);
-> 		lt.push_back(5);
-> 
-> 		list<int>::iterator it = lt.begin();
-> 		while (it != lt.end())
-> 		{
-> 			cout << *it << " ";
-> 			++it;
-> 		}
-> 		cout << endl;
-> 
-> 		it = lt.begin();
-> 		while (it != lt.end())
-> 		{
-> 			*it *= 2;
-> 			++it;
-> 		}
-> 		cout << endl;
-> 
-> 		for (auto e : lt)
-> 		{
-> 			cout << e << " ";
-> 		}
-> 		cout << endl;
-> 	}
-> 	struct Pos
-> 	{
-> 		int _a1;
-> 		int _a2;
-> 
-> 		Pos(int a1 = 0, int a2 = 0)
-> 			:_a1(a1)
-> 			, _a2(a2)
-> 		{}
-> 	};
-> 	void test2()
-> 	{
-> 		int x = 10;
-> 		int* p1 = &x;
-> 
-> 		cout << *p1 << endl;
-> 
-> 		Pos aa;
-> 		Pos* p2 = &aa;
-> 		p2->_a1;
-> 		p2->_a2;
-> 
-> 		list<Pos> lt;
-> 		lt.push_back(Pos(10, 20));
-> 		lt.push_back(Pos(10, 21));
-> 
-> 		list<Pos>::iterator it = lt.begin();
-> 		while (it != lt.end())
-> 		{
-> 			//cout << (*it)._a1 << ":" << (*it)._a2 << endl;
-> 			cout << it->_a1 << ":" << it->_a2 << endl;
-> 
-> 			++it;
-> 		}
-> 		cout << endl;
-> 	}
-> 	void Func(const list<int>& l)
-> 	{
-> 		list<int>::const_iterator it = l.begin();
-> 		while (it != l.end())
-> 		{
-> 			//*it = 10;
-> 
-> 			cout << *it << " ";
-> 			++it;
-> 		}
-> 		cout << endl;
-> 	}
-> 	void test3()
-> 	{
-> 		list<int> lt;
-> 		lt.push_back(1);
-> 		lt.push_back(2);
-> 		lt.push_back(3);
-> 		lt.push_back(4);
-> 		lt.push_back(5);
-> 
-> 		Func(lt);
-> 	}
-> 	void test4()
-> 	{
-> 		list<int> lt;
-> 		lt.push_back(1);
-> 		lt.push_back(2);
-> 		lt.push_back(3);
-> 		lt.push_back(4);
-> 		lt.push_back(5);
-> 
-> 		list<int>::iterator it = lt.begin();
-> 		while (it != lt.end())
-> 		{
-> 			cout << *it << " ";
-> 			++it;
-> 		}
-> 		cout << endl;
-> 
-> 		it = lt.begin();
-> 		while (it != lt.end())
-> 		{
-> 			*it *= 2;
-> 			++it;
-> 		}
-> 		cout << endl;
-> 
-> 		for (auto e : lt)
-> 		{
-> 			cout << e << " ";
-> 		}
-> 		cout << endl;
-> 
-> 		lt.push_front(10);
-> 		lt.push_front(20);
-> 		lt.push_front(30);
-> 		lt.push_front(40);
-> 
-> 		lt.pop_back();
-> 		lt.pop_back();
-> 
-> 		for (auto e : lt)
-> 		{
-> 			cout << e << " ";
-> 		}
-> 		cout << endl;
-> 
-> 		auto pos = find(lt.begin(), lt.end(), 4);
-> 		if (pos != lt.end())
-> 		{
-> 			// pos是否会失效？不会
-> 			lt.insert(pos, 40);
-> 			//lt.insert(pos, 30);
-> 			*pos *= 100;
-> 		}
-> 
-> 		for (auto e : lt)
-> 		{
-> 			cout << e << " ";
-> 		}
-> 		cout << endl;
-> 	}
-> 	void test5()
-> 	{
-> 		list<int> l1;
-> 		l1.push_back(4);
-> 		l1.push_back(1);
-> 		l1.push_back(3);
-> 		l1.push_back(2);
-> 
-> 		/*auto it = l1.begin();
-> 		cout << *it << endl;
-> 
-> 		auto rit = l1.rbegin();
-> 
-> 		cout << *rit;*/
-> 
-> 		for (auto rit = l1.rbegin(); rit != l1.rend(); rit++)
-> 			cout << *rit << endl;
-> 
-> 
-> 
-> 	}
-> #pragma endregion
-> 
-> 
-> }
-> 
-> ```
->
-> ###### 构造函数
-> ```C++
-> list()
-> {
-> 	_head = new Node;
-> 	_head->_next = _head;
-> 	_head->_prev = _head;
-> }
-> 
-> list(size_t n, const T& value = T())
-> {
-> 	_head = new Node;
-> 	_head->_next = _head;
-> 	_head->_prev = _head;
-> 
-> 	for (int i = 0; i < n; ++i)
-> 		push_back(value);
-> }
-> list(int n, const T& value = T())
-> {
-> 	_head = new Node;
-> 	_head->_next = _head;
-> 	_head->_prev = _head;
-> 
-> 	for (int i = 0; i < n; ++i)
-> 		push_back(value);
-> }
-> 
-> template <class Iterator>
-> list(Iterator first, Iterator last)
-> {
-> 	_head = new Node;
-> 	_head->_next = _head;
-> 	_head->_prev = _head;
-> 
-> 	while (first != last)
-> 	{
-> 		push_back(*first);
-> 		++first;
-> 	}
-> }
-> 
-> list(const list<T>& l)
-> {
-> 	_head = new Node;
-> 	_head->_next = _head;
-> 	_head->_prev = _head;
-> 
-> 	// 用l中的元素构造临时的temp,然后与当前对象交换
-> 	list<T> temp(l.begin(), l.end());
-> 	this->swap(temp);
-> }
-> 
-> list<T>& operator=(list<T> l)
-> {
-> 	this->swap(l);
-> 	return *this;
-> }
-> ```
->
-> ###### 空间操作
-> ```c++
-> //内置交换
-> void swap(list<T>& l)
-> {
-> 	std::swap(_head, l._head);
-> }
-> 
-> //判空
-> bool empty()const
-> {
-> 	return _head->_next == _head;
-> }
-> 
-> //元素个数
-> size_t size()const
-> {
-> 	Node* cur = _head->_next;
-> 	size_t count = 0;
-> 	while (cur != _head)
-> 	{
-> 		count++;
-> 		cur = cur->_next;
-> 	}
-> 
-> 	return count;
-> }
-> 
-> //设置元素个数
-> void resize(size_t newsize, const T& val = T())
-> {
-> 	size_t oldsize = size();
-> 	if (newsize <= oldsize)
-> 	{
-> 		// 有效元素个数减少到newsize
-> 		while (newsize < oldsize)
-> 		{
-> 			pop_back();
-> 			oldsize--;
-> 		}
-> 	}
-> 	else
-> 	{
-> 		while (oldsize < newsize)
-> 		{
-> 			push_back(val);
-> 			oldsize++;
-> 		}
-> 	}
-> }
-> 
-> //清空
-> void clear()
-> {
-> 	Node* cur = _head->_next;
-> 
-> 	// 采用头删除删除
-> 	while (cur != _head)
-> 	{
-> 		_head->_next = cur->_next;
-> 		delete cur;
-> 		cur = _head->_next;
-> 	}
-> 	//只保留头节点
-> 	_head->_next = _head->_prev = _head;
-> }
-> ```
->
-> ###### 增删
-> ```c++
-> void push_back(const T& val)
-> {
-> 	Node* node = new Node(val);
-> 
-> 	Node* tail = _head->_prev;
-> 	tail->_next = node;
-> 	node->_prev = tail;
-> 	node->_next = _head;
-> 	_head->_prev = node;
-> }
-> 
-> //返回当前节点迭代器
-> iterator insert(iterator pos, const T& x)
-> {
-> 	Node* cur = pos._node;
-> 	Node* prev = cur->_prev;
-> 
-> 	Node* newnode = new Node(x);
-> 
-> 	// prev newnode cur
-> 	prev->_next = newnode;
-> 	newnode->_prev = prev;
-> 	newnode->_next = cur;
-> 	cur->_prev = newnode;
-> 
-> 	return iterator(newnode);
-> }
-> 
-> //返回下一个节点的迭代器
-> iterator erase(iterator pos)
-> {
-> 	assert(pos != end());
-> 
-> 	Node* cur = pos._node;
-> 	Node* prev = cur->_prev;
-> 	Node* next = cur->_next;
-> 
-> 	prev->_next = next;
-> 	next->_prev = prev;
-> 	delete cur;
-> 
-> 	return iterator(next);
-> }
-> 
-> void push_front(const T& x)
-> {
-> 	insert(begin(), x);
-> }
-> 
-> void pop_back()
-> {
-> 	erase(--end());
-> }
-> 
-> void pop_front()
-> {
-> 	erase(begin());
-> }
-> ```
->
-> ###### 迭代器
->
-> **模板类声明**
-> ```c++
-> //迭代器模板类声明
-> typedef list_node<T> Node;
-> //通过实例化的区别, 生成const迭代器, 和非const迭代器
-> typedef _list_iterator<T, T&, T*> iterator;
-> typedef _list_iterator<T, const T&, const T*> const_iterator;		
-> //仍然可以 以 函数重载的方式, 实现返回 成员变量的const引用 和 非const引用
-> 
-> /*反向迭代器(不复用)*/
-> /*typedef _reverse_list_iterator<T, T&, T*> reverse_iterator;
-> typedef _reverse_list_iterator<T, const T&, const T*> const_reverse_iterator;*/
-> /*反向迭代器(复用)*/
-> typedef _reverse_list_iterator<iterator> reverse_iterator;
-> typedef _reverse_list_iterator<const_iterator> const_reverse_iterator;
-> 
-> //----------------------------------------------------------------------------
-> ```
-> **模板类**
-> ```c++
-> //迭代器模板类
-> /*
-> * 1. 以 函数重载的方式, 实现返回 成员变量的const引用 和 非const引用, 两种迭代器属于相同的类型
-> * 2. 通过实例化的区别, 生成const迭代器, 和非const迭代器, 两种迭代器属于不同的类型, 指定 引用返回, 指针返回的类型
-> * typedef _list_iterator<T, T&, T*>             iterator;
-> * typedef _list_iterator<T, const T&, const T*> const_iterator;
-> * 
-> * List 的迭代器
-> * 迭代器有两种实现方式，具体应根据容器底层数据结构实现：
-> *   1. 原生态指针，比如：vector
-> *   2. 将原生态指针进行封装，因迭代器使用形式与指针完全相同，因此在自定义的类中必须实现以下方法：
-> * 	 1. 指针可以解引用，迭代器的类中必须重载operator*()
-> * 	 2. 指针可以通过->访问其所指空间成员，迭代器类中必须重载oprator->()
-> * 	 3. 指针可以++向后移动，迭代器类中必须重载operator++()与operator++(int)
-> * 		至于operator--()/operator--(int)释放需要重载，根据具体的结构来抉择，双向链表可以向前             移动，所以需要重载，如果是forward_list就不需要重载--
-> * 	 4. 迭代器需要进行是否相等的比较，因此还需要重载operator==()与operator!=()
-> */
-> //正向迭代器
-> template<typename T, typename Ref, typename Ptr>//数据类型, 数据类型的引用, 数据类型的指针
-> struct _list_iterator
-> {
-> public:
-> 	typedef list_node<T> Node;
-> 	typedef _list_iterator<T, Ref, Ptr> iterator;
-> 
-> 	//使用 std::find() 需要这些 
-> 	typedef bidirectional_iterator_tag iterator_category;
-> 	typedef T value_type;
-> 	typedef Ptr pointer;
-> 	typedef Ref reference;
-> 	typedef ptrdiff_t difference_type;
-> 
-> 	//反向迭代器需要这些
-> 	typedef Ref Ref;
-> 	typedef Ptr Ptr;
-> 
-> 	Node* _node;
-> 
-> 	//指针类型, 浅拷贝即可
-> 	_list_iterator(Node* node = nullptr)
-> 		:_node(node)
-> 	{}
-> 	//默认生成的拷贝构造为浅拷贝, 可使用
-> 	/*_list_iterator(const iterator& it)
-> 		:_node(it._node)
-> 	{}*/
-> 
-> 	//!=
-> 	bool operator!=(const iterator& it) const
-> 	{
-> 		return _node != it._node;
-> 	}
-> 
-> 	//==
-> 	bool operator==(const iterator& it) const
-> 	{
-> 		return _node == it._node;
-> 	}
-> 
-> 
-> 	/* 对于循环双向带头链表
-> 	* 在逻辑上, Node节点应该就是元素, 而实际上, Node节点 封装了元素和前后指针
-> 	* 逻辑上, 迭代器为元素的"指针", 若元素为结构体类型, 则可以通过 (*). / -> 访问元素的成员变量
-> 	* 但实际上, 迭代器为Node节点的指针, (*). / -> 访问的的是 Node节点的 元素和前后指针,
-> 	* 所以需要对 (*). / -> 重载
-> 	* ++, -- 同理
-> 	*/
-> 
-> 	//*
-> 	// 注意模板类型
-> 	// const T& operator*()
-> 	// T& operator*()
-> 	Ref operator*()
-> 	{
-> 		return (_node->_data);
-> 	}
-> 
-> 	//->, 注意, 若元素为结构体类型, 编译器进行了优化, it->(得到元素地址)->_val1 -----> it->_val
-> 	Ptr operator->()
-> 	{
-> 		return &(operator*());
-> 	}
-> 
-> 	// ++it
-> 	iterator& operator++()
-> 	{
-> 		_node = _node->_next;
-> 		return *this;
-> 	}
-> 
-> 	// it++
-> 	iterator operator++(int)
-> 	{
-> 		iterator tmp(*this);
-> 		_node = _node->_next;
-> 		return tmp;
-> 	}
-> 
-> 	// --it
-> 	iterator& operator--()
-> 	{
-> 		_node = _node->_prev;
-> 		return *this;
-> 	}
-> 
-> 	// it--
-> 	iterator operator--(int)
-> 	{
-> 		iterator tmp(*this);
-> 		_node = _node->_prev;
-> 		return tmp;
-> 	}
-> 
-> };
-> 
-> /*反向迭代器(重写逻辑)*/
-> //template<typename T, typename Ref, typename Ptr>//数据类型, 数据类型的引用, 数据类型的指针
-> //struct _reverse_list_iterator
-> //{
-> //	typedef list_node<T> Node;
-> //	typedef _reverse_list_iterator<T, Ref, Ptr> reverse_iterator;
-> //
-> //	Node* _node;
-> //
-> //	//指针类型, 浅拷贝即可
-> //	_reverse_list_iterator(Node* node = nullptr)
-> //		:_node(node)
-> //	{}
-> //
-> //	//!=
-> //	bool operator!=(const reverse_iterator& it) const
-> //	{
-> //		return _node != it._node;
-> //	}
-> //
-> //	//==
-> //	bool operator==(const reverse_iterator& it) const
-> //	{
-> //		return _node == it._node;
-> //	}
-> //
-> //
-> //	/* 对于循环双向带头链表
-> //	* 在逻辑上, Node节点应该就是元素, 而实际上, Node节点 封装了元素和前后指针
-> //	* 逻辑上, 迭代器为元素的"指针", 若元素为结构体类型, 则可以通过 (*). / -> 访问元素的成员变量
-> //	* 但实际上, 迭代器为Node节点的指针, (*). / -> 访问的的是 Node节点的 元素和前后指针,
-> //	* 所以需要对 (*). / -> 重载
-> //	* ++, -- 同理
-> //	*/
-> //
-> //	//*
-> //	// 注意模板类型
-> //	// const T& operator*()
-> //	// T& operator*()
-> //	Ref operator*()
-> //	{
-> //		Node* tmp= _node->_prev;
-> //		return (tmp->_data);
-> //	}
-> //
-> //	//->, 注意, 若元素为结构体类型, 编译器进行了优化, it->(得到元素地址)->_val1 -----> it->_val
-> //	Ptr operator->()
-> //	{
-> //		return &(operator*());
-> //	}
-> //
-> //	// ++it
-> //	reverse_iterator& operator++()
-> //	{
-> //		_node = _node->_prev;
-> //		return *this;
-> //	}
-> //
-> //	// it++
-> //	reverse_iterator operator++(int)
-> //	{
-> //		reverse_iterator tmp(*this);
-> //		_node = _node->_prev;
-> //		return tmp;
-> //	}
-> //
-> //	// --it
-> //	reverse_iterator& operator--()
-> //	{
-> //		_node = _node->_next;
-> //		return *this;
-> //	}
-> //
-> //	// it--
-> //	reverse_iterator operator--(int)
-> //	{
-> //		iterator tmp(*this);
-> //		_node = _node->_next;
-> //		return tmp;
-> //	}
-> //
-> //};
-> /*反向迭代器(适配器)*/
-> template<class iterator>
-> struct _reverse_list_iterator
-> {
-> public:
-> 	// 注意：此处typename的作用是明确告诉编译器，Ref是Iterator类中的一个类型，而不是静态成员变量
-> 	// 否则编译器编译时就不知道Ref是Iterator中的类型还是静态成员变量
-> 	// 因为静态成员变量也是按照 类名::静态成员变量名 的方式访问的
-> 	typedef typename iterator::Ref Ref;
-> 	typedef typename iterator::Ptr Ptr;
-> 	typedef _reverse_list_iterator<iterator> reverse_iterator;
-> public:
-> 	// 构造
-> 	_reverse_list_iterator(iterator it)
-> 		: _rit(it)
-> 	{}
-> 
-> 	//////////////////////////////////////////////
-> 	// 具有指针类似行为
-> 	Ref operator*()
-> 	{
-> 		iterator temp(_rit);
-> 		--temp;
-> 		return *temp;
-> 	}
-> 
-> 	Ptr operator->()
-> 	{
-> 		return &(operator*());
-> 	}
-> 
-> 	// 迭代器支持移动
-> 	reverse_iterator& operator++()
-> 	{
-> 		--_rit;
-> 		return *this;
-> 	}
-> 
-> 	reverse_iterator operator++(int)
-> 	{
-> 		reverse_iterator temp(*this);
-> 		--_rit;
-> 		return temp;
-> 	}
-> 
-> 	reverse_iterator& operator--()
-> 	{
-> 		++_rit;
-> 		return *this;
-> 	}
-> 
-> 	reverse_iterator operator--(int)
-> 	{
-> 		reverse_iterator temp(*this);
-> 		++_rit;
-> 		return temp;
-> 	}
-> 
-> 	// 迭代器支持比较
-> 	bool operator!=(const reverse_iterator& l)const
-> 	{
-> 		return _rit != l._rit;
-> 	}
-> 
-> 	bool operator==(const reverse_iterator& l)const
-> 	{
-> 		return _rit != l._rit;
-> 	}
-> 
-> 	iterator _rit;
-> };
-> 
-> //---------------------------------------------------------------------------------
-> ```
-> **函数**
-> ```
-> //迭代器函数
-> const_iterator begin() const//const对象
-> {
-> 	return const_iterator(_head->_next);
-> }
-> 
-> const_iterator end() const//const对象
-> {
-> 	return const_iterator(_head);
-> }
-> 
-> iterator begin()
-> {
-> 	return iterator(_head->_next);
-> }
-> 
-> iterator end()
-> {
-> 	return iterator(_head);
-> }
-> 
-> 
-> /*反向迭代器(不复用正向)*/
-> //const_reverse_iterator rbegin() const//const对象
-> //{
-> //	return const_reverse_iterator(_head);
-> //}
-> //const_reverse_iterator rend() const//const对象
-> //{
-> //	return const_reverse_iterator(_head->_next);
-> //}
-> //reverse_iterator rbegin()
-> //{
-> //	return reverse_iterator(_head);
-> //}
-> //reverse_iterator rend()
-> //{
-> //	return reverse_iterator(_head->_next);
-> //}
-> /*反向迭代器(复用正向)*/
-> const_reverse_iterator rbegin() const//const对象
-> {
-> 	return const_reverse_iterator(end());
-> }
-> const_reverse_iterator rend() const//const对象
-> {
-> 	return const_reverse_iterator(begin());
-> }
-> reverse_iterator rbegin()
-> {
-> 	return reverse_iterator(end());
-> }
-> reverse_iterator rend()
-> {
-> 	return reverse_iterator(begin());
-> }
-> 
-> ```
->
-> 
+###### 新思想
+
+```
+泛型编程--模板成员变量
+迭代器失效问题
+深拷贝嵌套问题
+```
+
+###### 迭代器失效
+
+```
+迭代器失效问题: insert(), erase()
+insert: 发生扩容 使pos指向的空间非法, 野指针; 插入后, pos不再指向原来的 [逻辑位置], 运行结果不符合逻辑, std::insert()返回插入的元素的迭代器
+erase: 发生缩容, 使pos指向的空间非法, 野指针; 逻辑问题. erase()根据编译器规则不同, 会有不同的结果. 不建议erase后立即访问, std::erase()返回删除元素的后一个元素的迭代器
+```
+
+###### 其他
+
+```
+capacity的代码在vs和g++下分别运行会发现，vs下capacity是按1.5倍增长的，g++是按2倍增长的。 这个问题经常会考察，不要固化的认为，vector增容都是2倍，具体增长多少是根据具体的需求定义 的。vs是PJ版本STL，g++是SGI版本STL。 reserve只负责开辟空间，如果确定知道需要用多少空间，reserve可以缓解vector增容的代价缺陷问 题。 resize在开空间的同时还会进行初始化，影响size。
+```
+
+###### 全代码
+
+[Vector模拟实现](https://gitee.com/ailiangshilove/cpp-class/blob/master/%E8%AF%BE%E4%BB%B6%E4%BB%A3%E7%A0%81/C++%E8%AF%BE%E4%BB%B6V6/vector%E7%9A%84%E6%A8%A1%E6%8B%9F%E5%AE%9E%E7%8E%B0/Vector.h)
+
+```c++
+#pragma once
+
+#include<iostream>
+#include<vector>
+#include<assert.h>
+
+using namespace std;
+
+namespace qlz
+{
+	template<class T>//模板类型
+
+	class vector
+	{
+	public:
+#pragma region TypedefAndIterator
+		//vector迭代器是原生指针, 我们声明两个迭代器, 类型为模板类型指针;
+		typedef T* iterator;
+		typedef const T* const_iterator;
+
+		iterator begin()
+		{
+			return _start;
+		}
+		iterator end()
+		{
+			return _finish;
+		}
+		//const_iterator begin() const, 构成函数重载
+		//因为第一个形参, 即对象的指针是不同类型, 一个是非const指针, 一个是const指针
+		const_iterator cbegin() const
+		{
+			return _start;
+		}
+		const_iterator cend() const
+		{
+			return _finish;
+		}
+
+#pragma endregion
+
+#pragma region 构造函数
+
+		//无参默认构造
+		vector()
+			:_start(nullptr)
+			, _finish(nullptr)
+			, _endOfStorage(nullptr)
+		{}
+
+		//拷贝构造
+		vector(const vector<T>& vec)
+			:_start(nullptr)
+			, _finish(nullptr)
+			, _endOfStorage(nullptr)
+		{
+			reverse(vec.capacity());
+
+			/*for (size_t i = 0; i < vec.size(); i++)
+			{
+				_start[i] = vec._start[i];
+			}
+
+			_finish = _start + vec.size();
+			_endOfStorage = _start + vec.capacity();*/
+
+			//迭代器实现
+			iterator it = begin();
+			const_iterator vit = vec.cbegin();
+			while (vit != vec.cend())
+			{
+				//已设置容量
+				*it++ = *vit++;
+			}
+			_finish = it;
+
+		}
+
+		//n个元素
+		vector(size_t n, const T& val = T())
+			//注意成员变量声明顺序
+			:_start(new T[n])
+			, _finish(_start + n)
+			, _endOfStorage(_start + n)
+		{
+			for (size_t i = 0; i < n; i++)
+			{
+				//已设置容量
+				_start[i] = val;
+			}
+		}
+		/*
+		* 理论上将，提供了vector(size_t n, const T& value = T())之后
+		* vector(int n, const T& value = T())就不需要提供了，但是对于：
+		* vector<int> v(10, 10);
+		* 编译器在编译时，认为T已经被实例化为int，而10和5编译器会默认其为int类型
+		* 就不会走vector(size_t n, const T& value = T())这个构造方法，
+		* 因为 vector(InputIterator first, InputIterator last) 模板Inpu实例化为int时, 形参列表更符合
+		* 但是10 和 10根本不是一个区间，编译时就报错了
+		* 故需要该构造方法, 防止跑到迭代器构造函数
+		*/
+		vector(int n, const T& val = T())
+			//注意成员变量声明顺序
+			:_start(new T[n])
+			, _finish(_start + n)
+			, _endOfStorage(_start + n)
+		{
+			for (int i = 0; i < n; i++)
+			{
+				//已设置容量
+				_start[i] = val;
+			}
+		}
+
+		//迭代器构造
+		template<class InputIterator>//迭代器模板
+		vector(InputIterator first, InputIterator last)
+		{
+			//复用push_back
+			while (first != last)
+			{
+				//未确定容量, 调用push_back, 每次询问是否需要扩容
+				push_back(*first);
+				++first;
+			}
+		}
+
+		~vector()
+		{
+			delete[] _start;
+			_start = _finish = _endOfStorage = nullptr;
+		}
+
+
+#pragma endregion
+
+#pragma region 空间
+
+	private:
+		bool Full()
+		{
+			if (_finish == _endOfStorage)
+			{
+				return true;
+			}
+
+			return false;
+		}
+	public:
+		size_t capacity() const
+		{
+			return _endOfStorage - _start;
+		}
+
+		size_t size() const
+		{
+			return _finish - _start;
+		}
+
+		bool empty() const
+		{
+			if (_finish == _start)
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		void reverse(size_t n)
+		{
+			if (n <= capacity())
+			{
+				return;
+			}
+
+			size_t oldSize = size();
+
+			T* tmp = new T[n];
+
+			for (size_t i = 0; i < oldSize; i++)
+			{
+				tmp[i] = _start[i];//模板类型T的赋值运算
+			}
+			delete[] _start;
+
+			_start = tmp;
+			tmp = nullptr;
+			_finish = _start + oldSize;
+			_endOfStorage = _start + n;
+
+		}
+
+		void resize(size_t n, const T& val = T())
+		{
+			if (n <= _finish - _start)
+			{
+				_finish = _start + n;
+			}
+			else
+			{
+				reverse(n);
+
+				iterator cur = _finish;
+				_finish = _start + n;
+				while (cur != _finish)
+				{
+					//已经确定容量到位, 直接使用赋值, 减少调用
+					*cur = val;
+					cur++;
+				}
+			}
+		}
+
+#pragma endregion
+
+#pragma region Other
+
+		//接受形参的引用, 将形参替换为空对象
+		void swap(vector<T>& vec)
+		{
+			::swap(_start, vec._start);
+			::swap(_finish, vec._finish);
+			::swap(_endOfStorage, vec._endOfStorage);
+		}
+
+#pragma endregion
+
+#pragma region 增删改查
+
+		//传元素引用, 防止无意义的深拷贝
+		iterator insert(iterator it, const T& val)
+		{
+			assert(it <= _finish);//合法插入
+
+			if (Full())
+			{
+				size_t pos = it - _start;
+
+				reverse(capacity() == 0 ? 2 : capacity() * 2);
+
+				it = _start + pos;//重置插入位置迭代器, 防止迭代器失效
+			}
+
+			iterator end = _finish - 1;//_finish所在地址, 为新的vector最后一个元素的位置
+
+			while (end >= it)
+			{
+				*(end + 1) = *end;
+				end--;
+			}
+
+			*it = val;
+			_finish++;
+			return it;//返回插入位置的迭代器
+		}
+
+		//复用insert
+		void push_back(const T& val)
+		{
+			insert(_finish, val);
+		}
+
+		//返回被删除的位置的迭代器
+		iterator erase(iterator it)
+		{
+			assert(!empty());//非空
+
+			// 挪动数据进行删除
+			iterator begin = it;
+			while (begin != _finish - 1) {
+				*begin = *(begin + 1);
+				++begin;
+			}
+
+			--_finish;
+			return it;
+		}
+
+		//复用erase
+		void pop_back()
+		{
+			erase(_finish - 1);
+		}
+
+#pragma endregion
+
+
+#pragma region 操作符AND访问
+
+		vector<T>& operator= (vector<T> vec)
+		{
+			swap(vec);
+			return *this;
+		}
+
+		T& operator[](size_t pos)
+		{
+			assert(pos < size());
+			return _start[pos];
+		}
+
+		const T& operator[](size_t pos)const
+		{
+			assert(pos < size());
+			return _start[pos];
+		}
+
+		T& front()
+		{
+			return *_start;
+		}
+
+		const T& front()const
+		{
+			return *_start;
+		}
+
+		T& back()
+		{
+			return *(_finish - 1);
+		}
+
+		const T& back()const
+		{
+			return *(_finish - 1);
+		}
+
+#pragma endregion
+
+
+	private:
+
+		//左闭右开
+		//没必要设置初始值, 因为会频繁使用初始化列表
+		iterator _start;//头
+		iterator _finish;//尾 == 头指针 + 实际大小
+		iterator _endOfStorage;// == 头指针 + 最大容量
+	};
+
+	void Test1()
+	{
+		qlz::vector<int> v1;
+		qlz::vector<int> v2(10, 5);
+
+		int array[] = { 1,2,3,4,5 };
+		qlz::vector<int> v3(array, array + sizeof(array) / sizeof(array[0]));
+
+		qlz::vector<int> v4(v3);
+
+		for (size_t i = 0; i < v2.size(); ++i)
+		{
+			cout << v2[i] << " ";
+		}
+		cout << endl;
+
+		auto it = v3.begin();
+		while (it != v3.end())
+		{
+			cout << *it << " ";
+			++it;
+		}
+		cout << endl;
+
+		for (auto e : v4)
+		{
+			cout << e << " ";
+		}
+		cout << endl;
+	}
+
+	void Test2()
+	{
+		qlz::vector<int> v;
+		v.push_back(1);
+		v.push_back(2);
+		v.push_back(3);
+		v.push_back(4);
+		v.push_back(5);
+		cout << v.size() << endl;
+		cout << v.capacity() << endl;
+		cout << v.front() << endl;
+		cout << v.back() << endl;
+		cout << v[0] << endl;
+		for (auto e : v)
+		{
+			cout << e << " ";
+		}
+		cout << endl;
+
+		v.pop_back();
+		v.pop_back();
+		for (auto e : v)
+		{
+			cout << e << " ";
+		}
+		cout << endl;
+
+		v.insert(v.begin(), 0);
+		for (auto e : v)
+		{
+			cout << e << " ";
+		}
+		cout << endl;
+
+		v.erase(v.begin() + 1);
+		for (auto e : v)
+		{
+			cout << e << " ";
+		}
+		cout << endl;
+	}
+
+	void Test3()
+	{
+		vector<int*> vec;
+		int a = 1, b = 2, c = 3;
+		vec.push_back(&a);
+		vec.push_back(&c);
+		vec.push_back(&b);
+
+		for (auto& ptr : vec)
+		{
+			cout << *ptr << ' ';
+		}
+
+
+	}
+}
+```
+
+###### 构造函数
+```c++
+//无参默认构造
+	vector()
+		:_start(nullptr)
+		, _finish(nullptr)
+		, _endOfStorage(nullptr)
+	{}
+
+//拷贝构造
+	vector(const vector<T>& vec)
+		:_start(nullptr)
+		, _finish(nullptr)
+		, _endOfStorage(nullptr)
+	{
+		reverse(vec.capacity());
+
+		/*for (size_t i = 0; i < vec.size(); i++)
+		{
+			_start[i] = vec._start[i];
+		}
+
+		_finish = _start + vec.size();
+		_endOfStorage = _start + vec.capacity();*/
+
+		//迭代器实现
+		iterator it = begin();
+		const_iterator vit = vec.cbegin();
+		while (vit != vec.cend())
+		{
+			//已设置容量
+			*it++ = *vit++;
+		}
+		_finish = it;
+
+	}
+
+//n个元素
+	vector(size_t n, const T& val = T())
+		//注意成员变量声明顺序
+		:_start(new T[n])
+		, _finish(_start + n)
+		, _endOfStorage(_start + n)
+	{
+		for (size_t i = 0; i < n; i++)
+		{
+			//已设置容量
+			_start[i] = val;
+		}
+	}
+	/*
+	* 理论上将，提供了vector(size_t n, const T& value = T())之后
+	* vector(int n, const T& value = T())就不需要提供了，但是对于：
+	* vector<int> v(10, 10);
+	* 编译器在编译时，认为T已经被实例化为int，而10和5编译器会默认其为int类型
+	* 就不会走vector(size_t n, const T& value = T())这个构造方法，
+	* 因为 vector(InputIterator first, InputIterator last) 模板Inpu实例化为int时, 形参列表更符合
+	* 但是10 和 10根本不是一个区间，编译时就报错了
+	* 故需要该构造方法, 防止跑到迭代器构造函数
+	*/
+	vector(int n, const T& val = T())
+		//注意成员变量声明顺序
+		:_start(new T[n])
+		, _finish(_start + n)
+		, _endOfStorage(_start + n)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			//已设置容量
+			_start[i] = val;
+		}
+	}
+
+//迭代器构造
+	template<class InputIterator>//迭代器模板
+	vector(InputIterator first, InputIterator last)
+	{
+		//复用push_back
+		while (first != last)
+		{
+			//未确定容量, 调用push_back, 每次询问是否需要扩容
+			push_back(*first);
+			++first;
+		}
+	}
+//析构
+	~vector()
+	{
+		delete[] _start;
+		_start = _finish = _endOfStorage = nullptr;
+	}
+```
+
+###### 空间操作
+```c++
+private:
+	bool Full()//私有化
+	{
+		if (_finish == _endOfStorage)
+		{
+			return true;
+		}
+
+		return false;
+	}
+public:
+	size_t capacity() const
+	{
+		return _endOfStorage - _start;
+	}
+
+	size_t size() const
+	{
+		return _finish - _start;
+	}
+
+	bool empty() const
+	{
+		if (_finish == _start)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	void reverse(size_t n)
+	{
+		if (n <= capacity())
+		{
+			return;
+		}
+
+		size_t oldSize = size();
+
+		T* tmp = new T[n];
+
+		for (size_t i = 0; i < oldSize; i++)
+		{
+			tmp[i] = _start[i];//模板类型T的赋值运算
+		}
+		delete[] _start;
+
+		_start = tmp;
+		tmp = nullptr;
+		_finish = _start + oldSize;
+		_endOfStorage = _start + n;
+
+	}
+
+	void resize(size_t n, const T& val = T())
+	{
+		if (n <= _finish - _start)
+		{
+			_finish = _start + n;
+		}
+		else
+		{
+			reverse(n);
+
+			iterator cur = _finish;
+			_finish = _start + n;
+			while (cur != _finish)
+			{
+				//已经确定容量到位, 直接使用赋值, 减少调用
+				*cur = val;
+				cur++;
+			}
+		}
+	}
+```
+
+###### 增删改查
+```c++
+//传元素引用, 防止无意义的深拷贝
+	iterator insert(iterator it, const T& val)
+	{
+		assert(it <= _finish);//合法插入
+
+		if (Full())
+		{
+			size_t pos = it - _start;
+
+			reverse(capacity() == 0 ? 2 : capacity() * 2);
+
+			it = _start + pos;//重置插入位置迭代器, 防止迭代器失效
+		}
+
+		iterator end = _finish - 1;//_finish所在地址, 为新的vector最后一个元素的位置
+
+		while (end >= it)
+		{
+			*(end + 1) = *end;
+			end--;
+		}
+
+		*it = val;
+		_finish++;
+		return it;//返回插入位置的迭代器
+	}
+
+//复用insert
+	void push_back(const T& val)
+	{
+		insert(_finish, val);
+	}
+
+//返回被删除的位置的迭代器
+	iterator erase(iterator it)
+	{
+		assert(!empty());//非空
+
+		// 挪动数据进行删除
+		iterator begin = it;
+		while (begin != _finish - 1) {
+			*begin = *(begin + 1);
+			++begin;
+		}
+
+		--_finish;
+		return it;
+	}
+
+//复用erase
+	void pop_back()
+	{
+		erase(_finish - 1);
+	}
+```
+
+###### 操作符重载
+```c++
+vector<T>& operator= (vector<T> vec)
+	{
+		swap(vec);
+		return *this;
+	}
+
+	T& operator[](size_t pos)
+	{
+		assert(pos < size());
+		return _start[pos];
+	}
+
+	const T& operator[](size_t pos)const
+	{
+		assert(pos < size());
+		return _start[pos];
+	}
+
+	T& front()
+	{
+		return *_start;
+	}
+
+	const T& front()const
+	{
+		return *_start;
+	}
+
+	T& back()
+	{
+		return *(_finish - 1);
+	}
+
+	const T& back()const
+	{
+		return *(_finish - 1);
+	}
+```
+
+###### 迭代器/其他
+```c++
+//vector迭代器是原生指针, 我们声明两个迭代器, 类型为模板类型指针;
+	typedef T* iterator;
+	typedef const T* const_iterator;
+
+	iterator begin()
+	{
+		return _start;
+	}
+	iterator end()
+	{
+		return _finish;
+	}
+	//const_iterator begin() const, 构成函数重载
+	//因为第一个形参, 即对象的指针是不同类型, 一个是非const指针, 一个是const指针
+	const_iterator cbegin() const
+	{
+		return _start;
+	}
+	const_iterator cend() const
+	{
+		return _finish;
+	}
+
+//接受形参的引用, 将形参替换为空对象
+	void swap(vector<T>& vec)
+	{
+		::swap(_start, vec._start);
+		::swap(_finish, vec._finish);
+		::swap(_endOfStorage, vec._endOfStorage);
+	}
+```
+
+
+
+
+
+##### list
+
+###### 新思想
+
+```
+泛型编程---通过模板类型列表的不同,形参实例化不同, 最终实现泛型编程
+
+复用思想---适配器
+
+非原生指针迭代器--封装原生指针, 形成迭代器类, 并重载运算符, 向原生指针靠拢
+
+重点迭代器
+
+```
+
+###### 全代码
+
+[List的模拟实现](https://gitee.com/ailiangshilove/cpp-class/blob/master/%E8%AF%BE%E4%BB%B6%E4%BB%A3%E7%A0%81/C++%E8%AF%BE%E4%BB%B6V6/List%E7%9A%84%E6%A8%A1%E6%8B%9F%E5%AE%9E%E7%8E%B0/List.h)
+
+```
+#pragma once
+
+#include<assert.h>
+#include<iostream>
+#include<list>
+
+using namespace std;
+
+
+namespace qlz
+{
+
+	template<typename T>//数据类型
+	//节点结构
+	struct list_node 
+	{
+		T _data;//元素
+		list_node<T>* _next;//后指针
+		list_node<T>* _prev;//前指针
+
+		list_node(const T& x = T())//默认构造
+			:_data(x)
+			, _next(nullptr)
+			, _prev(nullptr)
+		{}
+
+	};
+
+
+	/*
+	* 1. 以 函数重载的方式, 实现返回 成员变量的const引用 和 非const引用, 两种迭代器属于相同的类型
+	* 2. 通过实例化的区别, 生成const迭代器, 和非const迭代器, 两种迭代器属于不同的类型, 指定 引用返回, 指针返回的类型
+	* typedef _list_iterator<T, T&, T*>             iterator;
+	* typedef _list_iterator<T, const T&, const T*> const_iterator;
+	* 
+	* List 的迭代器
+	* 迭代器有两种实现方式，具体应根据容器底层数据结构实现：
+	*   1. 原生态指针，比如：vector
+	*   2. 将原生态指针进行封装，因迭代器使用形式与指针完全相同，因此在自定义的类中必须实现以下方法：
+	* 	 1. 指针可以解引用，迭代器的类中必须重载operator*()
+	* 	 2. 指针可以通过->访问其所指空间成员，迭代器类中必须重载oprator->()
+	* 	 3. 指针可以++向后移动，迭代器类中必须重载operator++()与operator++(int)
+	* 		至于operator--()/operator--(int)释放需要重载，根据具体的结构来抉择，双向链表可以向前             移动，所以需要重载，如果是forward_list就不需要重载--
+	* 	 4. 迭代器需要进行是否相等的比较，因此还需要重载operator==()与operator!=()
+	*/
+	//正向迭代器
+	template<typename T, typename Ref, typename Ptr>//数据类型, 数据类型的引用, 数据类型的指针
+	struct _list_iterator
+	{
+	public:
+		typedef list_node<T> Node;
+		typedef _list_iterator<T, Ref, Ptr> iterator;
+
+		//使用 std::find() 需要这些 
+		typedef bidirectional_iterator_tag iterator_category;
+		typedef T value_type;
+		typedef Ptr pointer;
+		typedef Ref reference;
+		typedef ptrdiff_t difference_type;
+
+		//反向迭代器需要这些
+		typedef Ref Ref;
+		typedef Ptr Ptr;
+
+		Node* _node;
+
+		//指针类型, 浅拷贝即可
+		_list_iterator(Node* node = nullptr)
+			:_node(node)
+		{}
+		//默认生成的拷贝构造为浅拷贝, 可使用
+		/*_list_iterator(const iterator& it)
+			:_node(it._node)
+		{}*/
+
+		//!=
+		bool operator!=(const iterator& it) const
+		{
+			return _node != it._node;
+		}
+
+		//==
+		bool operator==(const iterator& it) const
+		{
+			return _node == it._node;
+		}
+
+
+		/* 对于循环双向带头链表
+		* 在逻辑上, Node节点应该就是元素, 而实际上, Node节点 封装了元素和前后指针
+		* 逻辑上, 迭代器为元素的"指针", 若元素为结构体类型, 则可以通过 (*). / -> 访问元素的成员变量
+		* 但实际上, 迭代器为Node节点的指针, (*). / -> 访问的的是 Node节点的 元素和前后指针,
+		* 所以需要对 (*). / -> 重载
+		* ++, -- 同理
+		*/
+
+		//*
+		// 注意模板类型
+		// const T& operator*()
+		// T& operator*()
+		Ref operator*()
+		{
+			return (_node->_data);
+		}
+
+		//->, 注意, 若元素为结构体类型, 编译器进行了优化, it->(得到元素地址)->_val1 -----> it->_val
+		Ptr operator->()
+		{
+			return &(operator*());
+		}
+
+		// ++it
+		iterator& operator++()
+		{
+			_node = _node->_next;
+			return *this;
+		}
+
+		// it++
+		iterator operator++(int)
+		{
+			iterator tmp(*this);
+			_node = _node->_next;
+			return tmp;
+		}
+
+		// --it
+		iterator& operator--()
+		{
+			_node = _node->_prev;
+			return *this;
+		}
+
+		// it--
+		iterator operator--(int)
+		{
+			iterator tmp(*this);
+			_node = _node->_prev;
+			return tmp;
+		}
+
+	};
+
+	/*反向迭代器(重写逻辑)*/
+	//template<typename T, typename Ref, typename Ptr>//数据类型, 数据类型的引用, 数据类型的指针
+	//struct _reverse_list_iterator
+	//{
+	//	typedef list_node<T> Node;
+	//	typedef _reverse_list_iterator<T, Ref, Ptr> reverse_iterator;
+	//
+	//	Node* _node;
+	//
+	//	//指针类型, 浅拷贝即可
+	//	_reverse_list_iterator(Node* node = nullptr)
+	//		:_node(node)
+	//	{}
+	//
+	//	//!=
+	//	bool operator!=(const reverse_iterator& it) const
+	//	{
+	//		return _node != it._node;
+	//	}
+	//
+	//	//==
+	//	bool operator==(const reverse_iterator& it) const
+	//	{
+	//		return _node == it._node;
+	//	}
+	//
+	//
+	//	/* 对于循环双向带头链表
+	//	* 在逻辑上, Node节点应该就是元素, 而实际上, Node节点 封装了元素和前后指针
+	//	* 逻辑上, 迭代器为元素的"指针", 若元素为结构体类型, 则可以通过 (*). / -> 访问元素的成员变量
+	//	* 但实际上, 迭代器为Node节点的指针, (*). / -> 访问的的是 Node节点的 元素和前后指针,
+	//	* 所以需要对 (*). / -> 重载
+	//	* ++, -- 同理
+	//	*/
+	//
+	//	//*
+	//	// 注意模板类型
+	//	// const T& operator*()
+	//	// T& operator*()
+	//	Ref operator*()
+	//	{
+	//		Node* tmp= _node->_prev;
+	//		return (tmp->_data);
+	//	}
+	//
+	//	//->, 注意, 若元素为结构体类型, 编译器进行了优化, it->(得到元素地址)->_val1 -----> it->_val
+	//	Ptr operator->()
+	//	{
+	//		return &(operator*());
+	//	}
+	//
+	//	// ++it
+	//	reverse_iterator& operator++()
+	//	{
+	//		_node = _node->_prev;
+	//		return *this;
+	//	}
+	//
+	//	// it++
+	//	reverse_iterator operator++(int)
+	//	{
+	//		reverse_iterator tmp(*this);
+	//		_node = _node->_prev;
+	//		return tmp;
+	//	}
+	//
+	//	// --it
+	//	reverse_iterator& operator--()
+	//	{
+	//		_node = _node->_next;
+	//		return *this;
+	//	}
+	//
+	//	// it--
+	//	reverse_iterator operator--(int)
+	//	{
+	//		iterator tmp(*this);
+	//		_node = _node->_next;
+	//		return tmp;
+	//	}
+	//
+	//};
+	/*反向迭代器(适配器)*/
+	template<class iterator>
+	struct _reverse_list_iterator
+	{
+	public:
+		// 注意：此处typename的作用是明确告诉编译器，Ref是Iterator类中的一个类型，而不是静态成员变量
+		// 否则编译器编译时就不知道Ref是Iterator中的类型还是静态成员变量
+		// 因为静态成员变量也是按照 类名::静态成员变量名 的方式访问的
+		typedef typename iterator::Ref Ref;
+		typedef typename iterator::Ptr Ptr;
+		typedef _reverse_list_iterator<iterator> reverse_iterator;
+	public:
+		// 构造
+		_reverse_list_iterator(iterator it)
+			: _rit(it)
+		{}
+
+		//////////////////////////////////////////////
+		// 具有指针类似行为
+		Ref operator*()
+		{
+			iterator temp(_rit);
+			--temp;
+			return *temp;
+		}
+
+		Ptr operator->()
+		{
+			return &(operator*());
+		}
+
+		// 迭代器支持移动
+		reverse_iterator& operator++()
+		{
+			--_rit;
+			return *this;
+		}
+
+		reverse_iterator operator++(int)
+		{
+			reverse_iterator temp(*this);
+			--_rit;
+			return temp;
+		}
+
+		reverse_iterator& operator--()
+		{
+			++_rit;
+			return *this;
+		}
+
+		reverse_iterator operator--(int)
+		{
+			reverse_iterator temp(*this);
+			++_rit;
+			return temp;
+		}
+
+		// 迭代器支持比较
+		bool operator!=(const reverse_iterator& l)const
+		{
+			return _rit != l._rit;
+		}
+
+		bool operator==(const reverse_iterator& l)const
+		{
+			return _rit != l._rit;
+		}
+
+		iterator _rit;
+	};
+
+	//List
+	template<typename T>
+	class list//双向带头循环链表
+	{
+
+	public:
+		typedef list_node<T> Node;
+		//通过实例化的区别, 生成const迭代器, 和非const迭代器
+		typedef _list_iterator<T, T&, T*> iterator;
+		typedef _list_iterator<T, const T&, const T*> const_iterator;		
+		/*
+		* 仍然可以 以 函数重载的方式, 实现返回 成员变量的const引用 和 非const引用
+		* eg
+		* typedef const _list_iterator<T, T&, T*> const_iterator;
+		* 
+		* const iterator begin() const
+		* {
+		* 	return const iterator(_head->_next);
+		* }
+		*
+		* const iterator end() const
+		* {
+		* 	return const iterator(_head);
+		* }
+		* 
+		* T& operator*()
+		* {
+		* 	return (it->_data);
+		* }
+		* const T& operator*() const
+		* {
+		* 	return (it->_data);
+		* }
+		*/
+
+		/*反向迭代器(不复用)*/
+		/*typedef _reverse_list_iterator<T, T&, T*> reverse_iterator;
+		typedef _reverse_list_iterator<T, const T&, const T*> const_reverse_iterator;*/
+		/*反向迭代器(复用)*/
+		typedef _reverse_list_iterator<iterator> reverse_iterator;
+		typedef _reverse_list_iterator<const_iterator> const_reverse_iterator;
+
+
+
+#pragma region 构造函数
+		list()
+		{
+			_head = new Node;
+			_head->_next = _head;
+			_head->_prev = _head;
+		}
+
+		list(size_t n, const T& value = T())
+		{
+			_head = new Node;
+			_head->_next = _head;
+			_head->_prev = _head;
+
+			for (int i = 0; i < n; ++i)
+				push_back(value);
+		}
+		list(int n, const T& value = T())
+		{
+			_head = new Node;
+			_head->_next = _head;
+			_head->_prev = _head;
+
+			for (int i = 0; i < n; ++i)
+				push_back(value);
+		}
+
+		template <class Iterator>
+		list(Iterator first, Iterator last)
+		{
+			_head = new Node;
+			_head->_next = _head;
+			_head->_prev = _head;
+
+			while (first != last)
+			{
+				push_back(*first);
+				++first;
+			}
+		}
+
+		list(const list<T>& l)
+		{
+			_head = new Node;
+			_head->_next = _head;
+			_head->_prev = _head;
+
+			// 用l中的元素构造临时的temp,然后与当前对象交换
+			list<T> temp(l.begin(), l.end());
+			this->swap(temp);
+		}
+
+		list<T>& operator=(list<T> l)
+		{
+			this->swap(l);
+			return *this;
+		}
+
+#pragma endregion
+
+#pragma region 空间
+
+		//内置交换
+		void swap(list<T>& l)
+		{
+			std::swap(_head, l._head);
+		}
+
+		//判空
+		bool empty()const
+		{
+			return _head->_next == _head;
+		}
+
+		//元素个数
+		size_t size()const
+		{
+			Node* cur = _head->_next;
+			size_t count = 0;
+			while (cur != _head)
+			{
+				count++;
+				cur = cur->_next;
+			}
+
+			return count;
+		}
+
+		//设置元素个数
+		void resize(size_t newsize, const T& val = T())
+		{
+			size_t oldsize = size();
+			if (newsize <= oldsize)
+			{
+				// 有效元素个数减少到newsize
+				while (newsize < oldsize)
+				{
+					pop_back();
+					oldsize--;
+				}
+			}
+			else
+			{
+				while (oldsize < newsize)
+				{
+					push_back(val);
+					oldsize++;
+				}
+			}
+		}
+
+		//清空
+		void clear()
+		{
+			Node* cur = _head->_next;
+
+			// 采用头删除删除
+			while (cur != _head)
+			{
+				_head->_next = cur->_next;
+				delete cur;
+				cur = _head->_next;
+			}
+			//只保留头节点
+			_head->_next = _head->_prev = _head;
+		}
+
+#pragma endregion
+
+#pragma region 迭代器
+		const_iterator begin() const//const对象
+		{
+			return const_iterator(_head->_next);
+		}
+
+		const_iterator end() const//const对象
+		{
+			return const_iterator(_head);
+		}
+
+		iterator begin()
+		{
+			return iterator(_head->_next);
+		}
+
+		iterator end()
+		{
+			return iterator(_head);
+		}
+
+
+		/*反向迭代器(不复用正向)*/
+		//const_reverse_iterator rbegin() const//const对象
+		//{
+		//	return const_reverse_iterator(_head);
+		//}
+		//const_reverse_iterator rend() const//const对象
+		//{
+		//	return const_reverse_iterator(_head->_next);
+		//}
+		//reverse_iterator rbegin()
+		//{
+		//	return reverse_iterator(_head);
+		//}
+		//reverse_iterator rend()
+		//{
+		//	return reverse_iterator(_head->_next);
+		//}
+		/*反向迭代器(复用正向)*/
+		const_reverse_iterator rbegin() const//const对象
+		{
+			return const_reverse_iterator(end());
+		}
+		const_reverse_iterator rend() const//const对象
+		{
+			return const_reverse_iterator(begin());
+		}
+		reverse_iterator rbegin()
+		{
+			return reverse_iterator(end());
+		}
+		reverse_iterator rend()
+		{
+			return reverse_iterator(begin());
+		}
+#pragma endregion
+
+#pragma region 增删
+		void push_back(const T& val)
+		{
+			Node* node = new Node(val);
+
+			Node* tail = _head->_prev;
+			tail->_next = node;
+			node->_prev = tail;
+			node->_next = _head;
+			_head->_prev = node;
+		}
+
+		//返回当前节点迭代器
+		iterator insert(iterator pos, const T& x)
+		{
+			Node* cur = pos._node;
+			Node* prev = cur->_prev;
+
+			Node* newnode = new Node(x);
+
+			// prev newnode cur
+			prev->_next = newnode;
+			newnode->_prev = prev;
+			newnode->_next = cur;
+			cur->_prev = newnode;
+
+			return iterator(newnode);
+		}
+
+		//返回下一个节点的迭代器
+		iterator erase(iterator pos)
+		{
+			assert(pos != end());
+
+			Node* cur = pos._node;
+			Node* prev = cur->_prev;
+			Node* next = cur->_next;
+
+			prev->_next = next;
+			next->_prev = prev;
+			delete cur;
+
+			return iterator(next);
+		}
+
+		void push_front(const T& x)
+		{
+			insert(begin(), x);
+		}
+
+		void pop_back()
+		{
+			erase(--end());
+		}
+
+		void pop_front()
+		{
+			erase(begin());
+		}
+#pragma endregion
+
+#pragma region 访问
+		//不支持[]
+		T& front()
+		{
+			return _head->_next->_val;
+		}
+		const T& front()const
+		{
+			return _head->_next->_val;
+		}
+		T& back()
+		{
+			return _head->_prev->_val;
+		}
+		const T& back()const
+		{
+			return _head->_prev->_val;
+		}
+#pragma endregion
+
+
+	private:
+		Node* _head;//头节点
+	};
+
+
+
+#pragma region 测试
+
+	/*void ttest1()
+		{
+			list<int> lis1;
+
+			lis1.push_back(1);
+			lis1.push_back(2);
+			lis1.push_back(3);
+
+
+		}
+
+		struct pPos
+		{
+			int _a1;
+			int _a2;
+
+			pPos(int a1 = 0, int a2 = 0)
+				:_a1(a1)
+				, _a2(a2)
+			{}
+		};
+
+		void ttest2()
+		{
+			int x = 10;
+			int* p1 = &x;
+
+			cout << *p1 << endl;
+
+			pPos aa;
+			pPos* p2 = &aa;
+			p2->_a1;
+			p2->_a2;
+
+			list<pPos> lt;
+			lt.push_back(pPos(10, 20));
+			lt.push_back(pPos(10, 21));
+
+			list<pPos>::iterator it = lt.begin();
+
+			cout << endl;
+		}
+
+		void FFunc(const list<int>& l)
+		{
+			list<int>::const_iterator it = l.begin();
+
+			*it;
+
+			cout << endl;
+		}*/
+
+	void test1()
+	{
+		list<int> lt;
+		lt.push_back(1);
+		lt.push_back(2);
+		lt.push_back(3);
+		lt.push_back(4);
+		lt.push_back(5);
+
+		list<int>::iterator it = lt.begin();
+		while (it != lt.end())
+		{
+			cout << *it << " ";
+			++it;
+		}
+		cout << endl;
+
+		it = lt.begin();
+		while (it != lt.end())
+		{
+			*it *= 2;
+			++it;
+		}
+		cout << endl;
+
+		for (auto e : lt)
+		{
+			cout << e << " ";
+		}
+		cout << endl;
+	}
+	struct Pos
+	{
+		int _a1;
+		int _a2;
+
+		Pos(int a1 = 0, int a2 = 0)
+			:_a1(a1)
+			, _a2(a2)
+		{}
+	};
+	void test2()
+	{
+		int x = 10;
+		int* p1 = &x;
+
+		cout << *p1 << endl;
+
+		Pos aa;
+		Pos* p2 = &aa;
+		p2->_a1;
+		p2->_a2;
+
+		list<Pos> lt;
+		lt.push_back(Pos(10, 20));
+		lt.push_back(Pos(10, 21));
+
+		list<Pos>::iterator it = lt.begin();
+		while (it != lt.end())
+		{
+			//cout << (*it)._a1 << ":" << (*it)._a2 << endl;
+			cout << it->_a1 << ":" << it->_a2 << endl;
+
+			++it;
+		}
+		cout << endl;
+	}
+	void Func(const list<int>& l)
+	{
+		list<int>::const_iterator it = l.begin();
+		while (it != l.end())
+		{
+			//*it = 10;
+
+			cout << *it << " ";
+			++it;
+		}
+		cout << endl;
+	}
+	void test3()
+	{
+		list<int> lt;
+		lt.push_back(1);
+		lt.push_back(2);
+		lt.push_back(3);
+		lt.push_back(4);
+		lt.push_back(5);
+
+		Func(lt);
+	}
+	void test4()
+	{
+		list<int> lt;
+		lt.push_back(1);
+		lt.push_back(2);
+		lt.push_back(3);
+		lt.push_back(4);
+		lt.push_back(5);
+
+		list<int>::iterator it = lt.begin();
+		while (it != lt.end())
+		{
+			cout << *it << " ";
+			++it;
+		}
+		cout << endl;
+
+		it = lt.begin();
+		while (it != lt.end())
+		{
+			*it *= 2;
+			++it;
+		}
+		cout << endl;
+
+		for (auto e : lt)
+		{
+			cout << e << " ";
+		}
+		cout << endl;
+
+		lt.push_front(10);
+		lt.push_front(20);
+		lt.push_front(30);
+		lt.push_front(40);
+
+		lt.pop_back();
+		lt.pop_back();
+
+		for (auto e : lt)
+		{
+			cout << e << " ";
+		}
+		cout << endl;
+
+		auto pos = find(lt.begin(), lt.end(), 4);
+		if (pos != lt.end())
+		{
+			// pos是否会失效？不会
+			lt.insert(pos, 40);
+			//lt.insert(pos, 30);
+			*pos *= 100;
+		}
+
+		for (auto e : lt)
+		{
+			cout << e << " ";
+		}
+		cout << endl;
+	}
+	void test5()
+	{
+		list<int> l1;
+		l1.push_back(4);
+		l1.push_back(1);
+		l1.push_back(3);
+		l1.push_back(2);
+
+		/*auto it = l1.begin();
+		cout << *it << endl;
+
+		auto rit = l1.rbegin();
+
+		cout << *rit;*/
+
+		for (auto rit = l1.rbegin(); rit != l1.rend(); rit++)
+			cout << *rit << endl;
+
+
+
+	}
+#pragma endregion
+
+
+}
+
+```
+
+###### 构造函数
+```C++
+list()
+{
+	_head = new Node;
+	_head->_next = _head;
+	_head->_prev = _head;
+}
+
+list(size_t n, const T& value = T())
+{
+	_head = new Node;
+	_head->_next = _head;
+	_head->_prev = _head;
+
+	for (int i = 0; i < n; ++i)
+		push_back(value);
+}
+list(int n, const T& value = T())
+{
+	_head = new Node;
+	_head->_next = _head;
+	_head->_prev = _head;
+
+	for (int i = 0; i < n; ++i)
+		push_back(value);
+}
+
+template <class Iterator>
+list(Iterator first, Iterator last)
+{
+	_head = new Node;
+	_head->_next = _head;
+	_head->_prev = _head;
+
+	while (first != last)
+	{
+		push_back(*first);
+		++first;
+	}
+}
+
+list(const list<T>& l)
+{
+	_head = new Node;
+	_head->_next = _head;
+	_head->_prev = _head;
+
+	// 用l中的元素构造临时的temp,然后与当前对象交换
+	list<T> temp(l.begin(), l.end());
+	this->swap(temp);
+}
+
+list<T>& operator=(list<T> l)
+{
+	this->swap(l);
+	return *this;
+}
+```
+
+###### 空间操作
+```c++
+//内置交换
+void swap(list<T>& l)
+{
+	std::swap(_head, l._head);
+}
+
+//判空
+bool empty()const
+{
+	return _head->_next == _head;
+}
+
+//元素个数
+size_t size()const
+{
+	Node* cur = _head->_next;
+	size_t count = 0;
+	while (cur != _head)
+	{
+		count++;
+		cur = cur->_next;
+	}
+
+	return count;
+}
+
+//设置元素个数
+void resize(size_t newsize, const T& val = T())
+{
+	size_t oldsize = size();
+	if (newsize <= oldsize)
+	{
+		// 有效元素个数减少到newsize
+		while (newsize < oldsize)
+		{
+			pop_back();
+			oldsize--;
+		}
+	}
+	else
+	{
+		while (oldsize < newsize)
+		{
+			push_back(val);
+			oldsize++;
+		}
+	}
+}
+
+//清空
+void clear()
+{
+	Node* cur = _head->_next;
+
+	// 采用头删除删除
+	while (cur != _head)
+	{
+		_head->_next = cur->_next;
+		delete cur;
+		cur = _head->_next;
+	}
+	//只保留头节点
+	_head->_next = _head->_prev = _head;
+}
+```
+
+###### 增删
+```c++
+void push_back(const T& val)
+{
+	Node* node = new Node(val);
+
+	Node* tail = _head->_prev;
+	tail->_next = node;
+	node->_prev = tail;
+	node->_next = _head;
+	_head->_prev = node;
+}
+
+//返回当前节点迭代器
+iterator insert(iterator pos, const T& x)
+{
+	Node* cur = pos._node;
+	Node* prev = cur->_prev;
+
+	Node* newnode = new Node(x);
+
+	// prev newnode cur
+	prev->_next = newnode;
+	newnode->_prev = prev;
+	newnode->_next = cur;
+	cur->_prev = newnode;
+
+	return iterator(newnode);
+}
+
+//返回下一个节点的迭代器
+iterator erase(iterator pos)
+{
+	assert(pos != end());
+
+	Node* cur = pos._node;
+	Node* prev = cur->_prev;
+	Node* next = cur->_next;
+
+	prev->_next = next;
+	next->_prev = prev;
+	delete cur;
+
+	return iterator(next);
+}
+
+void push_front(const T& x)
+{
+	insert(begin(), x);
+}
+
+void pop_back()
+{
+	erase(--end());
+}
+
+void pop_front()
+{
+	erase(begin());
+}
+```
+
+###### 迭代器
+
+**模板类声明**
+
+```c++
+//迭代器模板类声明
+typedef list_node<T> Node;
+//通过实例化的区别, 生成const迭代器, 和非const迭代器
+typedef _list_iterator<T, T&, T*> iterator;
+typedef _list_iterator<T, const T&, const T*> const_iterator;		
+//仍然可以 以 函数重载的方式, 实现返回 成员变量的const引用 和 非const引用
+
+/*反向迭代器(不复用)*/
+/*typedef _reverse_list_iterator<T, T&, T*> reverse_iterator;
+typedef _reverse_list_iterator<T, const T&, const T*> const_reverse_iterator;*/
+/*反向迭代器(复用)*/
+typedef _reverse_list_iterator<iterator> reverse_iterator;
+typedef _reverse_list_iterator<const_iterator> const_reverse_iterator;
+
+//----------------------------------------------------------------------------
+```
+**模板类**
+
+```c++
+//迭代器模板类
+/*
+* 1. 以 函数重载的方式, 实现返回 成员变量的const引用 和 非const引用, 两种迭代器属于相同的类型
+* 2. 通过实例化的区别, 生成const迭代器, 和非const迭代器, 两种迭代器属于不同的类型, 指定 引用返回, 指针返回的类型
+* typedef _list_iterator<T, T&, T*>             iterator;
+* typedef _list_iterator<T, const T&, const T*> const_iterator;
+* 
+* List 的迭代器
+* 迭代器有两种实现方式，具体应根据容器底层数据结构实现：
+*   1. 原生态指针，比如：vector
+*   2. 将原生态指针进行封装，因迭代器使用形式与指针完全相同，因此在自定义的类中必须实现以下方法：
+* 	 1. 指针可以解引用，迭代器的类中必须重载operator*()
+* 	 2. 指针可以通过->访问其所指空间成员，迭代器类中必须重载oprator->()
+* 	 3. 指针可以++向后移动，迭代器类中必须重载operator++()与operator++(int)
+* 		至于operator--()/operator--(int)释放需要重载，根据具体的结构来抉择，双向链表可以向前             移动，所以需要重载，如果是forward_list就不需要重载--
+* 	 4. 迭代器需要进行是否相等的比较，因此还需要重载operator==()与operator!=()
+*/
+//正向迭代器
+template<typename T, typename Ref, typename Ptr>//数据类型, 数据类型的引用, 数据类型的指针
+struct _list_iterator
+{
+public:
+	typedef list_node<T> Node;
+	typedef _list_iterator<T, Ref, Ptr> iterator;
+
+	//使用 std::find() 需要这些 
+	typedef bidirectional_iterator_tag iterator_category;
+	typedef T value_type;
+	typedef Ptr pointer;
+	typedef Ref reference;
+	typedef ptrdiff_t difference_type;
+
+	//反向迭代器需要这些
+	typedef Ref Ref;
+	typedef Ptr Ptr;
+
+	Node* _node;
+
+	//指针类型, 浅拷贝即可
+	_list_iterator(Node* node = nullptr)
+		:_node(node)
+	{}
+	//默认生成的拷贝构造为浅拷贝, 可使用
+	/*_list_iterator(const iterator& it)
+		:_node(it._node)
+	{}*/
+
+	//!=
+	bool operator!=(const iterator& it) const
+	{
+		return _node != it._node;
+	}
+
+	//==
+	bool operator==(const iterator& it) const
+	{
+		return _node == it._node;
+	}
+
+
+	/* 对于循环双向带头链表
+	* 在逻辑上, Node节点应该就是元素, 而实际上, Node节点 封装了元素和前后指针
+	* 逻辑上, 迭代器为元素的"指针", 若元素为结构体类型, 则可以通过 (*). / -> 访问元素的成员变量
+	* 但实际上, 迭代器为Node节点的指针, (*). / -> 访问的的是 Node节点的 元素和前后指针,
+	* 所以需要对 (*). / -> 重载
+	* ++, -- 同理
+	*/
+
+	//*
+	// 注意模板类型
+	// const T& operator*()
+	// T& operator*()
+	Ref operator*()
+	{
+		return (_node->_data);
+	}
+
+	//->, 注意, 若元素为结构体类型, 编译器进行了优化, it->(得到元素地址)->_val1 -----> it->_val
+	Ptr operator->()
+	{
+		return &(operator*());
+	}
+
+	// ++it
+	iterator& operator++()
+	{
+		_node = _node->_next;
+		return *this;
+	}
+
+	// it++
+	iterator operator++(int)
+	{
+		iterator tmp(*this);
+		_node = _node->_next;
+		return tmp;
+	}
+
+	// --it
+	iterator& operator--()
+	{
+		_node = _node->_prev;
+		return *this;
+	}
+
+	// it--
+	iterator operator--(int)
+	{
+		iterator tmp(*this);
+		_node = _node->_prev;
+		return tmp;
+	}
+
+};
+
+/*反向迭代器(重写逻辑)*/
+//template<typename T, typename Ref, typename Ptr>//数据类型, 数据类型的引用, 数据类型的指针
+//struct _reverse_list_iterator
+//{
+//	typedef list_node<T> Node;
+//	typedef _reverse_list_iterator<T, Ref, Ptr> reverse_iterator;
+//
+//	Node* _node;
+//
+//	//指针类型, 浅拷贝即可
+//	_reverse_list_iterator(Node* node = nullptr)
+//		:_node(node)
+//	{}
+//
+//	//!=
+//	bool operator!=(const reverse_iterator& it) const
+//	{
+//		return _node != it._node;
+//	}
+//
+//	//==
+//	bool operator==(const reverse_iterator& it) const
+//	{
+//		return _node == it._node;
+//	}
+//
+//
+//	/* 对于循环双向带头链表
+//	* 在逻辑上, Node节点应该就是元素, 而实际上, Node节点 封装了元素和前后指针
+//	* 逻辑上, 迭代器为元素的"指针", 若元素为结构体类型, 则可以通过 (*). / -> 访问元素的成员变量
+//	* 但实际上, 迭代器为Node节点的指针, (*). / -> 访问的的是 Node节点的 元素和前后指针,
+//	* 所以需要对 (*). / -> 重载
+//	* ++, -- 同理
+//	*/
+//
+//	//*
+//	// 注意模板类型
+//	// const T& operator*()
+//	// T& operator*()
+//	Ref operator*()
+//	{
+//		Node* tmp= _node->_prev;
+//		return (tmp->_data);
+//	}
+//
+//	//->, 注意, 若元素为结构体类型, 编译器进行了优化, it->(得到元素地址)->_val1 -----> it->_val
+//	Ptr operator->()
+//	{
+//		return &(operator*());
+//	}
+//
+//	// ++it
+//	reverse_iterator& operator++()
+//	{
+//		_node = _node->_prev;
+//		return *this;
+//	}
+//
+//	// it++
+//	reverse_iterator operator++(int)
+//	{
+//		reverse_iterator tmp(*this);
+//		_node = _node->_prev;
+//		return tmp;
+//	}
+//
+//	// --it
+//	reverse_iterator& operator--()
+//	{
+//		_node = _node->_next;
+//		return *this;
+//	}
+//
+//	// it--
+//	reverse_iterator operator--(int)
+//	{
+//		iterator tmp(*this);
+//		_node = _node->_next;
+//		return tmp;
+//	}
+//
+//};
+/*反向迭代器(适配器)*/
+template<class iterator>
+struct _reverse_list_iterator
+{
+public:
+	// 注意：此处typename的作用是明确告诉编译器，Ref是Iterator类中的一个类型，而不是静态成员变量
+	// 否则编译器编译时就不知道Ref是Iterator中的类型还是静态成员变量
+	// 因为静态成员变量也是按照 类名::静态成员变量名 的方式访问的
+	typedef typename iterator::Ref Ref;
+	typedef typename iterator::Ptr Ptr;
+	typedef _reverse_list_iterator<iterator> reverse_iterator;
+public:
+	// 构造
+	_reverse_list_iterator(iterator it)
+		: _rit(it)
+	{}
+
+	//////////////////////////////////////////////
+	// 具有指针类似行为
+	Ref operator*()
+	{
+		iterator temp(_rit);
+		--temp;
+		return *temp;
+	}
+
+	Ptr operator->()
+	{
+		return &(operator*());
+	}
+
+	// 迭代器支持移动
+	reverse_iterator& operator++()
+	{
+		--_rit;
+		return *this;
+	}
+
+	reverse_iterator operator++(int)
+	{
+		reverse_iterator temp(*this);
+		--_rit;
+		return temp;
+	}
+
+	reverse_iterator& operator--()
+	{
+		++_rit;
+		return *this;
+	}
+
+	reverse_iterator operator--(int)
+	{
+		reverse_iterator temp(*this);
+		++_rit;
+		return temp;
+	}
+
+	// 迭代器支持比较
+	bool operator!=(const reverse_iterator& l)const
+	{
+		return _rit != l._rit;
+	}
+
+	bool operator==(const reverse_iterator& l)const
+	{
+		return _rit != l._rit;
+	}
+
+	iterator _rit;
+};
+
+//---------------------------------------------------------------------------------
+```
+**函数**
+```
+//迭代器函数
+const_iterator begin() const//const对象
+{
+	return const_iterator(_head->_next);
+}
+
+const_iterator end() const//const对象
+{
+	return const_iterator(_head);
+}
+
+iterator begin()
+{
+	return iterator(_head->_next);
+}
+
+iterator end()
+{
+	return iterator(_head);
+}
+
+
+/*反向迭代器(不复用正向)*/
+//const_reverse_iterator rbegin() const//const对象
+//{
+//	return const_reverse_iterator(_head);
+//}
+//const_reverse_iterator rend() const//const对象
+//{
+//	return const_reverse_iterator(_head->_next);
+//}
+//reverse_iterator rbegin()
+//{
+//	return reverse_iterator(_head);
+//}
+//reverse_iterator rend()
+//{
+//	return reverse_iterator(_head->_next);
+//}
+/*反向迭代器(复用正向)*/
+const_reverse_iterator rbegin() const//const对象
+{
+	return const_reverse_iterator(end());
+}
+const_reverse_iterator rend() const//const对象
+{
+	return const_reverse_iterator(begin());
+}
+reverse_iterator rbegin()
+{
+	return reverse_iterator(end());
+}
+reverse_iterator rend()
+{
+	return reverse_iterator(begin());
+}
+
+```
+
+##### map/set
+
+##### unordered_map/unordered_set
+
+##### hash
+
+位图
+
+布隆过滤器
+
+哈希切分
 
 ### 继承
 
@@ -5242,136 +5269,144 @@ void Swap(char& left, char& right)
 
 ###### 概念
 
-> **继承(inheritance)机制是面向对象程序设计使代码可以复用的最重要的手段**，它允许程序员在保持原有类特性的基础上进行扩展，增加功能，这样产生新的类，称派生类。继承呈现了面向对象 程序设计的层次结构，体现了由简单到复杂的认知过程。以前我们接触的复用都是函数复用，继承是类设计层次的复用。
+> **继承(inheritance)机制是面向对象程序设计使代码可以复用的最重要的手段**，它允许程序员在保持原有类特性的基础上进行扩展，增加功能，这样产生新的类，称派生类。
 >
-> ~~~c++
-> class Person
-> {
->     public:
->     void Print()
->     {
->         cout << "name:" << _name << endl;
->         cout << "age:" << _age << endl;
->     }
->     protected:
->     string _name = "peter"; // 姓名
->     int _age = 18;  // 年龄
-> };
-> // 继承后父类的Person的成员（成员函数+成员变量）都会变成子类的一部分。这里体现出了Student和Teacher复用了Person的成员。下面我们使用监视窗口查看Student和Teacher对象，可以看到变量的复用。调用Print可以看到成员函数的复用。
-> class Student : public Person
-> {
->     protected:
->     int _stuid; // 学号
-> };
-> class Teacher : public Person
-> {
->     protected:
->     int _jobid; // 工号
-> };
-> int main()
-> {
->     Student s;
->     Teacher t;
->     s.Print();
->     t.Print();
->     return 0;
-> }
-> ~~~
+> 继承呈现了面向对象 程序设计的层次结构，体现了由简单到复杂的认知过程。以前我们接触的复用都是函数复用，继承是类设计层次的复用。
+
+~~~c++
+class Person
+{
+ public:
+ void Print()
+ {
+     cout << "name:" << _name << endl;
+     cout << "age:" << _age << endl;
+ }
+ protected:
+ string _name = "peter"; // 姓名
+ int _age = 18;  // 年龄
+};
+// 继承后父类的Person的成员（成员函数+成员变量）都会变成子类的一部分。这里体现出了Student和Teacher复用了Person的成员。下面我们使用监视窗口查看Student和Teacher对象，可以看到变量的复用。调用Print可以看到成员函数的复用。
+class Student : public Person
+{
+ protected:
+ int _stuid; // 学号
+};
+class Teacher : public Person
+{
+ protected:
+ int _jobid; // 工号
+};
+int main()
+{
+ Student s;
+ Teacher t;
+ s.Print();
+ t.Print();
+ return 0;
+}
+~~~
+
+
 
 ###### 定义格式
 
-> 1. 定义格式： 下面我们看到Person是父类，也称作基类。Student是子类，也称作派生类。
->
->     ![image-20221020141552758](%E5%9B%BE%E7%89%87/README/image-20221020141552758.png)
->
-> 2. 继承关系
->
->     ![image-20221020141634603](%E5%9B%BE%E7%89%87/README/image-20221020141634603.png)
+1. 定义格式： 下面我们看到Person是父类，也称作基类。Student是子类，也称作派生类。
+
+    ![image-20221020141552758](%E5%9B%BE%E7%89%87/README/image-20221020141552758.png)
+
+2. 继承关系
+
+    ![image-20221020141634603](%E5%9B%BE%E7%89%87/README/image-20221020141634603.png)
 
 ###### 继承的基类成员访问权限的变化
 
-> | 类成员/继承方式      |       public继承       | protected继承          | private继承          |
-> | -------------------- | :--------------------: | ---------------------- | -------------------- |
-> | 基类的public成员     |   派生类的public成员   | 派生类的protected 成员 | 派生类的private 成员 |
-> | 基类的protected 成员 | 派生类的protected 成员 | 派生类的protected 成员 | 派生类的private 成员 |
-> | 基类的private成 员   |    在派生类中不可见    | 在派生类中不可见       | 在派生类中不可 见    |
->
-> 即：
->
-> 1. 基类private成员在派生类中无论以什么方式继承都是不可见的。这里的**不可见是指基类的私 有成员还是被继承到了派生类对象中，但是语法上限制派生类对象不管在类里面还是类外面 都不能去访问它。** 
-> 2. 基类private成员在派生类中是不能被访问，如果基类成员不想在类外直接被访问，但需要在 派生类中能访问，就定义为protected。**可以看出保护成员限定符是因继承才出现的。**
-> 3. 实际上面的表格我们进行一下总结会发现，基类的私有成员在子类都是不可见。基类的其他 成员在子类的访问方式 == Min(成员在基类的访问限定符，继承方式)，public > protected  > private。 
-> 4. 使用关键字**class时默认的继承方式是private，使用struct时默认的继承方式是public**，不过 **最好显示的写出继承方式。**
-> 5. **在实际运用中一般使用都是public继承，几乎很少使用protetced/private继承**，也不提倡 使用protetced/private继承，因为protetced/private继承下来的成员都只能在派生类的类里 面使用，实际中扩展维护性不强。
->
-> ~~~C++
-> // 实例演示三种继承关系下基类成员的各类型成员访问关系的变化  
-> class Person
-> {
-> public
->  void Print ()
->  {
->  cout<<_name <<endl;
->  }
-> protected :
->  string _name ; // 姓名
-> private :
->  int _age ; // 年龄
-> };
-> //class Student : protected Person
-> //class Student : private Person
-> class Student : public Person
-> {
-> protected :
->  int _stunum ; // 学号
-> };
-> ~~~
+| 类成员/继承方式      |       public继承       | protected继承          | private继承          |
+| -------------------- | :--------------------: | ---------------------- | -------------------- |
+| 基类的public成员     |   派生类的public成员   | 派生类的protected 成员 | 派生类的private 成员 |
+| 基类的protected 成员 | 派生类的protected 成员 | 派生类的protected 成员 | 派生类的private 成员 |
+| 基类的private成 员   |    在派生类中不可见    | 在派生类中不可见       | 在派生类中不可见     |
+
+即：
+
+1. 基类private成员在派生类中无论以什么方式继承都是不可见的。这里的**不可见是指基类的私有成员还是被继承到了派生类对象中，但是语法上限制派生类对象不管在类里面还是类外面 都不能去访问它。** 
+2. 基类private成员在派生类中是不能被访问，如果基类成员不想在类外直接被访问，但需要在派生类中能访问，就定义为protected。**可以看出保护成员限定符是因继承才出现的。**
+3. 实际上面的表格我们进行一下总结会发现，基类的私有成员在子类都是不可见。基类的其他 成员在子类的访问方式 == Min(成员在基类的访问限定符，继承方式)，public > protected  > private。 
+4. 使用关键字**class时默认的继承方式是private，使用struct时默认的继承方式是public**，不过 **最好显示的写出继承方式。**
+5. **在实际运用中一般使用都是public继承，几乎很少使用protetced/private继承**，也不提倡 使用protetced/private继承，因为protetced/private继承下来的成员都只能在派生类的类里 面使用，实际中扩展维护性不强。
+
+~~~C++
+// 实例演示三种继承关系下基类成员的各类型成员访问关系的变化  
+class Person
+{
+public
+ void Print ()
+ {
+ cout<<_name <<endl;
+ }
+protected :
+ string _name ; // 姓名
+private :
+ int _age ; // 年龄
+};
+//class Student : protected Person
+//class Student : private Person
+class Student : public Person
+{
+protected :
+ int _stunum ; // 学号
+};
+~~~
+
+
 
 ##### 基类和派生类 对象赋值转换
 
-> - **派生类对象 可以赋值给 基类的对象 / 基类的指针 / 基类的引用。**这里有个形象的说法叫**切片 或者切割**。寓意把派生类中父类那部分切来赋值过去。 
-> - **基类对象不能赋值给派生类对象。** 
-> - **基类的指针或者引用可以通过强制类型转换赋值给派生类的指针或者引用。** **但是必须是基类 的指针是指向派生类对象时才是安全的。**(如：基类的引用是被派生类赋值的， 则这个基类引用可以强转成对应子类的引用) 这里基类如果是多态类型，可以使用RTTI(RunTime Type Information)的dynamic_cast 来进行识别后进行安全转换。（ps：这个我们后 面再讲解，这里先了解一下）
->
-> ![image-20221020143620244](%E5%9B%BE%E7%89%87/README/image-20221020143620244.png)
->
-> ~~~C++
-> class Person
-> {
->     protected :
->     string _name; // 姓名
->     string _sex;  // 性别
->     int _age; // 年龄
-> };
-> class Student : public Person
-> {
->     public :
->     int _No ; // 学号
-> };
-> void Test ()
-> {
->     Student sobj ;
->     // 1.子类对象可以赋值给父类对象/指针/引用
->     Person pobj = sobj ;
->     Person* pp = &sobj;
->     Person& rp = sobj;
-> 
->     //2.基类对象不能赋值给派生类对象
->     sobj = pobj;
-> 
->     // 3.基类的指针可以通过强制类型转换赋值给派生类的指针
->     pp = &sobj;
->     Student* ps1 = (Student*)pp; // 这种情况转换时可以的。
->     ps1->_No = 10;
-> 
->     pp = &pobj;
->     Student* ps2 = (Student*)pp; // 这种情况转换时虽然可以，但是会存在越界访问的问题
->     ps2->_No = 10;
-> }
-> ~~~
+- **派生类对象 可以赋值给 基类的对象 / 基类的指针 / 基类的引用。**这里有个形象的说法叫**切片 或者切割**。寓意把派生类中父类那部分切来赋值过去。 
+- **基类对象不能赋值给派生类对象。** 
+- **基类的指针或者引用可以通过强制类型转换赋值给派生类的指针或者引用。** **但是必须是 基类的指针是指向派生类对象时 才是安全的。**
+
+    > 如：基类的引用是被派生类赋值的， 则这个基类引用可以强转成对应子类的引用。这里基类如果是多态类型，可以使用RTTI(RunTime Type Information)的dynamic_cast 来进行识别后进行安全转换。
+
+![image-20221020143620244](%E5%9B%BE%E7%89%87/README/image-20221020143620244.png)
+
+~~~C++
+class Person
+{
+    protected :
+    string _name; // 姓名
+    string _sex;  // 性别
+    int _age; // 年龄
+};
+class Student : public Person
+{
+    public :
+    int _No ; // 学号
+};
+void Test ()
+{
+    Student sobj ;
+    // 1.子类对象可以赋值给父类对象/指针/引用
+    Person pobj = sobj ;
+    Person* pp = &sobj;
+    Person& rp = sobj;
+
+    //2.基类对象不能赋值给派生类对象
+    sobj = pobj;
+
+    // 3.基类的指针可以通过强制类型转换赋值给派生类的指针
+    pp = &sobj;
+    Student* ps1 = (Student*)pp; // 这种情况转换时可以的。
+    ps1->_No = 10;
+
+    pp = &pobj;
+    Student* ps2 = (Student*)pp; // 这种情况转换时虽然可以，但是会存在越界访问的问题
+    ps2->_No = 10;
+}
+~~~
 > **注意**：这种转换不属于类型转换，而是特殊语法
->
-> ![image-20221015092045923](%E5%9B%BE%E7%89%87/README/image-20221015092045923.png)
+
+![image-20221015092045923](%E5%9B%BE%E7%89%87/README/image-20221015092045923.png)
 
 ------
 
@@ -5379,162 +5414,162 @@ void Swap(char& left, char& right)
 
 ##### 继承中的作用域
 
-> 1. 在继承体系中基类和派生类都有独立的作用域。 
-> 2. **子类和父类中有同名成员，子类成员将屏蔽父类对同名成员的直接访问，这种情况叫隐藏， 也叫重定义。（在子类成员函数中，可以使用 基类::基类成员 显示访问）** 
-> 3. 需要注意的是**如果是成员函数的隐藏，只需要函数名相同就构成隐藏**。 
-> 4. 注意在实际中在继承体系里面最好不要定义同名的成员。
->
-> ~~~C++
-> // Student的_num和Person的_num构成隐藏关系，可以看出这样代码虽然能跑，但是非常容易混淆
-> class Person
-> {
->     protected :
->     string _name = "小李子"; // 姓名
->     int _num = 111;   // 身份证号
-> };
-> class Student : public Person
-> {
->     public:
->     void Print()
->     {
->         cout<<" 姓名:"<<_name<< endl;
->         cout<<" 身份证号:"<<Person::_num<< endl;
->         cout<<" 学号:"<<_num<<endl;
->     }
->     protected:
->     int _num = 999; // 学号
-> };
-> void Test()
-> {
->     Student s1;
->     s1.Print();
-> };
-> 
-> ~~~
->
-> ~~~C++
-> // B中的fun和A中的fun不是构成重载，因为不是在同一作用域
-> // B中的fun和A中的fun构成隐藏，成员函数满足函数名相同就构成隐藏。
-> class A
-> {
->     public:
->     void fun()
->     {
->         cout << "func()" << endl;
->     }
-> };
-> class B : public A
-> {
->     public:
->     void fun(int i)
->     {
->         A::fun();
->         cout << "func(int i)->" <<i<<endl;
->     }
-> };
-> void Test()
-> {
->     B b;
->     b.fun(10);
-> };
-> ~~~
+1. 在继承体系中基类和派生类都有独立的作用域。 
+2. **子类和父类中有同名成员，子类成员将屏蔽对父类同名成员的直接访问，这种情况叫隐藏， 也叫重定义。（在子类成员函数中，可以使用 基类::基类成员 显示访问）** 
+3. 需要注意的是**如果是成员函数的隐藏，只需要函数名相同就构成隐藏，不关注形参列表**。 
+4. 注意在实际中在继承体系里面最好不要定义同名的成员。
 
-------
+~~~C++
+// Student的_num和Person的_num构成隐藏关系，可以看出这样代码虽然能跑，但是非常容易混淆
+class Person
+{
+    protected :
+    string _name = "小李子"; // 姓名
+    int _num = 111;   // 身份证号
+};
+class Student : public Person
+{
+    public:
+    void Print()
+    {
+        cout<<" 姓名:"<<_name<< endl;
+        cout<<" 身份证号:"<<Person::_num<< endl;
+        cout<<" 学号:"<<_num<<endl;
+    }
+    protected:
+    int _num = 999; // 学号
+};
+void Test()
+{
+    Student s1;
+    s1.Print();
+};
+
+~~~
+
+~~~C++
+// B中的fun和A中的fun不是构成重载，因为不是在同一作用域
+// B中的fun和A中的fun构成隐藏，成员函数满足函数名相同就构成隐藏。
+class A
+{
+    public:
+    void fun()
+    {
+        cout << "func()" << endl;
+    }
+};
+class B : public A
+{
+    public:
+    void fun(int i)
+    {
+        A::fun();
+        cout << "func(int i)->" <<i<<endl;
+    }
+};
+void Test()
+{
+    B b;
+    b.fun(10);
+};
+~~~
+
+
 
 
 
 ##### 派生类的默认成员函数
 
 > 6个默认成员函数，“默认”的意思就是指我们不写，编译器会变我们自动生成一个，那么在派生类 中，这几个成员函数是如何生成的呢？ 
->
-> 1. **派生类的构造函数必须调用基类的构造函数初始化基类的那一部分成员。**如果**基类没有默认 的构造函数**，则**必须在派生类构造函数的初始化列表阶段显示调用。** 
-> 2. 派生类的拷贝构造函数**必须调用基类的拷贝构造完成基类的拷贝初始化**。 
-> 3. 派生类的operator=**必须要调用基类的operator=完成基类的复制。** 
-> 4. **派生类的析构函数会在被调用完成后自动调用基类的析构函数清理基类成员。**因为这样才能 保证派生类对象先清理派生类成员再清理基类成员的顺序。
-> 5. **派生类对象初始化先调用基类构造再调派生类构造。** 
-> 6.  **派生类对象析构清理先调用派生类析构再调基类的析构。** 
-> 7. 因为后续一些场景析构函数需要构成重写，重写的条件之一是函数名相同(这个我们后面会讲 解)。那么**编译器会对析构函数名进行特殊处理，处理成destrutor()，所以父类析构函数不加 virtual的情况下，子类析构函数和父类析构函数构成隐藏关系。**
->
-> ![image-20221020145447885](%E5%9B%BE%E7%89%87/README/image-20221020145447885.png)
->
-> ~~~C++
-> class Person
-> {
->     public :
->     Person(const char* name = "peter")
->         : _name(name )
->         {
->             cout<<"Person()" <<endl;
->         }
-> 
->     Person(const Person& p)
->         : _name(p._name)
->         {
->             cout<<"Person(const Person& p)" <<endl;
->         }
-> 
->     Person& operator=(const Person& p )
->     {
->         cout<<"Person operator=(const Person& p)"<< endl;
->         if (this != &p)
->             _name = p ._name;
-> 
->         return *this ;
->     }
-> 
->     ~Person()
->     {
->         cout<<"~Person()" <<endl;
->     }
->     protected :
->     string _name ; // 姓名
-> };
-> class Student : public Person
-> {
->     public :
->     Student(const char* name, int num)
->         : Person(name )
->             , _num(num )
->         {
->             cout<<"Student()" <<endl;
->         }
-> 
->     Student(const Student& s)
->         : Person(s)
->             , _num(s ._num)
->         {
->             cout<<"Student(const Student& s)" <<endl ;
->         }
-> 
->     Student& operator = (const Student& s )
->     {
->         cout<<"Student& operator= (const Student& s)"<< endl;
->         if (this != &s)
->         {
->             Person::operator =(s);
->             _num = s ._num;
->         }
->         return *this ;
->     } 
-> 
->     ~Student()
->     {
->         cout<<"~Student()" <<endl;
->     }
->     protected :
->     int _num ; //学号
-> };
-> void Test ()
-> {
->     Student s1 ("jack", 18);
->     Student s2 (s1);
->     Student s3 ("rose", 17);
->     s1 = s3 ;
-> }
-> 
-> ~~~
->
-> 
+
+1. **派生类的构造函数必须调用基类的构造函数初始化基类的那一部分成员。**如果**基类没有默认的构造函数**，则**必须在派生类构造函数的初始化列表阶段显示调用。** 
+2. 派生类的拷贝构造函数**必须调用基类的拷贝构造完成基类的拷贝初始化**。 
+3. 派生类的operator=**必须要调用基类的operator=完成基类的复制。** 
+4. **派生类的析构函数会在被调用完成后自动调用基类的析构函数清理基类成员。**因为这样才能保证派生类对象先清理派生类成员再清理基类成员的顺序。
+5. **派生类对象初始化先调用基类构造再调派生类构造。** 
+6.  **派生类对象析构清理先调用派生类析构再调基类的析构。** 
+7. 因为后续一些场景析构函数需要构成重写，重写的条件之一是函数名相同(这个我们后面会讲 解)。那么**编译器会对析构函数名进行特殊处理，处理成destrutor()，所以父类析构函数不加 virtual的情况下，子类析构函数和父类析构函数构成隐藏关系。**
+
+![image-20221020145447885](%E5%9B%BE%E7%89%87/README/image-20221020145447885.png)
+
+~~~C++
+class Person
+{
+    public :
+    Person(const char* name = "peter")
+        : _name(name )
+        {
+            cout<<"Person()" <<endl;
+        }
+
+    Person(const Person& p)
+        : _name(p._name)
+        {
+            cout<<"Person(const Person& p)" <<endl;
+        }
+
+    Person& operator=(const Person& p )
+    {
+        cout<<"Person operator=(const Person& p)"<< endl;
+        if (this != &p)
+            _name = p ._name;
+
+        return *this ;
+    }
+
+    ~Person()
+    {
+        cout<<"~Person()" <<endl;
+    }
+    protected :
+    string _name ; // 姓名
+};
+class Student : public Person
+{
+    public :
+    Student(const char* name, int num)
+        : Person(name )
+            , _num(num )
+        {
+            cout<<"Student()" <<endl;
+        }
+
+    Student(const Student& s)
+        : Person(s)
+            , _num(s ._num)
+        {
+            cout<<"Student(const Student& s)" <<endl ;
+        }
+
+    Student& operator = (const Student& s )
+    {
+        cout<<"Student& operator= (const Student& s)"<< endl;
+        if (this != &s)
+        {
+            Person::operator =(s);
+            _num = s ._num;
+        }
+        return *this ;
+    } 
+
+    ~Student()
+    {
+        cout<<"~Student()" <<endl;
+    }
+    protected :
+    int _num ; //学号
+};
+void Test ()
+{
+    Student s1 ("jack", 18);
+    Student s2 (s1);
+    Student s3 ("rose", 17);
+    s1 = s3 ;
+}
+
+~~~
+
+
 
 ------
 
@@ -5542,77 +5577,79 @@ void Swap(char& left, char& right)
 
 > 友元关系不能继承，也就是说基类友元不能访问子类私有和保护成员 
 >
-> ~~~C++
-> class Student;
-> class Person
-> {
->     public:
->     friend void Display(const Person& p, const Student& s);
->     protected:
->     string _name; // 姓名
-> };
-> class Student : public Person
-> {
->     protected:
->     int _stuNum; // 学号
-> };
-> void Display(const Person& p, const Student& s)
-> {
->     cout << p._name << endl;
->     cout << s._stuNum << endl;
-> }
-> void main()
-> {
->     Person p;
->     Student s;
->     Display(p, s);
-> }
-> 
-> ~~~
->
-> 
+
+~~~C++
+class Student;
+class Person
+{
+ public:
+ friend void Display(const Person& p, const Student& s);
+ protected:
+ string _name; // 姓名
+};
+class Student : public Person
+{
+ protected:
+ int _stuNum; // 学号
+};
+void Display(const Person& p, const Student& s)
+{
+ cout << p._name << endl;
+ cout << s._stuNum << endl;
+}
+void main()
+{
+ Person p;
+ Student s;
+ Display(p, s);
+}
+
+~~~
+
+
 
 ------
 
 ##### 继承与静态成员
 
-> 基类定义了static静态成员，则整个继承体系里面只有一个这样的成员。无论派生出多少个子 类，都只有一个static成员实例 。
+> 基类定义了static静态成员，则**整个继承体系里面只有一个这样的成员**。无论派生出多少个子 类，都只有一个static成员实例 。
 >
-> ~~~C++
-> class Person
-> {
->     public :
->     Person () {++ _count ;}
->     protected :
->     string _name ; // 姓名
->     public :
->     static int _count; // 统计人的个数。
-> };
-> int Person :: _count = 0;
-> class Student : public Person
-> {
->     protected :
->     int _stuNum ; // 学号
-> };
-> class Graduate : public Student
-> {
->     protected :
->     string _seminarCourse ; // 研究科目
-> };
-> void TestPerson()
-> {
->     Student s1 ;
->     Student s2 ;
->     Student s3 ;
->     Graduate s4 ;
->     cout <<" 人数 :"<< Person ::_count << endl;
->     Student ::_count = 0;
->     cout <<" 人数 :"<< Person ::_count << endl;
-> }
-> 
-> ~~~
->
-> 
+
+~~~C++
+class Person
+{
+ public :
+ Person () {++ _count ;}
+ protected :
+ string _name ; // 姓名
+ public :
+ static int _count; // 统计人的个数。
+};
+int Person :: _count = 0;
+class Student : public Person
+{
+ protected :
+ int _stuNum ; // 学号
+};
+class Graduate : public Student
+{
+ protected :
+ string _seminarCourse ; // 研究科目
+};
+void TestPerson()
+{
+ Student s1 ;
+ Student s2 ;
+ Student s3 ;
+ Graduate s4 ;
+ cout <<" 人数 :"<< Person ::_count << endl;
+ Student ::_count = 0;
+ cout <<" 人数 :"<< Person ::_count << endl;
+}
+
+~~~
+
+
 
 ------
 
@@ -5620,200 +5657,210 @@ void Swap(char& left, char& right)
 
 ###### 继承方式
 
-> **单继承：**一个子类只有一个直接父类时称这个继承关系为单继承
->
-> ![image-20221020145902743](%E5%9B%BE%E7%89%87/README/image-20221020145902743.png)
->
-> **多继承：**一个子类有两个或以上直接父类时称这个继承关系为多继承
->
-> ![image-20221020145949271](%E5%9B%BE%E7%89%87/README/image-20221020145949271.png)
->
-> **菱形继承：**菱形继承是多继承的一种特殊情况。
->
-> ![image-20221020150007884](%E5%9B%BE%E7%89%87/README/image-20221020150007884.png)
+- **单继承：**一个子类只有一个直接父类时称这个继承关系为单继承
 
-###### 菱形继承的问题 与 虚拟继承
+    ![image-20221020145902743](%E5%9B%BE%E7%89%87/README/image-20221020145902743.png)
+
+- **多继承：**一个子类有两个或以上直接父类时称这个继承关系为多继承
+
+    ![image-20221020145949271](%E5%9B%BE%E7%89%87/README/image-20221020145949271.png)
+
+- **菱形继承：**菱形继承是多继承的一种特殊情况。
+
+    ![image-20221020150007884](%E5%9B%BE%E7%89%87/README/image-20221020150007884.png)
+
+
+
+###### 菱形继承的问题
 
 > **菱形继承的问题：从下面的对象成员模型构造，可以看出菱形继承有数据冗余和二义性的问题。 在Assistant的对象中Person成员会有两份。**
->
-> ![image-20221020150043641](%E5%9B%BE%E7%89%87/README/image-20221020150043641.png)
->
-> ~~~C++
-> class Person
-> {
->     public :
->     string _name ; // 姓名
-> };
-> class Student : public Person
-> {
->     protected :
->     int _num ; //学号
-> };
-> class Teacher : public Person
-> {
->     protected :
->     int _id ; // 职工编号
-> };
-> class Assistant : public Student, public Teacher
-> {
->     protected :
->     string _majorCourse ; // 主修课程
-> };
-> void Test ()
-> {
->     // 这样会有二义性无法明确知道访问的是哪一个
->     Assistant a ;
->     a._name = "peter";
->     // 需要显示指定访问哪个父类的成员可以解决二义性问题，但是数据冗余问题无法解决
->     a.Student::_name = "xxx";
->     a.Teacher::_name = "yyy";
-> }
-> 
-> ~~~
->
-> **虚拟继承可以解决菱形继承的二义性和数据冗余的问题。如上面的继承关系，在Student和 Teacher的继承Person时使用虚拟继承，即可解决问题。需要注意的是，虚拟继承不要在其他地方去使用。**
->
-> ~~~C++
-> class Person
-> {
-> public :
->  string _name ; // 姓名
-> };
-> class Student : virtual public Person
-> {
-> protected :
->  int _num ; //学号
-> };
-> class Teacher : virtual public Person
-> {
-> protected :
->  int _id ; // 职工编号
-> };
-> class Assistant : public Student, public Teacher
-> {
-> protected :
->  string _majorCourse ; // 主修课程
-> };
-> void Test ()
-> {
->  Assistant a ;
->  a._name = "peter";
-> }
-> ~~~
->
-> **虚拟继承解决数据冗余和二义性的原理** 
->
-> 为了研究虚拟继承原理，我们给出了一个简化的菱形虚拟继承体系，再借助内存窗口观察对象成 员的模型。
->
-> ~~~C++
-> class A
-> {
->     public:
->     int _a;
-> };
-> // class B : public A
-> class B : virtual public A
-> {
->     public:
->     int _b;
-> };
-> // class C : public A
-> class C : virtual public A
-> {
->     public:
->     int _c;
-> };
-> class D : public B, public C
-> {
->     public:
->     int _d;
-> };
-> int main()
-> {
->     D d;
->     d.B::_a = 1;
->     d.C::_a = 2;
->     d._b = 3;
->     d._c = 4;
->     d._d = 5;
->     return 0;
-> }
-> ~~~
->
-> 下图是菱形继承的内存对象成员模型：这里可以看到数据冗余
->
-> ![image-20221020150405408](%E5%9B%BE%E7%89%87/README/image-20221020150405408.png)
->
-> 下图是菱形虚拟继承的内存对象成员模型：这里可以分析出D对象中将A放到的了对象组成的最下 面，这个A同时属于B和C，那么B和C如何去找到公共的A呢？**这里是通过了B和C的两个指针，指 向的一张表。这两个指针叫虚基表指针，这两个表叫虚基表。虚基表中存的偏移量。通过偏移量 可以找到下面的A。**
->
-> ![image-20221020150441865](%E5%9B%BE%E7%89%87/README/image-20221020150441865.png)
->
-> ~~~C++
->      // 有童鞋会有疑问为什么D中B和C部分要去找属于自己的A？那么大家看看当下面的赋值发生时，d是不是要去找出B/C成员中的A才能赋值过去？
-> D d;
-> B b = d;
-> C c = d;
-> ~~~
-> 
->下面是上面的Person关系菱形虚拟继承的原理解释：
-> 
->![image-20221020150526890](%E5%9B%BE%E7%89%87/README/image-20221020150526890.png)
 
-------
+![image-20221020150043641](%E5%9B%BE%E7%89%87/README/image-20221020150043641.png)
+
+~~~C++
+class Person
+{
+public :
+string _name ; // 姓名
+};
+class Student : public Person
+{
+protected :
+int _num ; //学号
+};
+class Teacher : public Person
+{
+protected :
+int _id ; // 职工编号
+};
+class Assistant : public Student, public Teacher
+{
+protected :
+string _majorCourse ; // 主修课程
+};
+void Test ()
+{
+// 这样会有二义性无法明确知道访问的是哪一个
+Assistant a ;
+a._name = "peter";
+// 需要显示指定访问哪个父类的成员可以解决二义性问题，但是数据冗余问题无法解决
+a.Student::_name = "xxx";
+a.Teacher::_name = "yyy";
+}
+
+~~~
+
+###### 虚拟继承
+
+> **虚拟继承可以解决菱形继承的二义性和数据冗余的问题。如上面的继承关系，在Student和 Teacher的继承Person时使用虚拟继承，即可解决问题。需要注意的是，虚拟继承不要在其他地方去使用。**
+
+~~~C++
+class Person
+{
+public :
+string _name ; // 姓名
+};
+class Student : virtual public Person
+{
+protected :
+int _num ; //学号
+};
+class Teacher : virtual public Person
+{
+protected :
+int _id ; // 职工编号
+};
+class Assistant : public Student, public Teacher
+{
+protected :
+string _majorCourse ; // 主修课程
+};
+void Test ()
+{
+Assistant a ;
+a._name = "peter";
+}
+~~~
+
+###### 虚拟继承解决数据冗余和二义性的原理
+
+为了研究虚拟继承原理，我们给出了一个简化的菱形虚拟继承体系，再借助内存窗口观察对象成 员的模型。
+
+~~~C++
+class A
+{
+public:
+int _a;
+};
+// class B : public A
+class B : virtual public A
+{
+public:
+int _b;
+};
+// class C : public A
+class C : virtual public A
+{
+public:
+int _c;
+};
+class D : public B, public C
+{
+public:
+int _d;
+};
+int main()
+{
+D d;
+d.B::_a = 1;
+d.C::_a = 2;
+d._b = 3;
+d._c = 4;
+d._d = 5;
+return 0;
+}
+~~~
+
+下图是菱形继承的内存对象成员模型：这里可以看到数据冗余
+
+![image-20221020150405408](%E5%9B%BE%E7%89%87/README/image-20221020150405408.png)
+
+下图是菱形虚拟继承的内存对象成员模型：这里可以分析出D对象中将A放到的了对象组成的最下 面，这个A同时属于B和C，那么B和C如何去找到公共的A呢？
+
+**这里是通过了B和C的两个指针，指向的一张表。这两个指针叫虚基表指针，这两个表叫虚基表。虚基表中存的偏移量。通过偏移量 可以找到下面的A。**
+
+![image-20221020150441865](%E5%9B%BE%E7%89%87/README/image-20221020150441865.png)
+
+~~~C++
+// 有童鞋会有疑问为什么D中B和C部分要去找属于自己的A？那么大家看看当下面的赋值发生时，d是不是要去找出B/C成员中的A才能赋值过去？
+D d;
+B b = d;
+C c = d;
+~~~
+
+下面是上面的Person关系菱形虚拟继承的原理解释：
+![image-20221020150526890](%E5%9B%BE%E7%89%87/README/image-20221020150526890.png)
+
+
+
+
+
+
+
 
 
 
 ##### 继承的总结和反思
 
-> 1. 很多人说C++语法复杂，其实多继承就是一个体现。有了多继承，就存在菱形继承，有了菱 形继承就有菱形虚拟继承，底层实现就很复杂。所以一般不建议设计出多继承，一定不要设 计出菱形继承。否则在复杂度及性能上都有问题。 
->
-> 2.  多继承可以认为是C++的缺陷之一，很多后来的OO语言都没有多继承，如Java。 
->
-> 3. 继承和组合
->
->     - public继承是一种is-a的关系。也就是说每个派生类对象都是一个基类对象。 
->     - 组合是一种has-a的关系。假设B组合了A，每个B对象中都有一个A对象。
->     - 优先使用对象组合，而不是类继承 。[优先使用对象组合，而不是类继承 - 残雪余香 - 博客园 (cnblogs.com)](https://www.cnblogs.com/nexiyi/archive/2013/06/16/3138568.html)
->     - 继承允许你根据基类的实现来定义派生类的实现。这种通过生成派生类的复用通常被称 为白箱复用(white-box reuse)。术语“白箱”是相对可视性而言：在继承方式中，基类的 内部细节对子类可见 。继承一定程度破坏了基类的封装，基类的改变，对派生类有很 大的影响。派生类和基类间的依赖关系很强，耦合度高。 
->     - 对象组合是类继承之外的另一种复用选择。新的更复杂的功能可以通过组装或组合对象 来获得。对象组合要求被组合的对象具有良好定义的接口。这种复用风格被称为黑箱复 用(black-box reuse)，因为对象的内部细节是不可见的。对象只以“黑箱”的形式出现。 组合类之间没有很强的依赖关系，耦合度低。优先使用对象组合有助于你保持每个类被 封装。 
->     - 实际尽量多去用组合。组合的耦合度低，代码维护性好。不过继承也有用武之地的，有 些关系就适合继承那就用继承，另外要实现多态，也必须要继承。类之间的关系可以用 继承，可以用组合，就用组合。
->
->     ~~~C++
->     // Car和BMW Car和Benz构成is-a的关系
->     class Car{
->         protected:
->         string _colour = "白色"; // 颜色
->         string _num = "陕ABIT00"; // 车牌号
->     };
->                                                                                                                                                                                                                                         
->     class BMW : public Car{
->         public:
->         void Drive() {cout << "好开-操控" << endl;}
->     };
->                                                                                                                                                                                                                                         
->     class Benz : public Car{
->         public:
->         void Drive() {cout << "好坐-舒适" << endl;}
->     };
->                                                                                                                                                                                                                                         
->     // Tire和Car构成has-a的关系
->                                                                                                                                                                                                                                         
->     class Tire{
->         protected:
->         string _brand = "Michelin";  // 品牌
->         size_t _size = 17;         // 尺寸
->                                                                                                                                                                                                                                         
->     };
->                                                                                                                                                                                                                                         
->     class Car{
->         protected:
->         string _colour = "白色"; // 颜色
->         string _num = "陕ABIT00"; // 车牌号
->         Tire _t; // 轮胎
->     }; 
->     ~~~
->
->     
+1. 很多人说C++语法复杂，其实多继承就是一个体现。有了多继承，就存在菱形继承，有了菱 形继承就有菱形虚拟继承，底层实现就很复杂。所以一般不建议设计出多继承，一定不要设 计出菱形继承。否则在复杂度及性能上都有问题。 
+
+2.  多继承可以认为是C++的缺陷之一，很多后来的面向对象语言都没有多继承，如Java。 
+
+3. 继承和组合
+
+    - public继承是一种is-a的关系。也就是说每个派生类对象都是一个基类对象。 
+    - 组合是一种has-a的关系。假设B组合了A，每个B对象中都有一个A对象。
+    - **优先使用对象组合，而不是类继承** 。[优先使用对象组合，而不是类继承 - 残雪余香 - 博客园 (cnblogs.com)](https://www.cnblogs.com/nexiyi/archive/2013/06/16/3138568.html)
+    - 继承允许你根据基类的实现来定义派生类的实现。这种通过生成派生类的复用通常被称 为白箱复用(white-box reuse)。术语“白箱”是相对可视性而言：在继承方式中，基类的 内部细节对子类可见 。继承一定程度破坏了基类的封装，基类的改变，对派生类有很 大的影响。派生类和基类间的依赖关系很强，耦合度高。 
+    - 对象组合是类继承之外的另一种复用选择。新的更复杂的功能可以通过组装或组合对象 来获得。对象组合要求被组合的对象具有良好定义的接口。这种复用风格被称为黑箱复 用(black-box reuse)，因为对象的内部细节是不可见的。对象只以“黑箱”的形式出现。 组合类之间没有很强的依赖关系，耦合度低。优先使用对象组合有助于你保持每个类被 封装。 
+    - 实际尽量多去用组合。组合的耦合度低，代码维护性好。不过继承也有用武之地的，有 些关系就适合继承那就用继承，另外要实现多态，也必须要继承。类之间的关系可以用 继承，可以用组合，就用组合。
+
+    ~~~C++
+    // Car和BMW Car和Benz构成is-a的关系
+    class Car{
+        protected:
+        string _colour = "白色"; // 颜色
+        string _num = "陕ABIT00"; // 车牌号
+    };
+    
+    class BMW : public Car{
+        public:
+        void Drive() {cout << "好开-操控" << endl;}
+    };
+    
+    class Benz : public Car{
+        public:
+        void Drive() {cout << "好坐-舒适" << endl;}
+    };
+    
+    // Tire和Car构成has-a的关系
+    
+    class Tire{
+        protected:
+        string _brand = "Michelin";  // 品牌
+        size_t _size = 17;         // 尺寸
+    
+    };
+    
+    class Car{
+        protected:
+        string _colour = "白色"; // 颜色
+        string _num = "陕ABIT00"; // 车牌号
+        Tire _t; // 轮胎
+    }; 
+    ~~~
+
+
 
 ------
 
@@ -5822,6 +5869,7 @@ void Swap(char& left, char& right)
 > 1. 什么是菱形继承？菱形继承的问题是什么？ 
 > 2. 什么是菱形虚拟继承？如何解决数据冗余和二义性的 
 > 3. 继承和组合的区别？什么时候用继承？什么时候用组合？
+> 4. 虚基表哪里来？怎么判断派生类有几个虚基表？
 
 ------
 
@@ -5829,155 +5877,163 @@ void Swap(char& left, char& right)
 
 ### 多态
 
-多态的概念：通俗来说，就是多种形态，具体点就是去完成某个行为，当不同的对象去完成时会 产生出不同的状态。
+> 多态的概念：通俗来说，就是多种形态，具体点就是去完成某个行为，当不同的对象去完成时会 产生出不同的状态。
+>
 
 ##### 定义及实现
 
 ###### 多态的构成条件
 
-> 多态是在不同继承关系的类对象，去调用同一函数，产生了不同的行为。比如Student继承了 Person。Person对象买票全价，Student对象买票半价。 
+> 多态是同一个继承体系，不同继承关系的类对象，去调用同一函数，产生了不同的行为。比如Student继承了 Person。Person对象买票全价，Student对象买票半价。 
 >
-> 那么在继承中要构成多态还有两个条件： 
->
-> 1. **必须通过基类的指针或者引用调用虚函数**
-> 2. **被调用的函数必须是虚函数，且派生类必须对基类的虚函数进行重写**
->
-> ![image-20221020153736497](%E5%9B%BE%E7%89%87/README/image-20221020153736497.png)
+
+那么在继承中要构成多态还有两个条件： 
+
+1. **必须通过基类的指针或者引用调用虚函数**
+2. **被调用的函数必须是虚函数，且派生类必须对基类的虚函数进行重写**
+
+![image-20221020153736497](%E5%9B%BE%E7%89%87/README/image-20221020153736497.png)
+
+
 
 ###### 虚函数
 
-> 虚函数：
+> 被virtual修饰的**类成员函数**称为虚函数。
 >
-> 即被virtual修饰的**类成员函数**称为虚函数。
->
-> ~~~c++
-> class Person {
->     public:
->     virtual void BuyTicket() { cout << "买票-全价" << endl;}
-> };
-> ~~~
+
+~~~c++
+class Person {
+ public:
+ virtual void BuyTicket() { cout << "买票-全价" << endl;}
+};
+~~~
+
+
 
 ###### 虚函数的重写
 
-> 虚函数的重写(覆盖)：派生类中有一个跟基类完全相同的虚函数(即派生类虚函数与基类虚函数的 返回值类型、函数名字、参数列表完全相同)，称子类的虚函数重写了基类的虚函数。
+> 虚函数的重写(覆盖)：派生类中有一个跟基类**完全相同**的虚函数(即派生类虚函数与基类虚函数的 返回值类型、函数名字、参数列表完全相同)，称子类的虚函数重写了基类的虚函数。
 >
-> ~~~C++
-> class Person {
->     public:
->     virtual void BuyTicket() { cout << "买票-全价" << endl; }
-> };
-> class Student : public Person {
->     public:
->     virtual void BuyTicket() { cout << "买票-半价" << endl; }
->     /*注意：在重写基类虚函数时，派生类的虚函数在不加virtual关键字时，虽然也可以构成重写(因
->     为继承后基类的虚函数被继承下来了在派生类依旧保持虚函数属性),但是该种写法不是很规范，不建议
->     这样使用*/
->     /*void BuyTicket() { cout << "买票-半价" << endl; }*/
-> };
-> void Func(Person& p)
-> { p.BuyTicket(); }
-> int main()
-> {
->     Person ps;
->     Student st;
->     Func(ps);
->     Func(st);
->     return 0;
-> }
-> 
-> ~~~
->
-> **虚函数重写的两个例外**： 
->
-> 1. **协变(基类与派生类虚函数返回值类型不同)** 
->
->     派生类重写基类虚函数时，与基类虚函数返回值类型不同。**即基类虚函数返回基类对象的指 针或者引用，派生类虚函数返回派生类对象的指针或者引用时，称为协变。**（了解）
->
->     ~~~C++
->     class A{};
->     class B : public A {};
->     class Person {
->         public:
->         virtual A* f() {return new A;}
->     };
->     class Student : public Person {
->         public:
->         virtual B* f() {return new B;}
->     };
->     
->     ~~~
->
-> 2. **析构函数的重写(基类与派生类析构函数的名字不同)**
->
->     如果基类的析构函数为虚函数，此时派生类析构函数只要定义，无论是否加virtual关键字， 都与基类的析构函数构成重写，虽然基类与派生类析构函数名字不同。虽然函数名不相同， 看起来违背了重写的规则，其实不然，这**里可以理解为编译器对析构函数的名称做了特殊处 理，编译后析构函数的名称统一处理成destructor。**
->
->     ~~~C++
->     class Person {
->         public:
->         virtual ~Person() {cout << "~Person()" << endl;}
->     };
->     class Student : public Person {
->         public:
->         virtual ~Student() { cout << "~Student()" << endl; }
->     };
->     // 只有派生类Student的析构函数重写了Person的析构函数，下面的delete对象调用析构函
->     数，才能构成多态，才能保证p1和p2指向的对象正确的调用析构函数。
->         int main()
->     {
->         Person* p1 = new Person;
->         Person* p2 = new Student;
->         delete p1;
->         delete p2;
->         return 0;
->     }
->                                                                                                                                                                                                                                         
->     ~~~
 
-------
+~~~C++
+class Person {
+ public:
+ virtual void BuyTicket() { cout << "买票-全价" << endl; }
+};
+class Student : public Person {
+ public:
+ virtual void BuyTicket() { cout << "买票-半价" << endl; }
+ /*注意：在重写基类虚函数时，派生类的虚函数在不加virtual关键字时，虽然也可以构成重写(因
+ 为继承后基类的虚函数被继承下来了在派生类依旧保持虚函数属性),但是该种写法不是很规范，不建议
+ 这样使用*/
+ /*void BuyTicket() { cout << "买票-半价" << endl; }*/
+};
+void Func(Person& p)
+{ p.BuyTicket(); }
+int main()
+{
+ Person ps;
+ Student st;
+ Func(ps);
+ Func(st);
+ return 0;
+}
+
+~~~
+
+**虚函数重写的两个例外**： 
+
+1. **协变(基类与派生类虚函数返回值类型不同)** 
+
+    派生类重写基类虚函数时，与基类虚函数返回值类型不同。**即基类虚函数返回基类对象的指 针或者引用，派生类虚函数返回派生类对象的指针或者引用时，称为协变。**（了解）
+
+    ~~~C++
+    class A{};
+    class B : public A {};
+    class Person {
+        public:
+        virtual A* f() {return new A;}
+    };
+    class Student : public Person {
+        public:
+        virtual B* f() {return new B;}
+    };
+
+    ~~~
+
+2. **析构函数的重写(基类与派生类析构函数的名字不同)**
+
+    如果基类的析构函数为虚函数，此时派生类析构函数只要定义，无论是否加virtual关键字， 都与基类的析构函数构成重写，虽然基类与派生类析构函数名字不同。虽然函数名不相同， 看起来违背了重写的规则，其实不然，这**里可以理解为编译器对析构函数的名称做了特殊处 理，编译后析构函数的名称统一处理成destructor。**
+
+    ~~~C++
+    class Person {
+        public:
+        virtual ~Person() {cout << "~Person()" << endl;}
+    };
+    class Student : public Person {
+        public:
+        virtual ~Student() { cout << "~Student()" << endl; }
+    };
+    // 只有派生类Student的析构函数重写了Person的析构函数，下面的delete对象调用析构函
+    数，才能构成多态，才能保证p1和p2指向的对象正确的调用析构函数。
+        int main()
+    {
+        Person* p1 = new Person;
+        Person* p2 = new Student;
+        delete p1;
+        delete p2;
+        return 0;
+    }
+    
+    ~~~
+
+
 
 #####  C++11 override 和 final
 
-> 从上面可以看出，C++对函数重写的要求比较严格，但是有些情况下由于疏忽，可能会导致函数 名字母次序写反而无法构成重载，而这种错误在编译期间是不会报出的，只有在程序运行时没有 得到预期结果才来debug会得不偿失，因此：**C++11提供了override和final两个关键字，可以帮 助用户检测是否重写。**
+> 从上面可以看出，C++对函数重写的要求比较严格，但是有些情况下由于疏忽，可能会导致函数 名字母次序写反而无法构成重载，而这种错误在编译期间是不会报出的，只有在程序运行时没有 得到预期结果才来debug会得不偿失，
 >
-> 1. **final：修饰虚函数，表示该虚函数不能再被重写**
->
->     ~~~C++
->     class Car
->     {
->         public:
->         virtual void Drive() final {}
->     };
->     class Benz :public Car
->     {
->         public:
->         virtual void Drive() {cout << "Benz-舒适" << endl;}
->     };
->     ~~~
->
-> 2.  **override: 检查派生类虚函数是否重写了基类某个虚函数，如果没有重写编译报错**。
->
->     ~~~C++
->     class Car{
->         public:
->         virtual void Drive(){}
->     };
->     class Benz :public Car {
->         public:
->         virtual void Drive() override {cout << "Benz-舒适" << endl;}
->     };
->     ~~~
->
->     
+> 因此：**C++11提供了override和final两个关键字，可以帮助用户检测是否重写。**
+
+1. **final：修饰虚函数，表示该虚函数不能再被重写**
+
+    ~~~C++
+    class Car
+    {
+        public:
+        virtual void Drive() final {}
+    };
+    class Benz :public Car
+    {
+        public:
+        virtual void Drive() {cout << "Benz-舒适" << endl;}
+    };
+    ~~~
+
+2.  **override: 检查派生类虚函数是否重写了基类某个虚函数，如果没有重写编译报错**。
+
+    ~~~C++
+    class Car{
+        public:
+        virtual void Drive(){}
+    };
+    class Benz :public Car {
+        public:
+        virtual void Drive() override {cout << "Benz-舒适" << endl;}
+    };
+    ~~~
+
+
 
 ------
 
 ##### 重载、覆盖(重写)、隐藏(重定义)的对比
 
-
-
-> ![image-20221020164121890](%E5%9B%BE%E7%89%87/README/image-20221020164121890.png)
+![image-20221020164121890](%E5%9B%BE%E7%89%87/README/image-20221020164121890.png)
 
 ------
+
+
 
 ##### 建议
 
@@ -5989,15 +6045,15 @@ void Swap(char& left, char& right)
 
 ###### 析构函数建议定义为虚函数
 
-> ~~~c++
-> 父类* str1 = new 父类;
-> 父类* str2 = new 子类;
-> delete str1;
-> delete str2;
+~~~c++
+父类* str1 = new 父类;
+父类* str2 = new 子类;
+delete str1;
+delete str2;
+
+~~~
+
 > 若不把析构函数定义为虚函数， 不满足多态，则delete父类类型指针，会调用两次父类的析构
-> ~~~
->
-> 
 
 ------
 
@@ -6006,41 +6062,45 @@ void Swap(char& left, char& right)
 ###### 抽象类
 
 > **在虚函数的后面写上 =0 ，则这个函数为纯虚函数。**包含纯虚函数的类叫做抽象类（**也叫接口 类**），抽象类不能实例化出对象。**派生类继承后也不能实例化出对象，只有重写全部纯虚函数，派生类才能实例化出对象，否则派生类仍是抽象类，不能实例化对象**。纯虚函数规范了派生类必须重写，另外纯虚函数更体现出了接口继承。
->
-> ~~~C++
-> class Car
-> {
->     public:
->     virtual void Drive() = 0;
-> };
-> class Benz :public Car
-> {
->     public:
->     virtual void Drive()
->     {
->         cout << "Benz-舒适" << endl;
->     }
-> };
-> class BMW :public Car
-> {
->     public:
->     virtual void Drive()
->     {
->         cout << "BMW-操控" << endl;
->     }
-> };
-> void Test()
-> {
->     Car* pBenz = new Benz;
->     pBenz->Drive();
->     Car* pBMW = new BMW;
->     pBMW->Drive();
-> }
-> ~~~
+
+~~~C++
+class Car
+{
+ public:
+ virtual void Drive() = 0;
+};
+class Benz :public Car
+{
+ public:
+ virtual void Drive()
+ {
+     cout << "Benz-舒适" << endl;
+ }
+};
+class BMW :public Car
+{
+ public:
+ virtual void Drive()
+ {
+     cout << "BMW-操控" << endl;
+ }
+};
+void Test()
+{
+ Car* pBenz = new Benz;
+ pBenz->Drive();
+ Car* pBMW = new BMW;
+ pBMW->Drive();
+}
+~~~
+
+
 
 ###### 接口继承和实现继承
 
-> 普通函数的继承是一种实现继承，派生类继承了基类函数，可以使用函数，继承的是函数的实 现。虚函数的继承是一种接口继承，派生类继承的是基类虚函数的接口，目的是为了重写，达成 多态，继承的是接口。所以如果不实现多态，不要把函数定义成虚函数。**因为存在虚函数就会产生虚表， 有虚表就会运行时决议， 浪费时间空间。**
+> 普通函数的继承是一种实现继承，派生类继承了基类函数，可以使用函数，继承的是函数的实现。虚函数的继承是一种接口继承，派生类继承的是基类虚函数的接口，目的是为了重写，达成多态，继承的是接口。
+>
+> 所以如果不实现多态，不要把函数定义成虚函数。**因为存在虚函数就会产生虚表， 有虚表就会运行时决议， 浪费时间空间。**
 
 ------
 
@@ -6048,303 +6108,312 @@ void Swap(char& left, char& right)
 
 ###### 虚函数表
 
-> ~~~C++
-> // 这里常考一道笔试题：sizeof(Base)是多少？
-> class Base
-> {
->  public:
->  virtual void Func1()
->  {
->      cout << "Func1()" << endl;
->  }
->  private:
->  int _b = 1;
-> };
-> 
-> ~~~
->
-> 通过观察测试我们发现b对象是8bytes，**除了_b成员，还多一个__vfptr放在对象的前面(注意有些 平台可能会放到对象的最后面，这个跟平台有关)，对象中的这个指针我们叫做虚函数表指针(v代 表virtual，f代表function)。**一个含有虚函数的类中都至少都有一个虚函数表指针，因为虚函数 的地址要被放到虚函数表中，虚函数表也简称虚表，。那么派生类中这个表放了些什么呢？我们 接着往下分析
->
-> ![image-20221020165130484](%E5%9B%BE%E7%89%87/README/image-20221020165130484.png)
->
-> ~~~C++
-> // 针对上面的代码我们做出以下改造
-> // 1.我们增加一个派生类Derive去继承Base
-> // 2.Derive中重写Func1
-> // 3.Base再增加一个虚函数Func2和一个普通函数Func3
-> class Base
-> {
->     public:
->     virtual void Func1()
->     {
->         cout << "Base::Func1()" << endl;
->     }
->     virtual void Func2()
->     {
->         cout << "Base::Func2()" << endl;
->     }
->     void Func3()
->     {
->         cout << "Base::Func3()" << endl;
->     }
->     private:
->     int _b = 1;
-> };
-> class Derive : public Base
-> {
->     public:
->     virtual void Func1()
->     {
->         cout << "Derive::Func1()" << endl;
->     }
->     private:
->     int _d = 2;
-> };
-> int main()
-> {
->     Base b;
->     Derive d;
->     return 0;
-> }
-> 
-> ~~~
->
-> **通过观察和测试，我们发现了以下几点问题：** 
->
-> 1. 派生类对象d中也有一个虚表指针，d对象由两部分构成，一部分是父类继承下来的成员，虚表指针也就是父类部分的，另一部分是自己的成员。 
->
-> 2. **基类b对象和派生类d对象虚表是不一样的，**这里我们发现Func1完成了重写，所以**d的虚表 中存的是重写的Derive::Func1，**所以虚函数的重写也叫作覆盖，覆盖就是指虚表中虚函数 的覆盖。重写是语法的叫法，覆盖是原理层的叫法。 
->
-> 3. 另外**Func2继承下来后是虚函数，所以放进了虚表，Func3也继承下来了，但是不是虚函 数，所以不会放进虚表。** 
->
-> 4.  **虚函数表本质是一个存虚函数指针的指针数组，一般情况这个数组最后面放了一个nullptr。**
->
-> 5. 总结一下派生类的虚表生成：
->
->     - 先将**基类中的虚表内容拷贝一份到派生类虚表中** 
->     - 如果派生 类重写了基类中某个虚函数，用派生类自己的**虚函数覆盖虚表中基类的虚函数** 
->     - **派生类自己 新增加的虚函数按其在派生类中的声明次序增加到派生类虚表的最后。** 
->
-> 6. 这里还有一个童鞋们很容易混淆的问题：虚函数存在哪的？虚表存在哪的？ **答：虚函数存在 虚表，虚表存在对象中。注意上面的回答的错的。**但是很多童鞋都是这样深以为然的。注意 **虚表存的是虚函数指针，不是虚函数，虚函数和普通函数一样的，都是存在代码段的，只是 他的指针又存到了虚表中。另外对象中存的不是虚表，存的是虚表指针。那么虚表存在哪的 呢？实际我们去验证一下会发现vs下是存在代码段的，**Linux g++下大家自己去验证？
->
->     ![image-20221020170157379](%E5%9B%BE%E7%89%87/README/image-20221020170157379.png)
+常考的一道笔试题：sizeof(Base)是多少？
 
-------
+~~~c++
+class Base
+{
+public:
+virtual void Func1()
+{
+  cout << "Func1()" << endl;
+}
+private:
+int _b = 1;
+};
+~~~
+
+通过观察测试我们发现b对象是8bytes，**除了_b成员，还多一个__vfptr放在对象的前面(注意有些 平台可能会放到对象的最后面，这个跟平台有关)，对象中的这个指针我们叫做虚函数表指针(v代 表virtual，f代表function)。**
+
+一个含有虚函数的类中都**至少都有一个虚函数表指针**，因为虚函数 的地址要被放到虚函数表中，**虚函数表也简称虚表**。那么派生类中这个表放了些什么呢？我们接着往下分析
+
+![image-20221020165130484](%E5%9B%BE%E7%89%87/README/image-20221020165130484.png)
+
+~~~C++
+// 针对上面的代码我们做出以下改造
+// 1.我们增加一个派生类Derive去继承Base
+// 2.Derive中重写Func1
+// 3.Base再增加一个虚函数Func2和一个普通函数Func3
+class Base
+{
+ public:
+ virtual void Func1()
+ {
+     cout << "Base::Func1()" << endl;
+ }
+ virtual void Func2()
+ {
+     cout << "Base::Func2()" << endl;
+ }
+ void Func3()
+ {
+     cout << "Base::Func3()" << endl;
+ }
+ private:
+ int _b = 1;
+};
+class Derive : public Base
+{
+ public:
+ virtual void Func1()
+ {
+     cout << "Derive::Func1()" << endl;
+ }
+ private:
+ int _d = 2;
+};
+int main()
+{
+ Base b;
+ Derive d;
+ return 0;
+}
+
+~~~
+
+**通过观察和测试，我们发现了以下几点问题：** 
+
+1. 派生类对象d中也有一个虚表指针，d对象由两部分构成，一部分是父类继承下来的成员，虚表指针也就是父类部分的，另一部分是自己的成员。 
+
+2. **基类b对象和派生类d对象虚表是不一样的，**这里我们发现Func1完成了重写，所以**d的虚表 中存的是重写的Derive::Func1，**所以虚函数的重写也叫作覆盖，**覆盖就是指虚表中虚函数的覆盖**。重写是语法的叫法，覆盖是原理层的叫法。 
+
+3. 另外**Func2继承下来后是虚函数，所以放进了虚表，Func3也继承下来了，但不是虚函数，所以不会放进虚表。** 
+
+4. **虚函数表本质是一个存虚函数指针的指针数组，一般情况这个数组最后面放了一个nullptr。**
+
+5. 总结一下派生类的虚表生成：
+
+    - 先将**基类中的虚表内容拷贝一份到派生类虚表中** 
+    - 如果派生类重写了基类中某个虚函数，用派生类自己的**虚函数覆盖虚表中基类的虚函数** 
+    - **派生类自己新增加的虚函数按其在派生类中的声明次序增加到派生类虚表的最后。** 
+
+6. 这里还有一个童鞋们很容易混淆的问题：虚函数存在哪的？虚表存在哪的？ 
+
+    - **答：虚函数存在 虚表，虚表存在对象中。注意上面的回答的错的。**但是很多童鞋都是这样深以为然的。
+
+    - 注意：**虚表存的是虚函数指针**，不是虚函数，虚函数和普通函数一样的，都是存在代码段的，只是他的指针又存到了虚表中。另外对**象中存的不是虚表，存的是虚表指针**。那么虚表存在哪的呢？实际我们去验证一下会发现vs下是**存在代码段的**。
+
+    ![image-20221020170157379](%E5%9B%BE%E7%89%87/README/image-20221020170157379.png)
+
+
 
 ###### 多态的原理▲
 
-> 上面分析了这个半天了那么多态的原理到底是什么？还记得这里Func函数传Person调用的 Person::BuyTicket，传Student调用的是Student::BuyTicket
->
-> ![image-20221020170939096](%E5%9B%BE%E7%89%87/README/image-20221020170939096.png)
->
-> ~~~C++
-> class Person {
->     public:
->     virtual void BuyTicket() { cout << "买票-全价" << endl; }
-> };
-> class Student : public Person {
->     public:
->     virtual void BuyTicket() { cout << "买票-半价" << endl; }
-> };
-> void Func(Person& p)
-> {
->     p.BuyTicket();
-> }
-> int main()
-> {
->     Person Mike;
->     Func(Mike);
->     Student Johnson;
->     Func(Johnson);
->     return 0;
-> }
-> ~~~
->
-> 1. 观察下图的红色箭头我们看到，p是指向mike对象时，p->BuyTicket在mike的虚表中找到虚 函数是Person::BuyTicket。 
->
-> 2. 观察下图的蓝色箭头我们看到，p是指向johnson对象时，p->BuyTicket在johson的虚表中 找到虚函数是Student::BuyTicket。
->
-> 3. 这样就实现出了不同对象去完成同一行为时，展现出不同的形态。
->
-> 4. 反过来思考我们要达到多态，有两个条件，一个是虚函数覆盖，一个是对象的指针或引用调 用虚函数。反思一下为什么？ 
->
-> 5.  再通过下面的汇编代码分析，看出**满足多态以后的函数调用，不是在编译时确定的，是运行 起来以后到对象的中取找的。不满足多态的函数调用时编译时确认好的。**
->
->     ![image-20221020171058295](%E5%9B%BE%E7%89%87/README/image-20221020171058295.png)
->
->     ~~~C++
->     void Func(Person* p)
->     {
->         p->BuyTicket();
->     }
->     int main()
->     {
->         Person mike;
->         Func(&mike);
->         mike.BuyTicket();
->                                                                                                                                                                                                                         
->         return 0;
->     }
->     // 以下汇编代码中跟你这个问题不相关的都被去掉了
->     void Func(Person* p)
->     {
->         //...
->             p->BuyTicket();
->         // p中存的是mike对象的指针，将p移动到eax中
->         001940DE  mov         eax,dword ptr [p]
->             // [eax]就是取eax值指向的内容，这里相当于把mike对象头4个字节(虚表指针)移动到了edx
->             001940E1  mov         edx,dword ptr [eax]
->             // [edx]就是取edx值指向的内容，这里相当于把虚表中的头4字节存的虚函数指针移动到了eax
->             00B823EE  mov         eax,dword ptr [edx]
->             // call eax中存虚函数的指针。这里可以看出满足多态的调用，不是在编译时确定的，是运行起来以后到对象的中取找的。
->             001940EA  call        eax  
->             001940EC  cmp         esi,esp  
->     }
->     int main()
->     {
->         ... 
->             // 首先BuyTicket虽然是虚函数，但是mike是对象，不满足多态的条件，所以这里是普通函数的调用转换成地址时，是在编译时已经从符号表确认了函数的地址，直接call 地址
->             mike.BuyTicket();
->         00195182  lea         ecx,[mike]
->         00195185  call        Person::BuyTicket (01914F6h)  
->             ... 
->     }
->                                                                                                                                                                                                                         
->     ~~~
->
->     
+上面分析了这个半天了那么多态的原理到底是什么？还记得这里Func函数传Person调用的 Person::BuyTicket，传Student调用的是Student::BuyTicket
+
+![image-20221020170939096](%E5%9B%BE%E7%89%87/README/image-20221020170939096.png)
+
+~~~C++
+class Person {
+ public:
+ virtual void BuyTicket() { cout << "买票-全价" << endl; }
+};
+class Student : public Person {
+ public:
+ virtual void BuyTicket() { cout << "买票-半价" << endl; }
+};
+void Func(Person& p)
+{
+ p.BuyTicket();
+}
+int main()
+{
+ Person Mike;
+ Func(Mike);
+ Student Johnson;
+ Func(Johnson);
+ return 0;
+}
+~~~
+
+1. 观察下图的红色箭头我们看到，p是指向mike对象时，p->BuyTicket在mike的虚表中找到虚 函数是Person::BuyTicket。 
+
+2. 观察下图的蓝色箭头我们看到，p是指向johnson对象时，p->BuyTicket在johson的虚表中 找到虚函数是Student::BuyTicket。
+
+3. 这样就实现出了不同对象去完成同一行为时，展现出不同的形态。
+
+4. 反过来思考我们要达到多态，有**两个条件**，一个是虚函数覆盖，一个是对象的指针或引用调用虚函数。反思一下为什么？ 
+
+5.  再通过下面的汇编代码分析，看出**满足多态以后的函数调用，不是在编译时确定的，是运行起来以后到对象的中取找的。不满足多态的函数调用时编译时确认好的。**
+
+    ![image-20221020171058295](%E5%9B%BE%E7%89%87/README/image-20221020171058295.png)
+
+    ~~~C++
+    void Func(Person* p)
+    {
+        p->BuyTicket();
+    }
+    int main()
+    {
+        Person mike;
+        Func(&mike);
+        mike.BuyTicket();
+    
+        return 0;
+    }
+    // 以下汇编代码中跟你这个问题不相关的都被去掉了
+    void Func(Person* p)
+    {
+        //...
+            p->BuyTicket();
+        // p中存的是mike对象的指针，将p移动到eax中
+        001940DE  mov         eax,dword ptr [p]
+            // [eax]就是取eax值指向的内容，这里相当于把mike对象头4个字节(虚表指针)移动到了edx
+            001940E1  mov         edx,dword ptr [eax]
+            // [edx]就是取edx值指向的内容，这里相当于把虚表中的头4字节存的虚函数指针移动到了eax
+            00B823EE  mov         eax,dword ptr [edx]
+            // call eax中存虚函数的指针。这里可以看出满足多态的调用，不是在编译时确定的，是运行起来以后到对象的中取找的。
+            001940EA  call        eax  
+            001940EC  cmp         esi,esp  
+    }
+    int main()
+    {
+        ... 
+            // 首先BuyTicket虽然是虚函数，但是mike是对象，不满足多态的条件，所以这里是普通函数的调用转换成地址时，是在编译时已经从符号表确认了函数的地址，直接call 地址
+            mike.BuyTicket();
+        00195182  lea         ecx,[mike]
+        00195185  call        Person::BuyTicket (01914F6h)  
+            ... 
+    }
+    
+    ~~~
+
+
 
 ###### 动态绑定与静态绑定
 
-> 1. 静态绑定又称为前期绑定(早绑定)，在程序编译期间确定了程序的行为，也称为静态多态， 比如：函数重载，模板编程
-> 2. 动态绑定又称后期绑定(晚绑定)，是在程序运行期间，根据具体拿到的类型确定程序的具体 行为，调用具体的函数，也称为动态多态。 
+> 1. 静态绑定又称为前期绑定(早绑定)，在程序编译期间确定了程序的行为，也称为静态多态， 比如：函数重载，模板编程。
+> 2. 动态绑定又称后期绑定(晚绑定)，是在程序运行期间，根据具体拿到的类型确定程序的具体行为，调用具体的函数，也称为动态多态。 
 > 3. 本小节之前(5.2小节)买票的汇编代码很好的解释了什么是静态(编译器)绑定和动态(运行时)绑 定。
 
 ------
 
 ##### 单继承和多继承关系的虚函数表
 
-> 需要注意的是在单继承和多继承关系中，下面我们去关注的是派生类对象的虚表模型，因为基类 的虚表模型前面我们已经看过了，没什么需要特别研究的
+> 需要注意的是在单继承和多继承关系中，下面我们去关注的是派生类对象的虚表模型，因为基类的虚表模型前面我们已经看过了，没什么需要特别研究的
 
 ###### 单继承中的虚函数表
 
-> ~~~C++
-> class Base { 
->     public :
->     virtual void func1() { cout<<"Base::func1" <<endl;}
->     virtual void func2() {cout<<"Base::func2" <<endl;}
->     private :
->     int a;
-> };
-> class Derive :public Base { 
->     public :
->     virtual void func1() {cout<<"Derive::func1" <<endl;}
->     virtual void func3() {cout<<"Derive::func3" <<endl;}
->     virtual void func4() {cout<<"Derive::func4" <<endl;}
->     private :
->     int b;
-> };
-> 
-> ~~~
->
-> 观察下图中的监视窗口中我们发现看不见func3和func4。这里是编译器的监视窗口故意隐藏了这 两个函数，也可以认为是他的一个小bug。那么我们如何查看d的虚表呢？下面我们使用代码打印 出虚表中的函数。
->
-> ![image-20221020171810440](%E5%9B%BE%E7%89%87/README/image-20221020171810440.png)
->
-> ~~~C++
-> typedef void(*VFPTR) ();
-> void PrintVTable(VFPTR vTable[])
-> {
->     // 依次取虚表中的虚函数指针打印并调用。调用就可以看出存的是哪个函数
->     cout << " 虚表地址>" << vTable << endl;
->     for (int i = 0; vTable[i] != nullptr; ++i)
->     {
->         printf(" 第%d个虚函数地址 :0X%x,->", i, vTable[i]);
->         VFPTR f = vTable[i];
->         f();
->     }
->     cout << endl;
-> }
-> int main()
-> {
->     Base b;
->     Derive d;
->     // 思路：取出b、d对象的头4bytes，就是虚表的指针，前面我们说了虚函数表本质是一个存虚函数指针的指针数组，这个数组最后面放了一个nullptr
->     // 1.先取b的地址，强转成一个int*的指针
->     // 2.再解引用取值，就取到了b对象头4bytes的值，这个值就是指向虚表的指针
->     // 3.再强转成VFPTR*，因为虚表就是一个存VFPTR类型(虚函数指针类型)的数组。
->     // 4.虚表指针传递给PrintVTable进行打印虚表
->     // 5.需要说明的是这个打印虚表的代码经常会崩溃，因为编译器有时对虚表的处理不干净，虚表最后面没有放nullptr，导致越界，这是编译器的问题。我们只需要点目录栏的-生成-清理解决方案，再编译就好了。
->     VFPTR* vTableb = (VFPTR*)(*(int*)&b);
->     PrintVTable(vTableb);
->     VFPTR* vTabled = (VFPTR*)(*(int*)&d);
->     PrintVTable(vTabled);
->     return 0;
-> }
-> 
-> ~~~
->
-> ![image-20221020171905028](%E5%9B%BE%E7%89%87/README/image-20221020171905028.png)
+
+
+~~~c++
+class Base { 
+ public :
+ virtual void func1() { cout<<"Base::func1" <<endl;}
+ virtual void func2() {cout<<"Base::func2" <<endl;}
+ private :
+ int a;
+};
+class Derive :public Base { 
+ public :
+ virtual void func1() {cout<<"Derive::func1" <<endl;}
+ virtual void func3() {cout<<"Derive::func3" <<endl;}
+ virtual void func4() {cout<<"Derive::func4" <<endl;}
+ private :
+ int b;
+};
+~~~
+
+观察下图中的监视窗口中我们发现看不见func3和func4。这里是编译器的监视窗口故意隐藏了这两个函数，也可以认为是他的一个小bug。那么我们如何查看d的虚表呢？下面我们使用代码打印出虚表中的函数。
+
+![image-20221020171810440](%E5%9B%BE%E7%89%87/README/image-20221020171810440.png)
+
+~~~C++
+typedef void(*VFPTR) ();
+void PrintVTable(VFPTR vTable[])
+{
+ // 依次取虚表中的虚函数指针打印并调用。调用就可以看出存的是哪个函数
+ cout << " 虚表地址>" << vTable << endl;
+ for (int i = 0; vTable[i] != nullptr; ++i)
+ {
+     printf(" 第%d个虚函数地址 :0X%x,->", i, vTable[i]);
+     VFPTR f = vTable[i];
+     f();
+ }
+ cout << endl;
+}
+int main()
+{
+ Base b;
+ Derive d;
+ // 思路：取出b、d对象的头4bytes，就是虚表的指针，前面我们说了虚函数表本质是一个存虚函数指针的指针数组，这个数组最后面放了一个nullptr
+ // 1.先取b的地址，强转成一个int*的指针
+ // 2.再解引用取值，就取到了b对象头4bytes的值，这个值就是指向虚表的指针
+ // 3.再强转成VFPTR*，因为虚表就是一个存VFPTR类型(虚函数指针类型)的数组。
+ // 4.虚表指针传递给PrintVTable进行打印虚表
+ // 5.需要说明的是这个打印虚表的代码经常会崩溃，因为编译器有时对虚表的处理不干净，虚表最后面没有放nullptr，导致越界，这是编译器的问题。我们只需要点目录栏的-生成-清理解决方案，再编译就好了。
+ VFPTR* vTableb = (VFPTR*)(*(int*)&b);
+ PrintVTable(vTableb);
+ VFPTR* vTabled = (VFPTR*)(*(int*)&d);
+ PrintVTable(vTabled);
+ return 0;
+}
+~~~
+
+![image-20221020171905028](%E5%9B%BE%E7%89%87/README/image-20221020171905028.png)
+
+
 
 ###### 多继承中的虚函数表
 
-> ~~~C++
-> class Base1 {
->  public:
->  virtual void func1() {cout << "Base1::func1" << endl;}
->  virtual void func2() {cout << "Base1::func2" << endl;}
->  private:
->  int b1;
-> };
-> class Base2 {
->  public:
->  virtual void func1() {cout << "Base2::func1" << endl;}
->  virtual void func2() {cout << "Base2::func2" << endl;}
->  private:
->  int b2;
-> };
-> class Derive : public Base1, public Base2 {
->  public:
->  virtual void func1() {cout << "Derive::func1" << endl;}
->  virtual void func3() {cout << "Derive::func3" << endl;}
->  private:
->  int d1;
-> };
-> typedef void(*VFPTR) ();
-> void PrintVTable(VFPTR vTable[])
-> {
->  cout << " 虚表地址>" << vTable << endl;
->  for (int i = 0; vTable[i] != nullptr; ++i)
->  {
->      printf(" 第%d个虚函数地址 :0X%x,->", i, vTable[i]);
->      VFPTR f = vTable[i];
->      f();
->  }
->  cout << endl;
-> }
-> int main()
-> {
->  Derive d;
->  VFPTR* vTableb1 = (VFPTR*)(*(int*)&d);
->  PrintVTable(vTableb1);
->  VFPTR* vTableb2 = (VFPTR*)(*(int*)((char*)&d+sizeof(Base1)));
->  PrintVTable(vTableb2);
->  return 0;
-> }
-> 
-> ~~~
->
-> 观察下图可以看出：多继承派生类的未重写的/新增的虚函数放在**第一个继承基类部分的虚函数表**中
->
-> ![image-20221020172015696](%E5%9B%BE%E7%89%87/README/image-20221020172015696.png)
->
-> **为什么两个父类的虚表中， func1的地址不一样▲**
->
-> ~~~c++
-> 因为VS编译器， call的地址，不是函数的地址， 而是一条jump指令的地址， 跳转到这个指令， 通过这个指令去call原函数
-> ~~~
->
-> 
+
+
+~~~c++
+class Base1 {
+public:
+virtual void func1() {cout << "Base1::func1" << endl;}
+virtual void func2() {cout << "Base1::func2" << endl;}
+private:
+int b1;
+};
+class Base2 {
+public:
+virtual void func1() {cout << "Base2::func1" << endl;}
+virtual void func2() {cout << "Base2::func2" << endl;}
+private:
+int b2;
+};
+class Derive : public Base1, public Base2 {
+public:
+virtual void func1() {cout << "Derive::func1" << endl;}
+virtual void func3() {cout << "Derive::func3" << endl;}
+private:
+int d1;
+};
+typedef void(*VFPTR) ();
+void PrintVTable(VFPTR vTable[])
+{
+cout << " 虚表地址>" << vTable << endl;
+for (int i = 0; vTable[i] != nullptr; ++i)
+{
+  printf(" 第%d个虚函数地址 :0X%x,->", i, vTable[i]);
+  VFPTR f = vTable[i];
+  f();
+}
+cout << endl;
+}
+int main()
+{
+Derive d;
+VFPTR* vTableb1 = (VFPTR*)(*(int*)&d);
+PrintVTable(vTableb1);
+VFPTR* vTableb2 = (VFPTR*)(*(int*)((char*)&d+sizeof(Base1)));
+PrintVTable(vTableb2);
+return 0;
+}
+~~~
+
+观察下图可以看出：多继承派生类的未重写的/新增的虚函数放在**第一个继承基类部分的虚函数表**中
+
+![image-20221020172015696](%E5%9B%BE%E7%89%87/README/image-20221020172015696.png)
+
+**为什么两个父类的虚表中， func1的地址不一样▲**
+
+~~~c++
+因为VS编译器， call的地址，不是函数的地址， 而是一条jump指令的地址， 跳转到这个指令， 通过这个指令去call原函数
+~~~
+
+
 
 ######  菱形继承、菱形虚拟继承
 
@@ -6422,7 +6491,7 @@ void Swap(char& left, char& right)
 >         Derive* p3 = &d;
 >         return 0;
 >     }
->                                                                                                                                                                         
+>                                                                                                                                                                                                 
 >     ~~~
 >
 >     A：p1 == p2 == p3 B：p1 < p2 < p3 C：p1 == p3 != p2 D：p1 != p2 != p3
@@ -6437,13 +6506,13 @@ void Swap(char& left, char& right)
 >         virtual void func(int val = 1){ std::cout<<"A->"<< val <<std::endl;}
 >         virtual void test(){ func();}
 >     };
->                                                                                                                                                                         
+>                                                                                                                                                                                                 
 >     class B : public A
 >     {
 >         public:
 >         void func(int val=0){ std::cout<<"B->"<< val <<std::endl; }
 >     };
->                                                                                                                                                                         
+>                                                                                                                                                                                                 
 >     int main(int argc ,char* argv[])
 >     {
 >         B*p = new B;
@@ -6477,14 +6546,6 @@ void Swap(char& left, char& right)
 > 10. C++菱形继承的问题？虚继承的原理？答：参考继承课件。注意这里不要把虚函数表和虚基 表搞混了。 
 > 11. 什么是抽象类？抽象类的作用？答：参考（3.抽象类）。抽象类强制重写了虚函数，另外抽 象类体现出了接口继承关系。
 
-### 哈希应用
-
-位图
-
-布隆过滤器
-
-哈希切分
-
 ### C++11
 
 ##### 列表初始化
@@ -6492,106 +6553,107 @@ void Swap(char& left, char& right)
 > 在C++98中，标准允许使用花括号{}对数组或者结构体元素进行统一的列表初始值设定。
 >
 > C++11扩大了用大括号括起的列表(初始化列表)的使用范围，使其可用于所有的内置类型和用户自 定义的类型，使用初始化列表时，可添加等号(=)，也可不添加。
+>
+> 其实现底层原理为std::initializer_list
 
-###### std::initializer_list
+std::initializer_list的介绍文档： http://www.cplusplus.com/reference/initializer_list/initializer_list/
 
-> std::initializer_list的介绍文档： http://www.cplusplus.com/reference/initializer_list/initializer_list/
->
-> std::initializer_list一般是作为构造函数的参数，C++11对STL中的不少容器就增加 std::initializer_list作为参数的构造函数，这样初始化容器对象就更方便了。也可以作为operator= 的参数，这样就可以用大括号赋值。是支持列表初始化/赋值的关键。
->
->  http://www.cplusplus.com/reference/list/list/list/ 
->
-> http://www.cplusplus.com/reference/vector/vector/vector/ 
->
-> http://www.cplusplus.com/reference/map/map/map/ 
->
-> http://www.cplusplus.com/reference/vector/vector/operator=/
+std::initializer_list一般是作为构造函数的参数，C++11对STL中的不少容器就增加 std::initializer_list作为参数的构造函数，这样初始化容器对象就更方便了。也可以作为operator= 的参数，这样就可以用大括号赋值。是支持列表初始化/赋值的关键。
+
+http://www.cplusplus.com/reference/list/list/list/ 
+
+http://www.cplusplus.com/reference/vector/vector/vector/ 
+
+http://www.cplusplus.com/reference/map/map/map/ 
+
+http://www.cplusplus.com/reference/vector/vector/operator=/
 
 ##### 多个关键字
 
 ###### auto
 
-> ~~~C++
-> 在C++98中auto是一个存储类型的说明符，表明变量是局部自动存储类型，但是局部域中定义局部的变量默认就是自动存储类型，所以auto就没什么价值了。C++11中废弃auto原来的用法，将其用于实现自动类型腿断。这样要求必须进行显示初始化，让编译器将定义对象的类型设置为初始化值的类型。
-> ~~~
+~~~C++
+在C++98中auto是一个存储类型的说明符，表明变量是局部自动存储类型，但是局部域中定义局部的变量默认就是自动存储类型，所以auto就没什么价值了。
+C++11中废弃auto原来的用法，将其用于实现自动类型推断。这样要求必须进行显示初始化，让编译器将定义对象的类型设置为初始化值的类型。
+~~~
 
 ###### decltype
 
-> ~~~C++
-> //关键字decltype将变量的类型声明为表达式指定的类型。
-> // decltype的一些使用使用场景
-> template<class T1, class T2>
-> void F(T1 t1, T2 t2)
-> {
->     decltype(t1 * t2) ret;
->     cout << typeid(ret).name() << endl;
-> }
-> int main()
-> {
->     const int x = 1;
->     double y = 2.2;
->     decltype(x * y) ret; // ret的类型是double
->     decltype(&x) p;      // p的类型是int*
->     cout << typeid(ret).name() << endl;
->     cout << typeid(p).name() << endl;
->     F(1, 'a');
->     return 0;
-> }
-> ~~~
->
-> 
+~~~C++
+//关键字decltype将变量的类型声明为表达式指定的类型。
+// decltype的一些使用使用场景
+template<class T1, class T2>
+void F(T1 t1, T2 t2)
+{
+ decltype(t1 * t2) ret;
+ cout << typeid(ret).name() << endl;
+}
+int main()
+{
+ const int x = 1;
+ double y = 2.2;
+ decltype(x * y) ret; // ret的类型是double
+ decltype(&x) p;      // p的类型是int*
+ cout << typeid(ret).name() << endl;
+ cout << typeid(p).name() << endl;
+ F(1, 'a');
+ return 0;
+}
+~~~
+
+
 
 ###### nullptr
 
-> ~~~C++
-> //由于C++中NULL被定义成字面量0，这样就可能回带来一些问题，因为0既能指针常量，又能表示整形常量。所以出于清晰和安全的角度考虑，C++11中新增了nullptr，用于表示空指针。
-> #ifndef NULL
-> #ifdef __cplusplus
-> #define NULL   0
-> #else
-> #define NULL   ((void *)0)
-> #endif
-> #endif
-> ~~~
->
-> 
+~~~C++
+//由于C++中NULL被定义成字面量0，这样就可能回带来一些问题，因为0既能指针常量，又能表示整形常量。所以出于清晰和安全的角度考虑，C++11中新增了nullptr，用于表示空指针。
+#ifndef NULL
+#ifdef __cplusplus
+#define NULL   0
+#else
+#define NULL   ((void *)0)
+#endif
+#endif
+~~~
+
+
 
 ###### for : each
 
-> ~~~C++
-> 底层是迭代器，在编译阶段替换成迭代器遍历，使用范围for循环，迭代器需要支持++操作
-> ~~~
->
-> 
+~~~C++
+底层是迭代器，在编译阶段替换成迭代器遍历，使用范围for循环，迭代器需要支持++操作
+~~~
+
+
 
 ##### STL变化
 
 ###### 新容器
 
-> 用橘色圈起来是C++11中的一些几个新容器，但是实际最有用的是unordered_map和 unordered_set。这两个我们前面已经进行了非常详细的讲解，其他的大家了解一下即可。
->
-> ![image-20221120214646334](%E5%9B%BE%E7%89%87/README/image-20221120214646334.png)
->
-> 
+用橘色圈起来是C++11中的一些几个新容器，但是实际最有用的是unordered_map和 unordered_set。这两个我们前面已经进行了非常详细的讲解，其他的大家了解一下即可。
+
+![image-20221120214646334](%E5%9B%BE%E7%89%87/README/image-20221120214646334.png)
+
+
 
 ###### 新方法
 
-> ~~~C++
-> 如果我们再细细去看会发现基本每个容器中都增加了一些C++11的方法，但是其实很多都是用得比较少的。
-> 比如提供了cbegin和cend方法返回const迭代器等等，但是实际意义不大，因为begin和end也是可以返回const迭代器的，这些都是属于锦上添花的操作。
->     
-> 实际上C++11更新后，容器中增加的新方法最后用的插入接口函数的右值引用版本：
->     
-> http://www.cplusplus.com/reference/vector/vector/emplace_back/
-> http://www.cplusplus.com/reference/vector/vector/push_back/
-> http://www.cplusplus.com/reference/map/map/insert/
-> http://www.cplusplus.com/reference/map/map/emplace/
-> 
-> 但是这些接口到底意义在哪？网上都说他们能提高效率，他们是如何提高效率的？
-> 请看下面的右值引用和移动语义章节的讲解。另外emplace还涉及模板的可变参数，也需要再继续深入学习后面章节的知识。
-> ~~~
->
-> 
+~~~C++
+如果我们再细细去看会发现基本每个容器中都增加了一些C++11的方法，但是其实很多都是用得比较少的。
+比如提供了cbegin和cend方法返回const迭代器等等，但是实际意义不大，因为begin和end也是可以返回const迭代器的，这些都是属于锦上添花的操作。
+
+实际上C++11更新后，容器中增加的新方法最后用的插入接口函数的右值引用版本：
+
+http://www.cplusplus.com/reference/vector/vector/emplace_back/
+http://www.cplusplus.com/reference/vector/vector/push_back/
+http://www.cplusplus.com/reference/map/map/insert/
+http://www.cplusplus.com/reference/map/map/emplace/
+
+但是这些接口到底意义在哪？网上都说他们能提高效率，他们是如何提高效率的？
+请看下面的右值引用和移动语义章节的讲解。另外emplace还涉及模板的可变参数，也需要再继续深入学习后面章节的知识。
+~~~
+
+
 
 ##### 右值引用和移动语义▲
 
@@ -6599,764 +6661,780 @@ void Swap(char& left, char& right)
 
 > 传统的C++语法中就有引用的语法，而C++11中新增了的右值引用语法特性，所以从现在开始我们 之前学习的引用就叫做左值引用。无论左值引用还是右值引用，都是给对象取别名。 
 >
-> 什么是左值？什么是左值引用？ 
->
-> 左值是一个表示数据的表达式(如变量名或解引用的指针)，我们可以获取它的地址+可以对它赋 值，左值可以出现赋值符号的左边，右值不能出现在赋值符号左边。定义时const修饰符后的左 值，不能给他赋值，但是可以取它的地址。左值引用就是给左值的引用，给左值取别名。
->
-> ~~~C++
-> int main()
-> {
->     // 以下的p、b、c、*p都是左值
->     int* p = new int(0);
->     int b = 1;
->     const int c = 2;
->     // 以下几个是对上面左值的左值引用
->     int*& rp = p;
->     int& rb = b;
->     const int& rc = c;
->     int& pvalue = *p;
->     return 0;
-> }
-> ~~~
->
-> 什么是右值？什么是右值引用？ 
->
-> 右值也是一个表示数据的表达式，如：字面常量、表达式返回值，函数返回值(这个不能是左值引 用返回)等等，右值可以出现在赋值符号的右边，但是不能出现出现在赋值符号的左边，右值不能 取地址。右值引用就是对右值的引用，给右值取别名。
->
-> ~~~C++
-> int main()
-> {
->     double x = 1.1, y = 2.2;
->     // 以下几个都是常见的右值
->     10;
->     x + y;
->     fmin(x, y);
->     // 以下几个都是对右值的右值引用
->     int&& rr1 = 10;
->     double&& rr2 = x + y;
->     double&& rr3 = fmin(x, y);
->     // 这里编译会报错：error C2106: “=”: 左操作数必须为左值
->     10 = 1;
->     x + y = 1;
->     fmin(x, y) = 1;
->     return 0;
-> }
-> ~~~
->
+
+什么是左值？什么是左值引用？ 
+
+左值是一个表示数据的表达式(如变量名或解引用的指针)，我们**可以获取它的地址+可以对它赋值，左值可以出现赋值符号的左边，右值不能出现在赋值符号左边**。定义时const修饰符后的左值，不能给他赋值，但是可以取它的地址。左值引用就是给左值的引用，给左值取别名。
+
+~~~C++
+int main()
+{
+ // 以下的p、b、c、*p都是左值
+ int* p = new int(0);
+ int b = 1;
+ const int c = 2;
+ // 以下几个是对上面左值的左值引用
+ int*& rp = p;
+ int& rb = b;
+ const int& rc = c;
+ int& pvalue = *p;
+ return 0;
+}
+~~~
+
+什么是右值？什么是右值引用？ 
+
+右值也是一个表示数据的表达式，如：字面常量、表达式返回值，函数返回值(这个不能是左值引 用返回)等等，**右值可以出现在赋值符号的右边，但是不能出现出现在赋值符号的左边，右值不能取地址**。右值引用就是对右值的引用，给右值取别名。
+
+~~~C++
+int main()
+{
+ double x = 1.1, y = 2.2;
+ // 以下几个都是常见的右值
+ 10;
+ x + y;
+ fmin(x, y);
+ // 以下几个都是对右值的右值引用
+ int&& rr1 = 10;
+ double&& rr2 = x + y;
+ double&& rr3 = fmin(x, y);
+ // 这里编译会报错：error C2106: “=”: 左操作数必须为左值
+ 10 = 1;
+ x + y = 1;
+ fmin(x, y) = 1;
+ return 0;
+}
+~~~
+
 > 需要注意的是右值是不能取地址的，但是给右值取别名后，会导致**右值被存储到特定位置，且可以取到该位置的地址**，也就是说例如：不能取字面量10的地址，但是rr1引用后，可以对rr1取地 址，也可以修改rr1。如果不想rr1被修改，可以用const int&& rr1 去引用，是不是感觉很神奇， 这个了解一下实际中右值引用的使用场景并不在于此，这个特性也不重要。
 >
-> 
+
+
 
 ###### 左值引用与右值引用比较
 
-> 左值引用总结： 
->
-> 1. 左值引用只能引用左值，不能引用右值。 
->
-> 2. 但是const左值引用既可引用左值，也可引用右值。
->
->     ~~~C++
->     int main()
->     {
->         // 左值引用只能引用左值，不能引用右值。
->         int a = 10;
->         int& ra1 = a;   // ra为a的别名
->         //int& ra2 = 10;   // 编译失败，因为10是右值
->         // const左值引用既可引用左值，也可引用右值。
->         const int& ra3 = 10;
->         const int& ra4 = a;
->         return 0;
->     }
->     ~~~
->
->     右值引用总结： 
->
->     1. 右值引用只能右值，不能引用左值。
->     2. 但是右值引用可以move以后的左值。
->
->     ~~~C++
->     int main()
->     {
->         // 右值引用只能右值，不能引用左值。
->         int&& r1 = 10;
->         // error C2440: “初始化”: 无法从“int”转换为“int &&”
->         // message : 无法将左值绑定到右值引用
->         int a = 10;
->         int&& r2 = a;
->         // 右值引用可以引用move以后的左值
->         int&& r3 = std::move(a);
->      	return 0;
->     }
->     ~~~
->
->     
+左值引用总结： 
+
+1. 左值引用只能引用左值，不能引用右值。 
+
+2. 但是const左值引用既可引用左值，也可引用右值。
+
+    ~~~C++
+    int main()
+    {
+        // 左值引用只能引用左值，不能引用右值。
+        int a = 10;
+        int& ra1 = a;   // ra为a的别名
+        //int& ra2 = 10;   // 编译失败，因为10是右值
+        // const左值引用既可引用左值，也可引用右值。
+        const int& ra3 = 10;
+        const int& ra4 = a;
+        return 0;
+    }
+    ~~~
+
+右值引用总结： 
+
+1. 右值引用只能右值，不能引用左值。
+
+2. 但是右值引用可以move以后的左值。
+
+    ~~~c++
+    int main()
+    {
+        // 右值引用只能右值，不能引用左值。
+        int&& r1 = 10;
+        // error C2440: “初始化”: 无法从“int”转换为“int &&”
+        // message : 无法将左值绑定到右值引用
+        int a = 10;
+        int&& r2 = a;
+        // 右值引用可以引用move以后的左值
+        int&& r3 = std::move(a);
+     	return 0;
+    }
+    
+    ~~~
+
+    
 
 ###### 右值引用使用场景和意义
 
-> 前面我们可以看到左值引用既可以引用左值和又可以引用右值，那为什么C++11还要提出右值引 用呢？是不是化蛇添足呢？下面我们来看看左值引用的短板，右值引用是如何补齐这个短板的！
->
-> ~~~C++
-> namespace bit
-> {
->      class string
->      {
->      public:
->          typedef char* iterator;
->          iterator begin() 
->          {
->          	return _str;
->          }
->          iterator end()
->          {
->          	return _str + _size;
->          }
->          string(const char* str = "")
->          :_size(strlen(str))
->          , _capacity(_size)
->          {
->              //cout << "string(char* str)" << endl;
->              _str = new char[_capacity + 1];
->              strcpy(_str, str);
->          }
->          // s1.swap(s2)
->          void swap(string& s)
->          {
->              ::swap(_str, s._str);
->              ::swap(_size, s._size);
->              ::swap(_capacity, s._capacity);
->          }
->          // 拷贝构造
->          string(const string& s)
->          :_str(nullptr)
->          {
->              cout << "string(const string& s) -- 深拷贝" << endl;
->              string tmp(s._str);
->              swap(tmp);
->          }
->          // 赋值重载
->          string& operator=(const string& s)
->          {
->              cout << "string& operator=(string s) -- 深拷贝" << endl;
->              string tmp(s);
->              swap(tmp);
->              return *this;
->          }
->          // 移动构造
->          string(string&& s)
->          :_str(nullptr)
->          ,_size(0)
->          ,_capacity(0)
->          {
->              cout << "string(string&& s) -- 移动语义" << endl;
->              swap(s);
->          }
->          // 移动赋值
->          string& operator=(string&& s)
->          {
->              cout << "string& operator=(string&& s) -- 移动语义" << endl;
->              swap(s);
->              return *this;
->          }
->          ~string()
->          {
->              delete[] _str;
->              _str = nullptr;
->          }
->          char& operator[](size_t pos)
->          {
->              assert(pos < _size);
->              return _str[pos];
->          }
->          void reserve(size_t n)
->          {
->              if (n > _capacity)
->              {
->                  char* tmp = new char[n + 1];
->                  strcpy(tmp, _str);
->                  delete[] _str;
->                  _str = tmp;
->                  _capacity = n;
->              }
->          }
->          void push_back(char ch)
->          {
->              if (_size >= _capacity)
->              {
->              	size_t newcapacity = _capacity == 0 ? 4 : _capacity * 2;
->              	reserve(newcapacity);
->              }
->              _str[_size] = ch;
->              ++_size;
->              _str[_size] = '\0';
->          }
->              //string operator+=(char ch)
->          string& operator+=(char ch)
->          {
->              push_back(ch);
->              return *this;
->          }
->          const char* c_str() const
->          {
->          	return _str;
->          }
->      private:
->          char* _str;
->          size_t _size;
->          size_t _capacity; // 不包含最后做标识的\0
->      };
-> }
-> 
-> ~~~
->
-> **左值引用的使用场景**
->
+前面我们可以看到左值引用既可以引用左值和又可以引用右值，那为什么C++11还要提出右值引用呢？是不是化蛇添足呢？下面我们来看看左值引用的短板，右值引用是如何补齐这个短板的！
+
+~~~C++
+namespace bit
+{
+  class string
+  {
+  public:
+      typedef char* iterator;
+      iterator begin() 
+      {
+      	return _str;
+      }
+      iterator end()
+      {
+      	return _str + _size;
+      }
+      string(const char* str = "")
+      :_size(strlen(str))
+      , _capacity(_size)
+      {
+          //cout << "string(char* str)" << endl;
+          _str = new char[_capacity + 1];
+          strcpy(_str, str);
+      }
+      // s1.swap(s2)
+      void swap(string& s)
+      {
+          ::swap(_str, s._str);
+          ::swap(_size, s._size);
+          ::swap(_capacity, s._capacity);
+      }
+      // 拷贝构造
+      string(const string& s)
+      :_str(nullptr)
+      {
+          cout << "string(const string& s) -- 深拷贝" << endl;
+          string tmp(s._str);
+          swap(tmp);
+      }
+      // 赋值重载
+      string& operator=(const string& s)
+      {
+          cout << "string& operator=(string s) -- 深拷贝" << endl;
+          string tmp(s);
+          swap(tmp);
+          return *this;
+      }
+      // 移动构造
+      string(string&& s)
+      :_str(nullptr)
+      ,_size(0)
+      ,_capacity(0)
+      {
+          cout << "string(string&& s) -- 移动语义" << endl;
+          swap(s);
+      }
+      // 移动赋值
+      string& operator=(string&& s)
+      {
+          cout << "string& operator=(string&& s) -- 移动语义" << endl;
+          swap(s);
+          return *this;
+      }
+      ~string()
+      {
+          delete[] _str;
+          _str = nullptr;
+      }
+      char& operator[](size_t pos)
+      {
+          assert(pos < _size);
+          return _str[pos];
+      }
+      void reserve(size_t n)
+      {
+          if (n > _capacity)
+          {
+              char* tmp = new char[n + 1];
+              strcpy(tmp, _str);
+              delete[] _str;
+              _str = tmp;
+              _capacity = n;
+          }
+      }
+      void push_back(char ch)
+      {
+          if (_size >= _capacity)
+          {
+          	size_t newcapacity = _capacity == 0 ? 4 : _capacity * 2;
+          	reserve(newcapacity);
+          }
+          _str[_size] = ch;
+          ++_size;
+          _str[_size] = '\0';
+      }
+          //string operator+=(char ch)
+      string& operator+=(char ch)
+      {
+          push_back(ch);
+          return *this;
+      }
+      const char* c_str() const
+      {
+      	return _str;
+      }
+  private:
+      char* _str;
+      size_t _size;
+      size_t _capacity; // 不包含最后做标识的\0
+  };
+}
+
+~~~
+
+**左值引用的使用场景**
+
 > 做参数和做返回值都可以提高效率。
 >
-> ~~~C++
-> void func1(bit::string s)
-> {}
-> void func2(const bit::string& s)
-> {}
-> int main()
-> {
->      bit::string s1("hello world");
->      // func1和func2的调用我们可以看到左值引用做参数减少了拷贝，提高效率的使用场景和价值
->      func1(s1);
->      func2(s1);
->      // string operator+=(char ch) 传值返回存在深拷贝
->      // string& operator+=(char ch) 传左值引用没有拷贝提高了效率
->      s1 += '!';
->      return 0;
-> }
-> ~~~
->
-> **左值引用的短板**： 
->
-> 但是当函数返回对象是一个局部变量，出了函数作用域就不存在了，就不能使用左值引用返回， 只能传值返回。例如：bit::string to_string(int value)函数中可以看到，这里只能使用传值返回， 传值返回会导致至少1次拷贝构造(如果是一些旧一点的编译器可能是两次拷贝构造)。
->
-> ![image-20221120220304508](%E5%9B%BE%E7%89%87/README/image-20221120220304508.png)
->
-> ~~~C++
-> namespace bit
-> {
->      bit::string to_string(int value)
->      {
->          bool flag = true;
->          if (value < 0)
->          {
->              flag = false;
->              value = 0 - value;
->          }
->          bit::string str;
->          while (value > 0)
->          {
->              int x = value % 10;
->              value /= 10;
->              str += ('0' + x);
->          }
->          if (flag == false)
->          {
->          	str += '-';
->          }
->          std::reverse(str.begin(), str.end());
->          return str;
->      }
-> }
-> int main()
-> {
->     // 在bit::string to_string(int value)函数中可以看到，这里
->     // 只能使用传值返回，传值返回会导致至少1次拷贝构造(如果是一些旧一点的编译器可能是两次拷
->     贝构造)。
->      bit::string ret1 = bit::to_string(1234);
->      bit::string ret2 = bit::to_string(-1234);
->      return 0;
-> }
-> ~~~
->
-> ![image-20221120220236045](%E5%9B%BE%E7%89%87/README/image-20221120220236045.png)
->
-> **右值引用和移动语义解决上述问题：** 
->
-> 在bit::string中增加移动构造，**移动构造本质是将参数右值的资源窃取过来，占位已有，那么就不 用做深拷贝了，所以它叫做移动构造，就是窃取别人的资源来构造自己。**
->
-> ~~~C++
-> // 移动构造
-> string(string&& s)
->  :_str(nullptr)
->  ,_size(0)
->  ,_capacity(0)
-> {
->      cout << "string(string&& s) -- 移动语义" << endl;
->      swap(s);
-> }
-> int main()
-> {
->      bit::string ret2 = bit::to_string(-1234);
->      return 0;
-> }
-> ~~~
->
-> 再运行上面bit::to_string的两个调用，我们会发现，这里没有调用深拷贝的拷贝构造，而是调用 了移动构造，移动构造中没有新开空间，拷贝数据，所以效率提高了。
->
-> ![image-20221120220219139](%E5%9B%BE%E7%89%87/README/image-20221120220219139.png)
->
-> **不仅仅有移动构造，还有移动赋值：**
->
->  在bit::string类中增加移动赋值函数，再去调用bit::to_string(1234)，不过这次是将 bit::to_string(1234)返回的右值对象赋值给ret1对象，这时调用的是移动构造。
->
-> ~~~C++
-> // 移动赋值
-> string& operator=(string&& s)
-> {
->     cout << "string& operator=(string&& s) -- 移动语义" << endl;
->     swap(s);
->     return *this;
-> }
-> int main()
-> {
->      bit::string ret1;
->      ret1 = bit::to_string(1234);
->      return 0;
-> }
-> // 运行结果：
-> // string(string&& s) -- 移动语义
-> // string& operator=(string&& s) -- 移动语义
-> ~~~
->
-> 这里运行后，我们看到调用了一次移动构造和一次移动赋值。因为如果是用一个已经存在的对象 接收，编译器就没办法优化了。bit::to_string函数中会先用str生成构造生成一个临时对象，但是 我们可以看到，编译器很聪明的在这里把str识别成了右值，调用了移动构造。然后在把这个临时 对象做为bit::to_string函数调用的返回值赋值给ret1，这里调用的移动赋值。
->
-> **STL中的容器都是增加了移动构造和移动赋值：** 
->
-> http://www.cplusplus.com/reference/string/string/string/ 
->
-> http://www.cplusplus.com/reference/vector/vector/vector/
+
+~~~C++
+void func1(bit::string s)
+{}
+void func2(const bit::string& s)
+{}
+int main()
+{
+  bit::string s1("hello world");
+  // func1和func2的调用我们可以看到左值引用做参数减少了拷贝，提高效率的使用场景和价值
+  func1(s1);
+  func2(s1);
+  // string operator+=(char ch) 传值返回存在深拷贝
+  // string& operator+=(char ch) 传左值引用没有拷贝提高了效率
+  s1 += '!';
+  return 0;
+}
+~~~
+
+**左值引用的短板**： 
+
+但是当函数返回对象是一个局部变量，出了函数作用域就不存在了，就不能使用左值引用返回， 只能传值返回。例如：bit::string to_string(int value)函数中可以看到，这里只能使用传值返回， 传值返回会导致至少1次拷贝构造(如果是一些旧一点的编译器可能是两次拷贝构造)。
+
+![image-20221120220304508](%E5%9B%BE%E7%89%87/README/image-20221120220304508.png)
+
+~~~C++
+namespace bit
+{
+  bit::string to_string(int value)
+  {
+      bool flag = true;
+      if (value < 0)
+      {
+          flag = false;
+          value = 0 - value;
+      }
+      bit::string str;
+      while (value > 0)
+      {
+          int x = value % 10;
+          value /= 10;
+          str += ('0' + x);
+      }
+      if (flag == false)
+      {
+      	str += '-';
+      }
+      std::reverse(str.begin(), str.end());
+      return str;
+  }
+}
+int main()
+{
+ // 在bit::string to_string(int value)函数中可以看到，这里
+ // 只能使用传值返回，传值返回会导致至少1次拷贝构造(如果是一些旧一点的编译器可能是两次拷
+ 贝构造)。
+  bit::string ret1 = bit::to_string(1234);
+  bit::string ret2 = bit::to_string(-1234);
+  return 0;
+}
+~~~
+
+![image-20221120220236045](%E5%9B%BE%E7%89%87/README/image-20221120220236045.png)
+
+**右值引用和移动语义解决上述问题：** 
+
+在bit::string中增加移动构造，**移动构造本质是将参数右值的资源窃取过来，占位已有，那么就不用做深拷贝了，所以它叫做移动构造，就是窃取别人的资源来构造自己。**
+
+~~~C++
+// 移动构造
+string(string&& s)
+:_str(nullptr)
+,_size(0)
+,_capacity(0)
+{
+  cout << "string(string&& s) -- 移动语义" << endl;
+  swap(s);
+}
+int main()
+{
+  bit::string ret2 = bit::to_string(-1234);
+  return 0;
+}
+~~~
+
+再运行上面bit::to_string的两个调用，我们会发现，这里没有调用深拷贝的拷贝构造，而是调用 了移动构造，移动构造中没有新开空间，拷贝数据，所以效率提高了。
+
+![image-20221120220219139](%E5%9B%BE%E7%89%87/README/image-20221120220219139.png)
+
+**不仅仅有移动构造，还有移动赋值：**
+
+在bit::string类中增加移动赋值函数，再去调用bit::to_string(1234)，不过这次是将 bit::to_string(1234)返回的右值对象赋值给ret1对象，这时调用的是移动构造。
+
+~~~C++
+// 移动赋值
+string& operator=(string&& s)
+{
+ cout << "string& operator=(string&& s) -- 移动语义" << endl;
+ swap(s);
+ return *this;
+}
+int main()
+{
+  bit::string ret1;
+  ret1 = bit::to_string(1234);
+  return 0;
+}
+// 运行结果：
+// string(string&& s) -- 移动语义
+// string& operator=(string&& s) -- 移动语义
+~~~
+
+这里运行后，我们看到调用了一次移动构造和一次移动赋值。因为如果是用一个已经存在的对象 接收，编译器就没办法优化了。bit::to_string函数中会先用str生成构造生成一个临时对象，但是 我们可以看到，编译器很聪明的在这里把str识别成了右值，调用了移动构造。然后在把这个临时 对象做为bit::to_string函数调用的返回值赋值给ret1，这里调用的移动赋值。
+
+**STL中的容器都是增加了移动构造和移动赋值：** 
+
+http://www.cplusplus.com/reference/string/string/string/ 
+
+http://www.cplusplus.com/reference/vector/vector/vector/
+
+
 
 ###### 右值引用引用左值及其一些更深入的使用场景分析
 
-> 按照语法，右值引用只能引用右值，但右值引用一定不能引用左值吗？因为：有些场景下，可能 真的需要用右值去引用左值实现移动语义。**当需要用右值引用引用一个左值时，可以通过move 函数将左值转化为右值。**C++11中，std::move()函数位于 头文件中，该函数名字具有迷惑性， 它**并不搬移任何东西，唯一的功能就是将一个左值强制转化为右值引用，然后实现移动语义。**
->
-> ~~~C++
-> template<class _Ty>
-> inline typename remove_reference<_Ty>::type&& move(_Ty&& _Arg) _NOEXCEPT
-> {
->     // forward _Arg as movable
->      return ((typename remove_reference<_Ty>::type&&)_Arg);
-> }
-> int main()
-> {
->      bit::string s1("hello world");
->      // 这里s1是左值，调用的是拷贝构造
->      bit::string s2(s1);
->      // 这里我们把s1 move处理以后, 会被当成右值，调用移动构造
->      // 但是这里要注意，一般是不要这样用的，因为我们会发现s1的
->      // 资源被转移给了s3，s1被置空了。
->      bit::string s3(std::move(s1));
->      return 0;
-> }
-> ~~~
->
-> **STL容器插入接口函数也增加了右值引用版本：**
->
-> http://www.cplusplus.com/reference/list/list/push_back/ 
->
-> http://www.cplusplus.com/reference/vector/vector/push_back/
->
-> ~~~C++
-> void push_back (value_type&& val);
-> int main()
-> {
->      list<bit::string> lt;
->      bit::string s1("1111");
->     // 这里调用的是拷贝构造
->      lt.push_back(s1);
->     // 下面调用都是移动构造
->      lt.push_back("2222");
->      lt.push_back(std::move(s1));
->      return 0;
-> }
-> 
-> //运行结果：
-> // string(const string& s) -- 深拷贝
-> // string(string&& s) -- 移动语义
-> // string(string&& s) -- 移动语义
-> 
-> ~~~
->
-> ![image-20221120220742758](%E5%9B%BE%E7%89%87/README/image-20221120220742758.png)
+按照语法，右值引用只能引用右值，但右值引用一定不能引用左值吗？因为：有些场景下，可能真的需要用右值去引用左值实现移动语义。**当需要用右值引用引用一个左值时，可以通过move 函数将左值转化为右值。**
+
+C++11中，std::move()函数位于头文件中，该函数名字具有迷惑性， 它**并不搬移任何东西，唯一的功能就是将一个左值强制转化为右值引用，然后实现移动语义。**
+
+~~~C++
+template<class _Ty>
+inline typename remove_reference<_Ty>::type&& move(_Ty&& _Arg) _NOEXCEPT
+{
+ // forward _Arg as movable
+  return ((typename remove_reference<_Ty>::type&&)_Arg);
+}
+int main()
+{
+  bit::string s1("hello world");
+  // 这里s1是左值，调用的是拷贝构造
+  bit::string s2(s1);
+  // 这里我们把s1 move处理以后, 会被当成右值，调用移动构造
+  // 但是这里要注意，一般是不要这样用的，因为我们会发现s1的
+  // 资源被转移给了s3，s1被置空了。
+  bit::string s3(std::move(s1));
+  return 0;
+}
+~~~
+
+**STL容器插入接口函数也增加了右值引用版本：**
+
+http://www.cplusplus.com/reference/list/list/push_back/ 
+
+http://www.cplusplus.com/reference/vector/vector/push_back/
+
+~~~C++
+void push_back (value_type&& val);
+int main()
+{
+  list<bit::string> lt;
+  bit::string s1("1111");
+ // 这里调用的是拷贝构造
+  lt.push_back(s1);
+ // 下面调用都是移动构造
+  lt.push_back("2222");
+  lt.push_back(std::move(s1));
+  return 0;
+}
+
+//运行结果：
+// string(const string& s) -- 深拷贝
+// string(string&& s) -- 移动语义
+// string(string&& s) -- 移动语义
+
+~~~
+
+![image-20221120220742758](%E5%9B%BE%E7%89%87/README/image-20221120220742758.png)
+
+
 
 ###### 完美转发
 
-> **模板中的&& 万能引用**
->
-> ~~~C++
-> void Fun(int &x){ cout << "左值引用" << endl; }
-> void Fun(const int &x){ cout << "const 左值引用" << endl; }
-> void Fun(int &&x){ cout << "右值引用" << endl; }
-> void Fun(const int &&x){ cout << "const 右值引用" << endl; }
-> // 模板中的&&不代表右值引用，而是万能引用，其既能接收左值又能接收右值。
-> // 模板的万能引用只是提供了能够接收同时接收左值引用和右值引用的能力，
-> // 但是引用类型的唯一作用就是限制了接收的类型，后续使用中都退化成了左值，
-> // 我们希望能够在传递过程中保持它的左值或者右值的属性, 就需要用我们下面学习的完美转发
-> template<typename T>
-> void PerfectForward(T&& t)
-> {
->     //传进来的是右值引用，但t作为实参，传给fun的是作者
->  	Fun(t);
-> }
-> int main()
-> {
->      PerfectForward(10);           // 右值
->      int a;
->      PerfectForward(a);            // 左值
->      PerfectForward(std::move(a)); // 右值
->      const int b = 8;
->      PerfectForward(b);      // const 左值
->      PerfectForward(std::move(b)); // const 右值
->      return 0;
-> }
-> ~~~
->
-> **std::forward 完美转发在传参的过程中保留对象原生类型属性**
->
-> ~~~C++
-> void Fun(int &x){ cout << "左值引用" << endl; }
-> void Fun(const int &x){ cout << "const 左值引用" << endl; }
-> void Fun(int &&x){ cout << "右值引用" << endl; }
-> void Fun(const int &&x){ cout << "const 右值引用" << endl; }
-> // std::forward<T>(t)在传参的过程中保持了t的原生类型属性。
-> template<typename T>
-> void PerfectForward(T&& t)
-> {
->     //forward会在传参时保存t的原属性
->     Fun(std::forward<T>(t));
-> }
-> int main()
-> {
->      PerfectForward(10);           // 右值
->      int a;
->      PerfectForward(a);            // 左值
->      PerfectForward(std::move(a)); // 右值
->      const int b = 8;
->      PerfectForward(b);      // const 左值
->      PerfectForward(std::move(b)); // const 右值
->      return 0;
-> }
-> ~~~
->
-> **完美转发实际中的使用场景：**
->
-> ~~~C++
-> template<class T>
-> struct ListNode
-> {
->      ListNode* _next = nullptr;
->      ListNode* _prev = nullptr;
->      T _data;
-> };
-> template<class T>
-> class List
-> {
->  	typedef ListNode<T> Node;
-> public:
->      List()
->      {
->          _head = new Node;
->          _head->_next = _head;
->          _head->_prev = _head;
->      }
->      void PushBack(T&& x)
->      {
->          //Insert(_head, x);
->          Insert(_head, std::forward<T>(x));
->      }
->      void PushFront(T&& x)
->      {
->          //Insert(_head->_next, x);
->          Insert(_head->_next, std::forward<T>(x));
->      }
->      void Insert(Node* pos, T&& x)
->      {
->          Node* prev = pos->_prev;
->          Node* newnode = new Node;
->          newnode->_data = std::forward<T>(x); // 关键位置
->          // prev newnode pos
->          prev->_next = newnode;
->          newnode->_prev = prev;
->          newnode->_next = pos;
->          pos->_prev = newnode;
->      }
->      void Insert(Node* pos, const T& x)
->      {
->          Node* prev = pos->_prev;
->          Node* newnode = new Node;
->          newnode->_data = x; // 关键位置
->          // prev newnode pos
->          prev->_next = newnode;
->         newnode->_prev = prev;
->          newnode->_next = pos;
->          pos->_prev = newnode;
->      }
-> private:
->  	Node* _head;
-> };
-> int main()
-> {
->      List<bit::string> lt;
->      lt.PushBack("1111");
->      lt.PushFront("2222");
->      return 0;
-> }
-> ~~~
->
-> 
+**模板中的&& 万能引用**
+
+~~~C++
+void Fun(int &x){ cout << "左值引用" << endl; }
+void Fun(const int &x){ cout << "const 左值引用" << endl; }
+void Fun(int &&x){ cout << "右值引用" << endl; }
+void Fun(const int &&x){ cout << "const 右值引用" << endl; }
+// 模板中的&&不代表右值引用，而是万能引用，其既能接收左值又能接收右值。
+// 模板的万能引用只是提供了能够接收同时接收左值引用和右值引用的能力，
+// 但是引用类型的唯一作用就是限制了接收的类型，后续使用中都退化成了左值，
+// 我们希望能够在传递过程中保持它的左值或者右值的属性, 就需要用我们下面学习的完美转发
+template<typename T>
+void PerfectForward(T&& t)
+{
+ //传进来的是右值引用，但t作为实参，传给fun的是作者
+	Fun(t);
+}
+int main()
+{
+  PerfectForward(10);           // 右值
+  int a;
+  PerfectForward(a);            // 左值
+  PerfectForward(std::move(a)); // 右值
+  const int b = 8;
+  PerfectForward(b);      // const 左值
+  PerfectForward(std::move(b)); // const 右值
+  return 0;
+}
+~~~
+
+**std::forward 完美转发在传参的过程中保留对象原生类型属性**
+
+~~~C++
+void Fun(int &x){ cout << "左值引用" << endl; }
+void Fun(const int &x){ cout << "const 左值引用" << endl; }
+void Fun(int &&x){ cout << "右值引用" << endl; }
+void Fun(const int &&x){ cout << "const 右值引用" << endl; }
+// std::forward<T>(t)在传参的过程中保持了t的原生类型属性。
+template<typename T>
+void PerfectForward(T&& t)
+{
+ //forward会在传参时保存t的原属性
+ Fun(std::forward<T>(t));
+}
+int main()
+{
+  PerfectForward(10);           // 右值
+  int a;
+  PerfectForward(a);            // 左值
+  PerfectForward(std::move(a)); // 右值
+  const int b = 8;
+  PerfectForward(b);      // const 左值
+  PerfectForward(std::move(b)); // const 右值
+  return 0;
+}
+~~~
+
+**完美转发实际中的使用场景：**
+
+~~~C++
+template<class T>
+struct ListNode
+{
+  ListNode* _next = nullptr;
+  ListNode* _prev = nullptr;
+  T _data;
+};
+template<class T>
+class List
+{
+	typedef ListNode<T> Node;
+public:
+  List()
+  {
+      _head = new Node;
+      _head->_next = _head;
+      _head->_prev = _head;
+  }
+  void PushBack(T&& x)
+  {
+      //Insert(_head, x);
+      Insert(_head, std::forward<T>(x));
+  }
+  void PushFront(T&& x)
+  {
+      //Insert(_head->_next, x);
+      Insert(_head->_next, std::forward<T>(x));
+  }
+  void Insert(Node* pos, T&& x)
+  {
+      Node* prev = pos->_prev;
+      Node* newnode = new Node;
+      newnode->_data = std::forward<T>(x); // 关键位置
+      // prev newnode pos
+      prev->_next = newnode;
+      newnode->_prev = prev;
+      newnode->_next = pos;
+      pos->_prev = newnode;
+  }
+  void Insert(Node* pos, const T& x)
+  {
+      Node* prev = pos->_prev;
+      Node* newnode = new Node;
+      newnode->_data = x; // 关键位置
+      // prev newnode pos
+      prev->_next = newnode;
+     newnode->_prev = prev;
+      newnode->_next = pos;
+      pos->_prev = newnode;
+  }
+private:
+	Node* _head;
+};
+int main()
+{
+  List<bit::string> lt;
+  lt.PushBack("1111");
+  lt.PushFront("2222");
+  return 0;
+}
+~~~
+
+
 
 ##### 新的类功能
 
 ###### 默认成员函数
 
-> 原来C++类中，有6个默认成员函数： 
->
-> 1. 构造函数 
-> 2. 析构函数 
-> 3. 拷贝构造函数 
-> 4.  拷贝赋值重载 
-> 5.  取地址重载 
-> 6.  const 取地址重载 
->
-> 最后重要的是前4个，后两个用处不大。默认成员函数就是我们不写编译器会生成一个默认的。 
->
-> C++11 新增了两个：移动构造函数和移动赋值运算符重载。 
->
-> 针对移动构造函数和移动赋值运算符重载有一些需要注意的点如下： 
->
-> 1. 如果你没有自己实现移动构造函数，且**没有实现析构函数 、拷贝构造、拷贝赋值重载中的任意一个**。那么编译器会自动生成一个默认移动构造。默认生成的移动构造函数，对于内置类 型成员会执行逐成员**按字节拷贝**，自定义类型成员，则需要看这个成员是否实现移动构造， 如果**实现了就调用移动构造，没有实现就调用拷贝构造**。 
-> 2. 如果你没有自己实现移动赋值重载函数，且没**有实现析构函数 、拷贝构造、拷贝赋值重载中 的任意一个**，那么编译器会自动生成一个默认移动赋值。默认生成的移动构造函数，对于内置类型成员会执行逐成员**按字节拷贝**，自定义类型成员，则需要看这个成员是否实现移动赋 值，如果**实现了就调用移动赋值，没有实现就调用拷贝赋值**。(默认移动赋值跟上面移动构造完全类似) 如果你提供了移动构造或者移动赋值，编译器不会自动提供拷贝构造和拷贝赋值。
->
-> ~~~C++
-> // 以下代码在vs2013中不能体现，在vs2019下才能演示体现上面的特性。
-> class Person
-> {
-> public:
->      Person(const char* name = "", int age = 0)
->      :_name(name)
->      , _age(age)
->      {}
->      /*Person(const Person& p)
->     :_name(p._name)
->      ,_age(p._age)
->      {}*/
->      /*Person& operator=(const Person& p)
->      {
->          if(this != &p)
->          {
->              _name = p._name;
->              _age = p._age;
->          }
->      	return *this;
->      }*/
->      /*~Person()
->      {}*/
-> private:
->      bit::string _name;
->      int _age;
-> };
-> int main()
-> {
->      Person s1;
->      Person s2 = s1;
->      Person s3 = std::move(s1);
->      Person s4;
->      s4 = std::move(s2);
->      return 0;
-> }
-> 
-> ~~~
->
-> 
+原来C++类中，有6个默认成员函数： 
+
+1. 构造函数 
+2. 析构函数 
+3. 拷贝构造函数 
+4.  拷贝赋值重载 
+5.  取地址重载 
+6.  const 取地址重载 
+
+最后重要的是前4个，后两个用处不大。默认成员函数就是我们不写编译器会生成一个默认的。 
+
+C++11 新增了两个：移动构造函数和移动赋值运算符重载。 
+
+针对移动构造函数和移动赋值运算符重载有一些需要注意的点如下： 
+
+1. 如果你**没有自己实现移动构造函数，且没有实现析构函数 、拷贝构造、拷贝赋值重载中的任意一个**。那么编译器会自动生成一个默认移动构造。默认生成的移动构造函数，对于内置类 型成员会执行逐成员**按字节拷贝**，自定义类型成员，则需要看这个成员是否实现移动构造， 如果**实现了就调用移动构造，没有实现就调用拷贝构造**。 
+2. 如果你**没有自己实现移动赋值重载函数，且没有实现析构函数 、拷贝构造、拷贝赋值重载中 的任意一个**，那么编译器会自动生成一个默认移动赋值。默认生成的移动构造函数，对于内置类型成员会执行逐成员**按字节拷贝**，自定义类型成员，则需要看这个成员是否实现移动赋 值，如果**实现了就调用移动赋值，没有实现就调用拷贝赋值**。(默认移动赋值跟上面移动构造完全类似) 如果你提供了移动构造或者移动赋值，编译器不会自动提供拷贝构造和拷贝赋值。
+
+~~~C++
+// 以下代码在vs2013中不能体现，在vs2019下才能演示体现上面的特性。
+class Person
+{
+public:
+     Person(const char* name = "", int age = 0)
+     :_name(name)
+     , _age(age)
+     {}
+     /*Person(const Person& p)
+    :_name(p._name)
+     ,_age(p._age)
+     {}*/
+     /*Person& operator=(const Person& p)
+     {
+         if(this != &p)
+         {
+             _name = p._name;
+             _age = p._age;
+         }
+     	return *this;
+     }*/
+     /*~Person()
+     {}*/
+private:
+     bit::string _name;
+     int _age;
+};
+int main()
+{
+     Person s1;
+     Person s2 = s1;
+     Person s3 = std::move(s1);
+     Person s4;
+     s4 = std::move(s2);
+     return 0;
+}
+
+~~~
+
+
 
 ###### 类成员变量初始化 
 
-> C++11允许在类定义时给成员变量初始缺省值，默认生成构造函数会使用这些缺省值初始化，这 个我们在类和对象默认就讲了，这里就不再细讲了。 
+> C++11允许在类声明时给成员变量初始缺省值，默认生成构造函数会使用这些缺省值初始化，这 个我们在类和对象默认就讲了，这里就不再细讲了。 
 >
-> 
+
+
 
 ###### 强制生成默认函数的关键字default
 
-> C++11可以让你更好的控制要使用的默认函数。假设你要使用某个默认的函数，但是因为一些原 因这个函数没有默认生成。比如：我们提供了拷贝构造，就不会生成移动构造了，那么我们可以 使用default关键字显示指定移动构造生成。
+> C++11可以让你更好的控制要使用的默认函数。假设你要使用某个默认的函数，但是因为一些原因这个函数没有默认生成。比如：我们提供了拷贝构造，就不会生成移动构造了，那么我们可以 使用default关键字显示指定移动构造生成。
 >
-> ~~~C++
-> class Person
-> {
-> public:
->      Person(const char* name = "", int age = 0)
->      :_name(name)
->      , _age(age)
->      {}
->      Person(const Person& p)
->      :_name(p._name)
->      ,_age(p._age)
->      {}
->     Person(Person&& p) = default;
-> private:
->      bit::string _name;
->      int _age;
-> };
-> int main()
-> {
->      Person s1;
->      Person s2 = s1;
->      Person s3 = std::move(s1);
->      return 0;
-> }
-> ~~~
->
-> 
+
+~~~C++
+class Person
+{
+public:
+  Person(const char* name = "", int age = 0)
+  :_name(name)
+  , _age(age)
+  {}
+  Person(const Person& p)
+  :_name(p._name)
+  ,_age(p._age)
+  {}
+ Person(Person&& p) = default;
+private:
+  bit::string _name;
+  int _age;
+};
+int main()
+{
+  Person s1;
+  Person s2 = s1;
+  Person s3 = std::move(s1);
+  return 0;
+}
+~~~
+
+
 
 ###### 禁止生成默认函数的关键字delete
 
-> 如果能想要限制某些默认函数的生成，在C++98中，是该函数设置成private，并且只声明补丁 已，这样只要其他人想要调用就会报错。在C++11中更简单，只需在该函数声明加上=delete即 可，该语法指示编译器不生成对应函数的默认版本，称=delete修饰的函数为删除函数。
+> 如果能想要限制某些默认函数的生成，在C++98中，将该函数设置成private，并且只声明补丁，这样只要其他人想要调用就会报错（私有函数只能友元/类成员函数调用）。
 >
-> ~~~C++
-> class Person
-> {
-> public:
->      Person(const char* name = "", int age = 0)
->      :_name(name)
->      , _age(age)
->      {}
->      Person(const Person& p) = delete;
-> private:
->      bit::string _name;
->      int _age;
-> };
-> int main()
-> {
->      Person s1;
->      Person s2 = s1;
->      Person s3 = std::move(s1);
->      return 0;
-> }
-> ~~~
->
-> 
+> 在C++11中更简单，只需在该函数声明加上=delete即 可，该语法指示编译器不生成对应函数的默认版本，称=delete修饰的函数为**删除函数**。
+
+~~~C++
+class Person
+{
+public:
+  Person(const char* name = "", int age = 0)
+  :_name(name)
+  , _age(age)
+  {}
+  Person(const Person& p) = delete;
+private:
+  bit::string _name;
+  int _age;
+};
+int main()
+{
+  Person s1;
+  Person s2 = s1;
+  Person s3 = std::move(s1);
+  return 0;
+}
+~~~
+
+
 
 ###### 继承和多态中的final与override关键字
 
-> 这个我们在继承和多态章节已经进行了详细讲解这里就不再细讲，需要的话去复习继承和多台章 节吧。
+> 继承+多态
 
-##### 可变参数模板--了解
+##### 可变参数模板
 
-> C++11的新特性可变参数模板能够让您创建可以接受可变参数的函数模板和类模板，相比 C++98/03，类模版和函数模版中只能含固定数量的模版参数，可变模版参数无疑是一个巨大的改 进。然而由于可变模版参数比较抽象，使用起来需要一定的技巧，所以这块还是比较晦涩的。现 阶段呢，我们掌握一些基础的可变参数模板特性就够我们用了，所以这里我们点到为止，以后大 家如果有需要，再可以深入学习。 
+> C++11的新特性可变参数模板能够让您创建可以接受可变参数的函数模板和类模板，相比 C++98/03，类模版和函数模版中只能含固定数量的模版参数，可变模版参数无疑是一个巨大的改 。然而由于可变模版参数比较抽象，使用起来需要一定的技巧，所以这块还是比较晦涩的。现阶段呢，我们掌握一些基础的可变参数模板特性就够我们用了，所以这里我们点到为止，以后大 家如果有需要，再可以深入学习。 
 >
-> 下面就是一个基本可变参数的函数模板
->
-> ~~~C++
-> // Args是一个模板参数包，args是一个函数形参参数包
-> // 声明一个参数包Args...args，这个参数包中可以包含0到任意个模板参数。
-> template <class ...Args>
-> void ShowList(Args... args)
-> {}
-> ~~~
->
-> 上面的参数args前面有省略号，所以它就是一个可变模版参数，我们把带省略号的参数称为“参数 包”，它里面包含了0到N（N>=0）个模版参数。我们无法直接获取参数包args中的每个参数的， 只能通过展开参数包的方式来获取参数包中的每个参数，这是使用可变模版参数的一个主要特 点，也是最大的难点，即如何展开可变模版参数。由于语法不支持使用args[i]这样方式获取可变 参数，所以我们的用一些奇招来一一获取参数包的值。 
->
-> **1. 递归函数方式展开参数包**
->
-> ~~~C++
-> // 递归终止函数
-> template <class T>
-> void ShowList(const T& t)
-> {
-> 	 cout << t << endl;
-> }
-> // 展开函数
-> template <class T, class ...Args>
-> void ShowList(T value, Args... args)
-> {
->      cout << value <<" ";
->      ShowList(args...);
-> }
-> int main()
-> {
->      ShowList(1);
->      ShowList(1, 'A');
->      ShowList(1, 'A', std::string("sort"));
->      return 0;
-> }
-> ~~~
->
-> **2. 逗号表达式展开参数包**
->
-> 这种展开参数包的方式，不需要通过递归终止函数，是直接在expand函数体中展开的, printarg 不是一个递归终止函数，只是一个处理参数包中每一个参数的函数。这种就地展开参数包的方式 实现的关键是逗号表达式。我们知道逗号表达式会按顺序执行逗号前面的表达式。 
->
-> expand函数中的逗号表达式：(printarg(args), 0)，也是按照这个执行顺序，先执行 printarg(args)，再得到逗号表达式的结果0。同时还用到了C++11的另外一个特性——初始化列 表，通过初始化列表来初始化一个变长数组, {(printarg(args), 0)...}将会展开成((printarg(arg1),0),  (printarg(arg2),0), (printarg(arg3),0), etc... )，最终会创建一个元素值都为0的数组int arr[sizeof...(Args)]。由于是逗号表达式，在创建数组的过程中会先执行逗号表达式前面的部分printarg(args) 打印出参数，也就是说在构造int数组的过程中就将参数包展开了，这个数组的目的纯粹是为了在 数组构造的过程展开参数包
->
-> ~~~C++
-> template <class T>
-> void PrintArg(T t)
-> {
->  	cout << t << " ";
-> }
-> //展开函数
-> template <class ...Args>
-> void ShowList(Args... args)
-> {
->  	int arr[] = { (PrintArg(args), 0)... };
->  	cout << endl;
-> }
-> int main()
-> {
->      ShowList(1);
->      ShowList(1, 'A');
->      ShowList(1, 'A', std::string("sort"));
->      return 0;
-> }
-> ~~~
->
-> **STL**容器中的empalce相关接口函数： 
->
-> http://www.cplusplus.com/reference/vector/vector/emplace_back/ 
->
-> http://www.cplusplus.com/reference/list/list/emplace_back/
->
-> ~~~C++
-> template <class... Args>
-> void emplace_back (Args&&... args);
-> ~~~
->
-> 首先我们看到的emplace系列的接口，支持模板的可变参数，并且万能引用。那么相对insert和 emplace系列接口的优势到底在哪里呢？
->
-> ~~~C++
-> int main()
-> {
->      std::list< std::pair<int, char> > mylist;
->      // emplace_back支持可变参数，拿到构建pair对象的参数后自己去创建对象
->      // 那么在这里我们可以看到除了用法上，和push_back没什么太大的区别
->      mylist.emplace_back(10, 'a');
->      mylist.emplace_back(20, 'b');
->      mylist.emplace_back(make_pair(30, 'c'));
->      mylist.push_back(make_pair(40, 'd'));
->      mylist.push_back({ 50, 'e' });
->      for (auto e : mylist)
->      cout << e.first << ":" << e.second << endl;
->      return 0;
-> }
-> 
-> int main()
-> {
->     // 下面我们试一下带有拷贝构造和移动构造的bit::string，再试试呢
->     // 我们会发现其实差别也不到，emplace_back是直接构造了，push_back
->     // 是先构造，再移动构造，其实也还好。
->      std::list< std::pair<int, bit::string> > mylist;
->      mylist.emplace_back(10, "sort");
->      mylist.emplace_back(make_pair(20, "sort"));
->      mylist.push_back(make_pair(30, "sort"));
->      mylist.push_back({ 40, "sort"});
->      return 0;
-> }
-> ~~~
->
-> 
+
+下面就是一个基本可变参数的函数模板
+
+~~~C++
+// Args是一个模板参数包，args是一个函数形参参数包
+// 声明一个参数包Args...args，这个参数包中可以包含0到任意个模板参数。
+template <class ...Args>
+void ShowList(Args... args)
+{}
+~~~
+
+上面的参数args前面有省略号，所以它就是一个可变模版参数，我们把带省略号的参数称为“参数包”，它里面包含了0到N（N>=0）个模版参数。我们无法直接获取参数包args中的每个参数的， 只能通过展开参数包的方式来获取参数包中的每个参数，这是使用可变模版参数的一个主要特 点，也是最大的难点，即如何展开可变模版参数。由于语法不支持使用args[i]这样方式获取可变 参数，所以我们的用一些奇招来一一获取参数包的值。 
+
+**1. 递归函数方式展开参数包**
+
+~~~C++
+// 递归终止函数
+template <class T>
+void ShowList(const T& t)
+{
+	 cout << t << endl;
+}
+// 展开函数
+template <class T, class ...Args>
+void ShowList(T value, Args... args)
+{
+  cout << value <<" ";
+  ShowList(args...);
+}
+int main()
+{
+  ShowList(1);
+  ShowList(1, 'A');
+  ShowList(1, 'A', std::string("sort"));
+  return 0;
+}
+~~~
+
+**2. 逗号表达式展开参数包**
+
+这种展开参数包的方式，不需要通过递归终止函数，是直接在expand函数体中展开的, printarg 不是一个递归终止函数，只是一个处理参数包中每一个参数的函数。这种就地展开参数包的方式 实现的关键是逗号表达式。我们知道逗号表达式会按顺序执行逗号前面的表达式。 
+
+expand函数中的逗号表达式：(printarg(args), 0)，也是按照这个执行顺序，先执行 printarg(args)，再得到逗号表达式的结果0。同时还用到了C++11的另外一个特性——初始化列 表，通过初始化列表来初始化一个变长数组, {(printarg(args), 0)...}将会展开成((printarg(arg1),0),  (printarg(arg2),0), (printarg(arg3),0), etc... )，最终会创建一个元素值都为0的数组int arr[sizeof...(Args)]。由于是逗号表达式，在创建数组的过程中会先执行逗号表达式前面的部分printarg(args) 打印出参数，也就是说在构造int数组的过程中就将参数包展开了，这个数组的目的纯粹是为了在 数组构造的过程展开参数包
+
+~~~C++
+template <class T>
+void PrintArg(T t)
+{
+	cout << t << " ";
+}
+//展开函数
+template <class ...Args>
+void ShowList(Args... args)
+{
+	int arr[] = { (PrintArg(args), 0)... };
+	cout << endl;
+}
+int main()
+{
+  ShowList(1);
+  ShowList(1, 'A');
+  ShowList(1, 'A', std::string("sort"));
+  return 0;
+}
+~~~
+
+**STL**容器中的empalce相关接口函数： 
+
+http://www.cplusplus.com/reference/vector/vector/emplace_back/ 
+
+http://www.cplusplus.com/reference/list/list/emplace_back/
+
+~~~C++
+template <class... Args>
+void emplace_back (Args&&... args);
+~~~
+
+首先我们看到的emplace系列的接口，支持模板的可变参数，并且万能引用。那么相对insert和 emplace系列接口的优势到底在哪里呢？
+
+~~~C++
+int main()
+{
+  std::list< std::pair<int, char> > mylist;
+  // emplace_back支持可变参数，拿到构建pair对象的参数后自己去创建对象
+  // 那么在这里我们可以看到除了用法上，和push_back没什么太大的区别
+  mylist.emplace_back(10, 'a');
+  mylist.emplace_back(20, 'b');
+  mylist.emplace_back(make_pair(30, 'c'));
+  mylist.push_back(make_pair(40, 'd'));
+  mylist.push_back({ 50, 'e' });
+  for (auto e : mylist)
+  cout << e.first << ":" << e.second << endl;
+  return 0;
+}
+
+int main()
+{
+ // 下面我们试一下带有拷贝构造和移动构造的bit::string，再试试呢
+ // 我们会发现其实差别也不到，emplace_back是直接构造了，push_back
+ // 是先构造，再移动构造，其实也还好。
+  std::list< std::pair<int, bit::string> > mylist;
+  mylist.emplace_back(10, "sort");
+  mylist.emplace_back(make_pair(20, "sort"));
+  mylist.push_back(make_pair(30, "sort"));
+  mylist.push_back({ 40, "sort"});
+  return 0;
+}
+~~~
+
+
 
 #### lambda表达式▲
 
