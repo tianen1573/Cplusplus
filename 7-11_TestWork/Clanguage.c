@@ -28,13 +28,13 @@
 //	return 0;
 //}
 
-#include<stdio.h>
-
-int main()
-{
-	printf("%s %.3s\n", "computer", "computer");
-
-	printf("%.1f a", 123.00);
-
-	return 0;
-}
+//#include<stdio.h>
+//
+//int main()
+//{
+//	printf("%s %.3s\n", "computer", "computer");
+//
+//	printf("%.1f a", 123.00);
+//
+//	return 0;
+//}

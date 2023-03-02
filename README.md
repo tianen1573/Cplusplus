@@ -6491,7 +6491,7 @@ return 0;
 >         Derive* p3 = &d;
 >         return 0;
 >     }
->                                                                                                                                                                                                 
+>                                                                                                                                                                                                         
 >     ~~~
 >
 >     A：p1 == p2 == p3 B：p1 < p2 < p3 C：p1 == p3 != p2 D：p1 != p2 != p3
@@ -6506,13 +6506,13 @@ return 0;
 >         virtual void func(int val = 1){ std::cout<<"A->"<< val <<std::endl;}
 >         virtual void test(){ func();}
 >     };
->                                                                                                                                                                                                 
+>                                                                                                                                                                                                         
 >     class B : public A
 >     {
 >         public:
 >         void func(int val=0){ std::cout<<"B->"<< val <<std::endl; }
 >     };
->                                                                                                                                                                                                 
+>                                                                                                                                                                                                         
 >     int main(int argc ,char* argv[])
 >     {
 >         B*p = new B;
@@ -7440,415 +7440,434 @@ int main()
 
 ##### 前言
 
-> 在C++98中，如果想要对一个数据集合中的元素进行排序，可以使用std::sort方法。
->
-> ~~~C++
-> #include <algorithm>
-> #include <functional>
-> int main()
-> {
-> int array[] = {4,1,8,5,3,7,0,9,2,6};
-> // 默认按照小于比较，排出来结果是升序
-> std::sort(array, array+sizeof(array)/sizeof(array[0]));
-> // 如果需要降序，需要改变元素的比较规则
-> std::sort(array, array + sizeof(array) / sizeof(array[0]), greater<int>());
-> return 0;
-> }
-> ~~~
->
-> 如果待排序元素为自定义类型，需要用户定义排序时的比较规则：
->
-> ~~~C++
-> struct Goods
-> {
->      string _name;  // 名字
->      double _price; // 价格
->      int _evaluate; // 评价
->      Goods(const char* str, double price, int evaluate)
->      :_name(str)
->      , _price(price)
->      , _evaluate(evaluate)
->      {}
-> };
-> struct ComparePriceLess
-> {
->      bool operator()(const Goods& gl, const Goods& gr)
->      {
->      	return gl._price < gr._price;
->      }
-> };
-> struct ComparePriceGreater
-> {
->      bool operator()(const Goods& gl, const Goods& gr)
->      {
->      	return gl._price > gr._price;
->      }
-> };
-> int main()
-> {
->      vector<Goods> v = { { "苹果", 2.1, 5 }, { "香蕉", 3, 4 }, { "橙子", 2.2, 
->      3 }, { "菠萝", 1.5, 4 } };
->      sort(v.begin(), v.end(), ComparePriceLess());
->      sort(v.begin(), v.end(), ComparePriceGreater());
-> }
-> ~~~
->
-> 随着C++语法的发展，**人们开始觉得上面的写法太复杂了，每次为了实现一个algorithm算法， 都要重新去写一个类，如果每次比较的逻辑不一样，还要去实现多个类，特别是相同类的命名， 这些都给编程者带来了极大的不便**。因此，在C++11语法中出现了Lambda表达式。
+在C++98中，如果想要对一个数据集合中的元素进行排序，可以使用std::sort方法。
+
+~~~C++
+#include <algorithm>
+#include <functional>
+int main()
+{
+int array[] = {4,1,8,5,3,7,0,9,2,6};
+// 默认按照小于比较，排出来结果是升序
+std::sort(array, array+sizeof(array)/sizeof(array[0]));
+// 如果需要降序，需要改变元素的比较规则
+std::sort(array, array + sizeof(array) / sizeof(array[0]), greater<int>());
+return 0;
+}
+~~~
+
+如果待排序元素为自定义类型，需要用户定义排序时的比较规则：
+
+~~~C++
+struct Goods
+{
+  string _name;  // 名字
+  double _price; // 价格
+  int _evaluate; // 评价
+  Goods(const char* str, double price, int evaluate)
+  :_name(str)
+  , _price(price)
+  , _evaluate(evaluate)
+  {}
+};
+struct ComparePriceLess
+{
+  bool operator()(const Goods& gl, const Goods& gr)
+  {
+  	return gl._price < gr._price;
+  }
+};
+struct ComparePriceGreater
+{
+  bool operator()(const Goods& gl, const Goods& gr)
+  {
+  	return gl._price > gr._price;
+  }
+};
+int main()
+{
+  vector<Goods> v = { { "苹果", 2.1, 5 }, { "香蕉", 3, 4 }, { "橙子", 2.2, 
+  3 }, { "菠萝", 1.5, 4 } };
+  sort(v.begin(), v.end(), ComparePriceLess());
+  sort(v.begin(), v.end(), ComparePriceGreater());
+}
+~~~
+
+随着C++语法的发展，**人们开始觉得上面的写法太复杂了，每次为了实现一个algorithm算法， 都要重新去写一个类，如果每次比较的逻辑不一样，还要去实现多个类，特别是相同类的命名， 这些都给编程者带来了极大的不便**。
+
+因此，在C++11语法中出现了Lambda表达式。
 
 ##### lambda表达式
 
-> ~~~C++
-> int main()
-> {
->      vector<Goods> v = { { "苹果", 2.1, 5 }, { "香蕉", 3, 4 }, { "橙子", 2.2, 
->      3 }, { "菠萝", 1.5, 4 } };
->      sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2){
->      return g1._price < g2._price; });
->      sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2){
->      return g1._price > g2._price; });
->      sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2){
->      return g1._evaluate < g2._evaluate; });
->      sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2){
->      return g1._evaluate > g2._evaluate; });
-> }
-> ~~~
->
+~~~C++
+int main()
+{
+  vector<Goods> v = { { "苹果", 2.1, 5 }, { "香蕉", 3, 4 }, { "橙子", 2.2, 
+  3 }, { "菠萝", 1.5, 4 } };
+  sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2){
+  return g1._price < g2._price; });
+  sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2){
+  return g1._price > g2._price; });
+  sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2){
+  return g1._evaluate < g2._evaluate; });
+  sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2){
+  return g1._evaluate > g2._evaluate; });
+}
+~~~
+
 > 上述代码就是使用C++11中的lambda表达式来解决，可以看出lambda表达式实际是一个匿名函数。
 >
 > lambda表达式书写格式：[capture-list] (parameters) mutable -> return-type { statement  } 
 >
-> 
 
-###### 1. lambda表达式各部分说明 
 
-> 
->
-> - [capture-list] : 捕捉列表，该列表总是出现在lambda函数的开始位置，编译器根据[]来 判断接下来的代码是否为lambda函数，捕捉列表能够捕捉上下文中的变量供lambda 函数使用。 
-> - (parameters)：参数列表。与普通函数的参数列表一致，如果不需要参数传递，则可以 连同()一起省略 
-> - mutable：默认情况下，lambda函数总是一个const函数，mutable可以取消其常量 性。使用该修饰符时，参数列表不可省略(即使参数为空)。
-> - ->returntype：返回值类型。用追踪返回类型形式声明函数的返回值类型，没有返回 值时此部分可省略。返回值类型明确情况下，也可省略，由编译器对返回类型进行推 导。 
-> - {statement}：函数体。在该函数体内，除了可以使用其参数外，还可以使用所有捕获 到的变量。
->
-> **注意：** 
->
+
+###### 1. lambda表达式各部分说明
+
+- [capture-list] : 捕捉列表，该列表总是出现在lambda函数的开始位置，编译器根据[]来 判断接下来的代码是否为lambda函数，捕捉列表能够捕捉上下文中的变量供lambda 函数使用。 
+- (parameters)：参数列表。与普通函数的参数列表一致，如果不需要参数传递，则可以 连同()一起省略 
+- mutable：默认情况下，lambda函数总是一个const函数，mutable可以取消其常量性。使用该修饰符时，参数列表不可省略(即使参数为空)。
+- ->returntype：返回值类型。用追踪返回类型形式声明函数的返回值类型，没有返回值时此部分可省略。返回值类型明确情况下，也可省略，由编译器对返回类型进行推导。 
+- {statement}：函数体。在该函数体内，除了可以使用其参数外，还可以使用所有捕获到的变量。
+
+**注意：** 
+
 > 在lambda函数定义中，**参数列表和返回值类型都是可选部分**，**而捕捉列表和函数体可以为 空。**因此C++11中**最简单的lambda函数为：[]{}**; 该lambda函数不能做任何事情。
 >
-> ~~~C++
-> int main()
-> {
->     // 最简单的lambda表达式, 该lambda表达式没有任何意义
->    []{}; 
->     
->     // 省略参数列表和返回值类型，返回值类型由编译器推导为int
->     int a = 3, b = 4;
->    [=]{return a + 3; }; 
->     
->     // 省略了返回值类型，无返回值类型
->     auto fun1 = [&](int c){b = a + c; }; 
->     fun1(10)
->     cout<<a<<" "<<b<<endl;
->     
->     // 各部分都很完善的lambda函数
->     auto fun2 = [=, &b](int c)->int{return b += a+ c; }; 
->     cout<<fun2(10)<<endl;
->     
->     // 复制捕捉x
->     int x = 10;
->     auto add_x = [x](int a) mutable { x *= 2; return a + x; }; 
->     cout << add_x(10) << endl; 
->     return 0;
-> }
-> ~~~
->
-> 通过上述例子可以看出，lambda表达式实际上可以理解为无名函数，该函数无法直接调 用，如果想要直接调用，可借助auto将其赋值给一个变量。
+
+~~~C++
+int main()
+{
+    // 最简单的lambda表达式, 该lambda表达式没有任何意义
+   []{}; 
+
+    // 省略参数列表和返回值类型，返回值类型由编译器推导为int
+    int a = 3, b = 4;
+   [=]{return a + 3; }; 
+
+    // 省略了返回值类型，无返回值类型
+    auto fun1 = [&](int c){b = a + c; }; 
+    fun1(10)
+    cout<<a<<" "<<b<<endl;
+
+    // 各部分都很完善的lambda函数
+    auto fun2 = [=, &b](int c)->int{return b += a+ c; }; 
+    cout<<fun2(10)<<endl;
+
+    // 复制捕捉x
+    int x = 10;
+    auto add_x = [x](int a) mutable { x *= 2; return a + x; }; 
+    cout << add_x(10) << endl; 
+    return 0;
+}
+~~~
+
+通过上述例子可以看出，lambda表达式实际上可以理解为无名函数，该函数无法直接调 用，如果想要直接调用，可借助auto将其赋值给一个变量。
 
 ###### 2. 捕获列表说明
 
-> 捕捉列表描述了上下文中那些数据可以被lambda使用，以及使用的方式传值还是传引用。 
->
-> - [var]：表示值传递方式捕捉变量
-> - var [=]：表示值传递方式捕获所有父作用域中的变量(包括this) 
-> - [&var]：表示引用传递捕捉变量var 
-> - [&]：表示引用传递捕捉所有父作用域中的变量(包括this) 
-> - [this]：表示值传递方式捕捉当前的this指针
->
-> 注意：
->
-> - 父作用域指包含lambda函数的语句块
-> - 语法上捕捉列表可由多个捕捉项组成，并以逗号分割。 比如：[=, &a, &b]：以引用传递的方式捕捉变量a和b，值传递方式捕捉其他所有变量 [&，a, this]：值传递方式捕捉变量a和this，引用方式捕捉其他变量 
-> - 捕捉列表不允许变量重复传递，否则就会导致编译错误。 比如：[=, a]：=已经以值传递方式捕捉了所有变量，捕捉a重复
-> - 在块作用域以外的lambda函数捕捉列表必须为空。 
-> - 在块作用域中的lambda函数仅能捕捉父作用域中局部变量，捕捉任何非此作用域或者 非局部变量都  会导致编译报错。 
-> - lambda表达式之间不能相互赋值，即使看起来类型相同
->
-> ~~~C++
-> void (*PF)();
-> int main()
-> {
->      auto f1 = []{cout << "hello world" << endl; };
->      auto f2 = []{cout << "hello world" << endl; };
->         // 此处先不解释原因，等lambda表达式底层实现原理看完后，大家就清楚了
->      //f1 = f2;   // 编译失败--->提示找不到operator=()
->         // 允许使用一个lambda表达式拷贝构造一个新的副本
->      auto f3(f2);
->      f3();
->      // 可以将lambda表达式赋值给相同类型的函数指针
->      PF = f2;
->      PF();
->      return 0;
-> }
-> 
-> ~~~
->
-> 
+捕捉列表描述了上下文中那些数据可以被lambda使用，以及使用的方式传值还是传引用。 
+
+- [var]：表示值传递方式捕捉变量
+- [=]：表示值传递方式捕获所有父作用域中的变量(包括this) 
+- [&var]：表示引用传递捕捉变量var 
+- [&]：表示引用传递捕捉所有父作用域中的变量(包括this) 
+- [this]：表示值传递方式捕捉当前的this指针
+
+注意：
+
+- 父作用域指包含lambda函数的语句块
+- 语法上捕捉列表可由多个捕捉项组成，并以逗号分割。 比如：[=, &a, &b]：以引用传递的方式捕捉变量a和b，值传递方式捕捉其他所有变量。 [&，a, this]：值传递方式捕捉变量a和this，引用方式捕捉其他变量 
+- 捕捉列表不允许变量重复传递，否则就会导致编译错误。 比如：[=, a]：=已经以值传递方式捕捉了所有变量，捕捉a重复
+- 在块作用域以外的lambda函数捕捉列表必须为空。 
+- 在块作用域中的lambda函数仅能捕捉父作用域中局部变量，捕捉任何非此作用域或者 非局部变量都  会导致编译报错。 
+- lambda表达式之间不能相互赋值，即使看起来类型相同
+
+~~~C++
+void (*PF)();
+int main()
+{
+     auto f1 = []{cout << "hello world" << endl; };
+     auto f2 = []{cout << "hello world" << endl; };
+        // 此处先不解释原因，等lambda表达式底层实现原理看完后，大家就清楚了
+     //f1 = f2;   // 编译失败--->提示找不到operator=()
+        // 允许使用一个lambda表达式拷贝构造一个新的副本
+     auto f3(f2);
+     f3();
+     // 可以将lambda表达式赋值给相同类型的函数指针
+     PF = f2;
+     PF();
+     return 0;
+}
+
+~~~
+
+
 
 #### 函数对象与lanbda表达式
 
-> 函数对象，又称为仿函数，即可以想函数一样使用的对象，就是在类中重载了operator()运算符的 类对象。
->
-> ~~~C++
-> class Rate
-> {
-> public:
->      Rate(double rate): _rate(rate)
->      {}
->      double operator()(double money, int year)
->      { return money * _rate * year;}
-> private:
->  	double _rate;
-> };
-> int main()
-> {
->     // 函数对象
->      double rate = 0.49;
->      Rate r1(rate);
->      r1(10000, 2);
->     // lamber
->      auto r2 = [=](double monty, int year)->double{return monty*rate*year; 
->      };
->      r2(10000, 2);
->      return 0;
-> }
-> ~~~
->
-> 从使用方式上来看，函数对象与lambda表达式完全一样。 
->
-> 函数对象将rate作为其成员变量，在定义对象时给出初始值即可，lambda表达式通过捕获列表可 以直接将该变量捕获到。
->
-> ![image-20221121162001217](%E5%9B%BE%E7%89%87/README/image-20221121162001217.png)
->
-> 实际在底层编译器对于lambda表达式的处理方式，完全就是按照函数对象的方式处理的，即：如 果定义了一个lambda表达式，编译器会自动生成一个类，在该类中重载了operator()。
+函数对象，又称为仿函数，即可以想函数一样使用的对象，就是在类中重载了operator()运算符的类对象。
+
+~~~C++
+class Rate
+{
+public:
+  Rate(double rate): _rate(rate)
+  {}
+  double operator()(double money, int year)
+  { return money * _rate * year;}
+private:
+	double _rate;
+};
+int main()
+{
+ // 函数对象
+  double rate = 0.49;
+  Rate r1(rate);
+  r1(10000, 2);
+ // lamber
+  auto r2 = [=](double monty, int year)->double{return monty*rate*year; 
+  };
+  r2(10000, 2);
+  return 0;
+}
+~~~
+
+从使用方式上来看，函数对象与lambda表达式完全一样。 
+
+函数对象将rate作为其成员变量，在定义对象时给出初始值即可，lambda表达式通过捕获列表可 以直接将该变量捕获到。
+
+![image-20221121162001217](%E5%9B%BE%E7%89%87/README/image-20221121162001217.png)
+
+实际在底层编译器对于lambda表达式的处理方式，完全就是按照函数对象的方式处理的，
+
+即：如 果定义了一个lambda表达式，编译器会自动生成一个类，在该类中重载了operator()。
+
+
 
 #### 包装器与绑定
 
 ##### **function包装器** 
 
-> function包装器 也叫作适配器。
+function包装器 也叫作适配器。
+
+C++中的function本质是一个类模板，也是一个包装器。 那么我们来看看，我们为什么需要function呢？
+
+~~~C++
+ret = func(x);
+// 上面func可能是什么呢？那么func可能是函数名？函数指针？函数对象(仿函数对象)？也有可能
+// 是lamber表达式对象？所以这些都是可调用的类型！如此丰富的类型，可能会导致模板的效率低下！
+// 为什么呢？我们继续往下看
+template<class F, class T>
+T useF(F f, T x)
+{
+  static int count = 0;
+  cout << "count:" << ++count << endl;
+  cout << "count:" << &count << endl;
+  return f(x);
+}
+double f(double i)
+{
+	return i / 2;
+}
+struct Functor
+{
+  double operator()(double d)
+  {
+  	return d / 3;
+  }
+};
+int main()
+{
+  // 函数名
+  cout << useF(f, 11.11) << endl;
+  // 函数对象
+  cout << useF(Functor(), 11.11) << endl;
+  // lamber表达式
+  cout << useF([](double d)->double{ return d/4; }, 11.11) << endl;
+  return 0;
+}
+
+//count ： 1 ， 1 ， 1
+~~~
+
+**通过上面的程序验证，我们会发现useF函数模板实例化了三份。** 
+
+**包装器可以很好的解决上面的问题**
+
+~~~C++
+// std::function在头文件<functional>
+// 类模板原型如下
+template <class T> function;     // undefined
+template <class Ret, class... Args>
+class function<Ret(Args...)>;
+模板参数说明：
+Ret: 被调用函数的返回类型
+Args…：被调用函数的形参
+~~~
+
+~~~C++
+// 使用方法如下：
+#include <functional>
+int f(int a, int b)
+{
+	return a + b;
+}
+struct Functor
+{
+public:
+  int operator() (int a, int b)
+  {
+  	return a + b;
+  }
+};
+class Plus
+{
+public:
+  static int plusi(int a, int b)
+  {
+  	return a + b;
+  }
+  double plusd(double a, double b)
+  {
+  	return a + b;
+  }
+};
+int main()
+{
+  // 函数名(函数指针)
+  std::function<int(int, int)> func1 = f;
+  cout << func1(1, 2) << endl;
+  // 函数对象
+  std::function<int(int, int)> func2 = Functor();
+  cout << func2(1, 2) << endl;
+  // lamber表达式
+  std::function<int(int, int)> func3 = [](const int a, const int b) 
+  {return a + b; };
+  cout << func3(1, 2) << endl;
+
+  // 类的成员函数
+  std::function<int(int, int)> func4 = &Plus::plusi;
+  cout << func4(1, 2) << endl;
+  std::function<double(Plus, double, double)> func5 = &Plus::plusd;
+  cout << func5(Plus(), 1.1, 2.2) << endl;
+  return 0;
+}
+~~~
+
+**有了包装器，如何解决模板的效率低下，实例化多份的问题呢？**
+
+~~~C++
+#include <functional>
+template<class F, class T>
+T useF(F f, T x)
+{
+  static int count = 0;
+  cout << "count:" << ++count << endl;
+  cout << "count:" << &count << endl;
+  return f(x);
+}
+double f(double i)
+{
+	return i / 2;
+}
+struct Functor
+{
+  double operator()(double d)
+  {
+ 	 return d / 3;
+  }
+};
+int main()
+{
+  // 函数名
+  std::function<double(double)> func1 = f;
+  cout << useF(func1, 11.11) << endl;
+  // 函数对象
+  std::function<double(double)> func2 = Functor();
+  cout << useF(func2, 11.11) << endl;
+  // lamber表达式
+  std::function<double(double)> func3 = [](double d)->double{ return d /
+  4; };
+  cout << useF(func3, 11.11) << endl;
+  return 0;
+}
+
+// count ： 1， 2， 3
+~~~
+
+> 将 相同作用，同一用法 的不 同类型 的 代码/lambda/仿函数 包装成同一种类型。
 >
-> C++中的function本质是一个类模板，也是一个包装器。 那么我们来看看，我们为什么需要function呢？
->
-> ~~~C++
-> ret = func(x);
-> // 上面func可能是什么呢？那么func可能是函数名？函数指针？函数对象(仿函数对象)？也有可能
-> 是lamber表达式对象？所以这些都是可调用的类型！如此丰富的类型，可能会导致模板的效率低下！
-> 为什么呢？我们继续往下看
-> template<class F, class T>
-> T useF(F f, T x)
-> {
->      static int count = 0;
->      cout << "count:" << ++count << endl;
->      cout << "count:" << &count << endl;
->      return f(x);
-> }
-> double f(double i)
-> {
->  	return i / 2;
-> }
-> struct Functor
-> {
->      double operator()(double d)
->      {
->      	return d / 3;
->      }
-> };
-> int main()
-> {
->      // 函数名
->      cout << useF(f, 11.11) << endl;
->      // 函数对象
->      cout << useF(Functor(), 11.11) << endl;
->      // lamber表达式
->      cout << useF([](double d)->double{ return d/4; }, 11.11) << endl;
->      return 0;
-> }
-> ~~~
->
-> **通过上面的程序验证，我们会发现useF函数模板实例化了三份。** 
->
-> **包装器可以很好的解决上面的问题**
->
-> ~~~C++
-> std::function在头文件<functional>
-> // 类模板原型如下
-> template <class T> function;     // undefined
-> template <class Ret, class... Args>
-> class function<Ret(Args...)>;
-> 模板参数说明：
-> Ret: 被调用函数的返回类型
-> Args…：被调用函数的形参
-> ~~~
->
-> ~~~C++
-> // 使用方法如下：
-> #include <functional>
-> int f(int a, int b)
-> {
->  	return a + b;
-> }
-> struct Functor
-> {
-> public:
->      int operator() (int a, int b)
->      {
->      	return a + b;
->      }
-> };
-> class Plus
-> {
-> public:
->      static int plusi(int a, int b)
->      {
->      	return a + b;
->      }
->      double plusd(double a, double b)
->      {
->      	return a + b;
->      }
-> };
-> int main()
-> {
->      // 函数名(函数指针)
->      std::function<int(int, int)> func1 = f;
->      cout << func1(1, 2) << endl;
->      // 函数对象
->      std::function<int(int, int)> func2 = Functor();
->      cout << func2(1, 2) << endl;
->      // lamber表达式
->      std::function<int(int, int)> func3 = [](const int a, const int b) 
->      {return a + b; };
->      cout << func3(1, 2) << endl;
-> 
->      // 类的成员函数
->      std::function<int(int, int)> func4 = &Plus::plusi;
->      cout << func4(1, 2) << endl;
->      std::function<double(Plus, double, double)> func5 = &Plus::plusd;
->      cout << func5(Plus(), 1.1, 2.2) << endl;
->      return 0;
-> }
-> ~~~
->
-> **有了包装器，如何解决模板的效率低下，实例化多份的问题呢？**
->
-> ~~~C++
-> #include <functional>
-> template<class F, class T>
-> T useF(F f, T x)
-> {
->      static int count = 0;
->      cout << "count:" << ++count << endl;
->      cout << "count:" << &count << endl;
->      return f(x);
-> }
-> double f(double i)
-> {
->  	return i / 2;
-> }
-> struct Functor
-> {
->      double operator()(double d)
->      {
->     	 return d / 3;
->      }
-> };
-> int main()
-> {
->      // 函数名
->      std::function<double(double)> func1 = f;
->      cout << useF(func1, 11.11) << endl;
->      // 函数对象
->      std::function<double(double)> func2 = Functor();
->      cout << useF(func2, 11.11) << endl;
->      // lamber表达式
->      std::function<double(double)> func3 = [](double d)->double{ return d /
->      4; };
->      cout << useF(func3, 11.11) << endl;
->      return 0;
-> }
-> ~~~
->
-> 
+> 但调用的还是原来的。
 
 ##### bind--绑定
 
-> std::bind函数定义在头文件中，**是一个函数模板，它就像一个函数包装器(适配器)，接受一个可 调用对象（callable object），生成一个新的可调用对象来“适应”原对象的参数列表。**一般而 言，我们用它可以把一个原本接收N个参数的函数fn，通过绑定一些参数，返回一个接收M个（M 可以大于N，但这么做没什么意义）参数的新函数。同时，使用std::bind函数还可以实现参数顺 序调整等操作。
+> std::bind函数定义在头文件中，**是一个函数模板，它就像一个函数包装器(适配器)，接受一个可调用对象（callable object），生成一个新的可调用对象来“适应”原对象的参数列表。**
 >
-> ~~~C++
-> // 原型如下：
-> template <class Fn, class... Args>
-> /* unspecified */ bind (Fn&& fn, Args&&... args);
-> // with return type (2) 
-> template <class Ret, class Fn, class... Args>
-> /* unspecified */ bind (Fn&& fn, Args&&... args);
-> ~~~
+> 一般而 言，我们用它可以把一个原本接收N个参数的函数fun，通过绑定一些参数，返回一个接收M个（M 可以大于N，但这么做没什么意义）参数的新函数。
 >
-> 可以将bind函数看作是一个通用的函数适配器，它接受一个可调用对象，生成一个新的可调用对 象来“适应”原对象的参数列表。 
->
-> 调用bind的一般形式：auto newCallable = bind(callable,arg_list); 
->
-> 其中，newCallable本身是一个可调用对象，arg_list是一个逗号分隔的参数列表，对应给定的 callable的参数。**当我们调用newCallable时，newCallable会调用callable,并传给它arg_list中 的参数。** 
->
-> arg_list中的参数可能包含形如_n的名字，其中n是一个整数，这些参数是“占位符”，表示 newCallable的参数，它们占据了传递给newCallable的参数的“位置”。数值n表示生成的可调用对 象中参数的位置：_1为newCallable的第一个参数，_2为第二个参数，以此类推。
->
-> ~~~C++
-> // 使用举例
-> #include <functional>
-> int Plus(int a, int b)
-> {
->  	return a + b;
-> }
-> class Sub
-> {
-> public:
->      int sub(int a, int b)
->      {
->      	return a - b;
->      }
-> };
-> int main()
-> {
->      //表示绑定函数plus 参数分别由调用 func1 的第一，二个参数指定
->      std::function<int(int, int)> func1 = std::bind(Plus, placeholders::_1, 
->      placeholders::_2);
->      //auto func1 = std::bind(Plus, placeholders::_1, placeholders::_2);
->      //func2的类型为 function<void(int, int, int)> 与func1类型一样
->      //表示绑定函数 plus 的第一，二为： 1， 2
->      auto  func2 = std::bind(Plus, 1, 2);   
->      cout << func1(1, 2) << endl;
->      cout << func2() << endl;
->      Sub s;
->      // 绑定成员函数
->      std::function<int(int, int)> func3 = std::bind(&Sub::sub, s, 
->      placeholders::_1, placeholders::_2);
->      // 参数调换顺序
->         std::function<int(int, int)> func4 = std::bind(&Sub::sub, s, 
->      placeholders::_2, placeholders::_1);
->      cout << func3(1, 2) << endl; 
->      cout << func4(1, 2) << endl;
->      return 0;
-> }
-> ~~~
->
-> 
+> 同时，使用std::bind函数还可以实现参数顺序调整等操作。
+
+~~~C++
+// 原型如下：
+template <class Fn, class... Args>
+/* unspecified */ 
+bind (Fn&& fn, Args&&... args);
+
+// with return type (2) 
+template <class Ret, class Fn, class... Args>  
+/* unspecified */ 
+bind (Fn&& fn, Args&&... args);
+~~~
+
+可以将bind函数看作是一个通用的函数适配器，它接受一个可调用对象，生成一个新的可调用对象来“适应”原对象的参数列表。 
+
+调用bind的一般形式：auto newCallable = bind(callable,arg_list); 
+
+其中，newCallable本身是一个可调用对象，arg_list是一个逗号分隔的参数列表，对应给定的 callable的参数。**当我们调用newCallable时，newCallable会调用callable,并传给它arg_list中 的参数。** 
+
+arg_list中的参数可能包含形如_n的名字，其中n是一个整数，这些参数是“占位符”，表示 newCallable的参数，它们占据了传递给newCallable的参数的“位置”。数值n表示生成的可调用对 象中参数的位置：_1为newCallable的第一个参数，_2为第二个参数，以此类推。
+
+~~~C++
+// 使用举例
+#include <functional>
+int Plus(int a, int b)
+{
+	return a + b;
+}
+class Sub
+{
+public:
+  int sub(int a, int b)
+  {
+  	return a - b;
+  }
+};
+int main()
+{
+  //表示绑定函数plus 参数分别由调用 func1 的第一，二个参数指定
+  std::function<int(int, int)> func1 = std::bind(Plus, placeholders::_1, 
+  placeholders::_2);
+  //auto func1 = std::bind(Plus, placeholders::_1, placeholders::_2);
+  //func2的类型为 function<void(int, int, int)> 与func1类型一样
+  //表示绑定函数 plus 的第一，二为： 1， 2
+  auto  func2 = std::bind(Plus, 1, 2);   
+  cout << func1(1, 2) << endl;
+  cout << func2() << endl;
+  Sub s;
+  // 绑定成员函数
+  std::function<int(int, int)> func3 = std::bind(&Sub::sub, s, 
+  placeholders::_1, placeholders::_2);
+  // 参数调换顺序
+     std::function<int(int, int)> func4 = std::bind(&Sub::sub, s, 
+  placeholders::_2, placeholders::_1);
+  cout << func3(1, 2) << endl; 
+  cout << func4(1, 2) << endl;
+  return 0;
+}
+~~~
+
+
 
 ### 线程库
 
@@ -7863,37 +7882,38 @@ int main()
 > 传统的错误处理机制： 
 >
 > 1. 终止程序，如assert，缺陷：用户难以接受。如发生内存错误，除0错误时就会终止程序。
-> 2.  返回错误码，缺陷：需要程序员自己去查找对应的错误。如系统的很多库的接口函数都是通 过把错误码放到errno中，表示错误 
+> 2.  返回错误码，缺陷：需要程序员自己去查找对应的错误。如系统的很多库的接口函数都是通过把错误码放到errno中，表示错误 
 >
 > 实际中C语言基本都是使用返回错误码的方式处理错误，部分情况下使用终止程序处理非常严重的 错误。
 
 #### C++异常概念
 
-> 异常是一种处理错误的方式，**当一个函数发现自己无法处理的错误时就可以抛出异常，让函数的 直接或间接的调用者处理这个错误。** 
+> 异常是一种处理错误的方式，**当一个函数发现自己无法处理的错误时就可以抛出异常，让函数的直接或间接的调用者处理这个错误。** 
 >
-> - throw: 当问题出现时，程序会抛出一个异常。这是通过使用 throw 关键字来完成的。 
-> - catch: 在您想要处理问题的地方，通过异常处理程序捕获异常.catch 关键字用于捕获异 常，可以有多个catch进行捕获。 
-> - try: try 块中的代码标识将被激活的特定异常,它后面通常跟着一个或多个 catch 块。
->
-> 如果有一个块抛出一个异常，捕获异常的方法会使用 try 和 catch 关键字。try 块中放置可能抛 出异常的代码，try 块中的代码被称为保护代码。使用 try/catch 语句的语法如下所示：
->
-> ~~~C++
-> try
-> {
->   // 保护的标识代码
-> }catch( ExceptionName e1 )
-> {
->   // catch 块
-> }catch( ExceptionName e2 )
-> {
->   // catch 块
-> }catch( ExceptionName eN )
-> {
->   // catch 块
-> }
-> ~~~
->
-> 
+
+- throw: 当问题出现时，程序会抛出一个异常。这是通过使用 throw 关键字来完成的。 
+- catch: 在您想要处理问题的地方，通过异常处理程序捕获异常`.catch `关键字用于捕获异 常，可以有多个catch进行捕获。 
+- try: try 块中的代码标识将被激活的特定异常,它后面通常跟着一个或多个 catch 块。
+
+如果有一个块抛出一个异常，捕获异常的方法会使用 try 和 catch 关键字。try 块中放置可能抛 出异常的代码，try 块中的代码被称为保护代码。使用 try/catch 语句的语法如下所示：
+
+~~~C++
+try
+{
+  // 保护的标识代码
+}catch( ExceptionName e1 )
+{
+  // catch 块
+}catch( ExceptionName e2 )
+{
+  // catch 块
+}catch( ExceptionName eN )
+{
+  // catch 块
+}
+~~~
+
+
 
 ####  异常的使用
 
@@ -7901,356 +7921,360 @@ int main()
 
 ###### 异常的抛出和匹配原则
 
-> 1. 异常是通过抛出对象而引发的，该**对象的类型决定了**应该激活哪个catch的处理代码。
-> 2. 被**选中的处理代码**是调用链中**与该对象类型匹配且离抛出异常位置最近**的那一个。 
-> 3. 抛出异常对象后，会生成一个**异常对象的拷贝**，因为抛出的异常对象可能是一个临时对象， 所以会生成一个拷贝对象，这个拷贝的临时对象会在被catch以后销毁。（这里的处理类似 于函数的传值返回） 
-> 4. catch(...)可以捕获**任意类型的异常**，问题是不知道异常错误是什么。 
-> 5. 实际中抛出和捕获的匹配原则有个**例外**，并不都是类型完全匹配，可以**抛出的派生类对象， 使用基类捕获**，这个在实际中非常实用，我们后面会详细讲解这个（继承+多态）。
+1. 异常是通过抛出对象而引发的，该**对象的类型决定了**应该激活哪个catch的处理代码。
+2. 被**选中的处理代码**是调用链中**与该对象类型匹配且离抛出异常位置最近**的那一个。 
+3. 抛出异常对象后，会生成一个**异常对象的拷贝**，因为抛出的异常对象可能是一个临时对象， 所以会生成一个拷贝对象，这个拷贝的临时对象会在被catch以后销毁。（这里的处理类似 于函数的传值返回） 
+4. catch(...)可以捕获**任意类型的异常**，问题是不知道异常错误是什么。 
+5. 实际中抛出和捕获的匹配原则有个**例外**，并不都是类型完全匹配，可以**抛出的派生类对象， 使用基类捕获**，这个在实际中非常实用，我们后面会详细讲解这个（继承+多态）。
 
 ###### 在函数调用链中异常栈展开匹配原则
 
-> 1. 首先检查throw本身是否在try块内部，如果是再查找匹配的catch语句。如果有匹配的，则 调到catch的地方进行处理。 
-> 2. 没有匹配的catch则退出当前函数栈，继续在调用函数的栈中进行查找匹配的catch。 
-> 3. 如果到达main函数的栈，依旧没有匹配的，则终止程序。上述这个沿着调用链查找匹配的 catch子句的过程称为栈展开。所以实际中我们最后都要加一个catch(...)捕获任意类型的异 常，否则当有异常没捕获，程序就会直接终止。 
-> 4. 找到匹配的catch子句并处理以后，会继续沿着catch子句后面继续执行。
->
-> ![image-20221121170158156](%E5%9B%BE%E7%89%87/README/image-20221121170158156.png)
->
-> ~~~C++
-> double Division(int a, int b)
-> {
->     // 当b == 0时抛出异常
->  if (b == 0)
->    throw "Division by zero condition!";
->     else
->         return ((double)a / (double)b);
-> }
-> void Func()
-> {
->      int len, time;
->      cin >> len >> time;
->      cout << Division(len, time) << endl;
-> }
-> int main()
-> {
->      try 
->      {
->      	Func();
->      }
->      catch (const char* errmsg） 
->      {
->      	cout << errmsg << endl;
->      }
->      catch(...){
->         cout<<"unkown exception"<<endl;           
->      }
->      return 0;
-> }
-> ~~~
->
-> 
+1. 首先检查throw本身是否在try块内部，如果是再查找匹配的catch语句。如果有匹配的，则调到catch的地方进行处理。 
+2. 没有匹配的catch则退出当前函数栈，继续在调用函数的栈中进行查找匹配的catch。 
+3. 如果到达main函数的栈，依旧没有匹配的，则终止程序。上述这个沿着调用链查找匹配的 catch子句的过程称为栈展开。所以实际中我们最后都要加一个catch(...)捕获任意类型的异 常，否则当有异常没捕获，程序就会直接终止。 
+4. 找到匹配的catch子句并处理以后，会继续沿着catch子句后面继续执行。
+
+![image-20221121170158156](%E5%9B%BE%E7%89%87/README/image-20221121170158156.png)
+
+~~~C++
+double Division(int a, int b)
+{
+    // 当b == 0时抛出异常
+ if (b == 0)
+   throw "Division by zero condition!";
+    else
+        return ((double)a / (double)b);
+}
+void Func()
+{
+     int len, time;
+     cin >> len >> time;
+     cout << Division(len, time) << endl;
+}
+int main()
+{
+     try 
+     {
+     	Func();
+     }
+     catch (const char* errmsg） 
+     {
+     	cout << errmsg << endl;
+     }
+     catch(...){
+        cout<<"unkown exception"<<endl;           
+     }
+     return 0;
+}
+~~~
+
+
 
 ##### 异常的重新抛出
 
-> 有可能单个的catch不能完全处理一个异常，在进行一些校正处理以后，希望再交给更外层的调用 链函数来处理，catch则可以通过重新抛出将异常传递给更上层的函数进行处理。
->
-> ~~~C++
-> double Division(int a, int b)
-> {
->  // 当b == 0时抛出异常
->  if (b == 0)
->  {
-> 	 throw "Division by zero condition!";
->  }
->  return (double)a / (double)b;
-> }
-> void Func()
-> {
->      // 这里可以看到如果发生除0错误抛出异常，另外下面的array没有得到释放。
->      // 所以这里捕获异常后并不处理异常，异常还是交给外面处理，这里捕获了再
->      // 重新抛出去。
->      int* array = new int[10];
->      try 
->      {
->          int len, time;
->          cin >> len >> time;
->          cout << Division(len, time) << endl;
->      }
->      catch (...)
->      {
->          cout << "delete []" << array << endl;
->          delete[] array;
->          throw;
->      }
->      // ...
->      cout << "delete []" << array << endl;
->      delete[] array;
-> }
-> int main()
-> {
->      try
->      {
->      	Func();
->      }
->      catch (const char* errmsg)
->      {
->      	cout << errmsg << endl;
->      }
->      return 0;
-> }
-> ~~~
->
+有可能单个的catch不能完全处理一个异常，在进行一些校正处理以后，希望再交给更外层的调用链函数来处理，catch则可以通过重新抛出将异常传递给更上层的函数进行处理。
+
+~~~C++
+double Division(int a, int b)
+{
+// 当b == 0时抛出异常
+if (b == 0)
+{
+	 throw "Division by zero condition!";
+}
+return (double)a / (double)b;
+}
+void Func()
+{
+  // 这里可以看到如果发生除0错误抛出异常，另外下面的array没有得到释放。
+  // 所以这里捕获异常后并不处理异常，异常还是交给外面处理，这里捕获了再
+  // 重新抛出去。
+  int* array = new int[10];
+  try 
+  {
+      int len, time;
+      cin >> len >> time;
+      cout << Division(len, time) << endl;
+  }
+  catch (...)
+  {
+      cout << "delete []" << array << endl;
+      delete[] array;
+      throw;
+  }
+  // ...
+  cout << "delete []" << array << endl;
+  delete[] array;
+}
+int main()
+{
+  try
+  {
+  	Func();
+  }
+  catch (const char* errmsg)
+  {
+  	cout << errmsg << endl;
+  }
+  return 0;
+}
+~~~
+
 > **非 常 地 抽 象**
 
 #### 异常安全
 
-> - **构造函数完成对象的构造和初始化**，**最好不要**在构造函数中抛出异常，否则**可能导致对象不 完整或没有完全初始化** 
-> - **析构函数主要完成资源的清理，最好不要**在析构函数内抛出异常，否则可能导致资源泄漏(内 存泄漏、句柄未关闭等) 
-> - C++中异常经常会导致资源泄漏的问题，比如在new和delete中抛出了异常，导致内存泄 漏，在lock和unlock之间抛出了异常导致死锁，C++经常使用RAII来解决以上问题，关于RAII 我们智能指针这节进行讲解。
+- **构造函数完成对象的构造和初始化**，**最好不要**在构造函数中抛出异常，否则**可能导致对象不完整或没有完全初始化** 
+- **析构函数主要完成资源的清理，最好不要**在析构函数内抛出异常，否则可能导致资源泄漏(内 存泄漏、句柄未关闭等) 
+- **C++中异常经常会导致资源泄漏**的问题，比如在new和delete中抛出了异常，导致内存泄 漏，在lock和unlock之间抛出了异常导致死锁，C++经常使用RAII来解决以上问题，关于RAII 我们智能指针这节进行讲解。
 
 #### 异常规范
 
-> 1. 异常规格说明的目的是为了让函数使用者知道该函数可能抛出的异常有哪些。 可以在函数的 后面接throw(类型)，列出这个函数可能抛掷的所有异常类型。 
-> 2. 函数的后面接throw()，表示函数不抛异常。 
-> 3. 若无异常接口声明，则此函数可以抛掷任何类型的异常。
->
-> ~~~C++
-> // 这里表示这个函数会抛出A/B/C/D中的某种类型的异常
-> void fun() throw(A，B，C，D);
-> // 这里表示这个函数只会抛出bad_alloc的异常
-> void* operator new (std::size_t size) throw (std::bad_alloc);
-> // 这里表示这个函数不会抛出异常
-> void* operator delete (std::size_t size, void* ptr) throw();
-> // C++11 中新增的noexcept，表示不会抛异常
-> thread() noexcept;
-> thread (thread&& x) noexcept;
-> ~~~
->
-> 
+1. 异常规格说明的目的是为了让函数使用者知道该函数可能抛出的异常有哪些。 可以在函数的后面接throw(类型)，列出这个函数可能抛掷的所有异常类型。 
+2. 函数的后面接throw()，表示函数不抛异常。 
+3. 若无异常接口声明，则此函数可以抛掷任何类型的异常。
+
+~~~C++
+// 这里表示这个函数会抛出A/B/C/D中的某种类型的异常
+void fun() throw(A，B，C，D);
+// 这里表示这个函数只会抛出bad_alloc的异常
+void* operator new (std::size_t size) throw (std::bad_alloc);
+// 这里表示这个函数不会抛出异常
+void* operator delete (std::size_t size, void* ptr) throw();
+// C++11 中新增的noexcept，表示不会抛异常
+thread() noexcept;
+thread (thread&& x) noexcept;
+~~~
+
+
 
 #### 自定义异常体系
 
 > 实际使用中很多公司都会自定义自己的异常体系进行规范的异常管理，因为一个项目中如果大家 随意抛异常，那么外层的调用者基本就没办法玩了，所以实际中都会定义一套继承的规范体系。 这样大家抛出的都是继承的派生类对象，捕获一个基类就可以了
 >
-> ![image-20221121203926757](%E5%9B%BE%E7%89%87/README/image-20221121203926757.png)
->
-> ~~~C++
-> // 服务器开发中通常使用的异常继承体系
-> class Exception
-> {
-> public:
->      Exception(const string& errmsg, int id)
->      :_errmsg(errmsg)
->      ,_id(id)
->      {}
->      virtual string what() const
->      {
->          return _errmsg;
->      }
-> protected:
->      string _errmsg;
->      int _id;
-> };
-> class SqlException : public Exception
-> {
-> public:
->      SqlException(const string& errmsg, int id, const string& sql)
->      :Exception(errmsg, id)
->      , _sql(sql)
->      {}
->      virtual string what() const
->      {
->          string str = "SqlException:";
->          str += _errmsg;
->          str += "->";
->          str += _sql;
->          return str;
->      }
-> private:
->  	const string _sql;
-> };
-> class CacheException : public Exception
-> {
-> public:
->      CacheException(const string& errmsg, int id)
->      :Exception(errmsg, id)
->      {}
->      virtual string what() const
->      {
->          string str = "CacheException:";
->          str += _errmsg;
->          return str;
->      }
-> };
-> class HttpServerException : public Exception
-> {
-> public:
->      HttpServerException(const string& errmsg, int id, const string& type)
->      :Exception(errmsg, id)
->      , _type(type)
->      {}
->      virtual string what() const
->      {
->          string str = "HttpServerException:";
->          str += _type;
->          str += ":";
->          str += _errmsg;
->          return str;
->      }
-> private:
->  	const string _type;
-> };
-> void SQLMgr()
-> {
->  srand(time(0));
->  if (rand() % 7 == 0)
->  {
->  	throw SqlException("权限不足", 100, "select * from name = '张三'");
->  }
->  //throw "xxxxxx";
-> }
-> void CacheMgr()
-> {
->      srand(time(0));
->      if (rand() % 5 == 0)
->      {
->      	throw CacheException("权限不足", 100);
->      }
->      else if (rand() % 6 == 0)
->      {
->      	throw CacheException("数据不存在", 101);
->      }
->      SQLMgr();
-> }
-> void HttpServer()
-> {
->      // ...
->      srand(time(0));
->      if (rand() % 3 == 0)
->      {
->      	throw HttpServerException("请求资源不存在", 100, "get");
->      }
->      else if (rand() % 4 == 0)
->      {
->      	throw HttpServerException("权限不足", 101, "post");
->      }
->      CacheMgr();
-> }
-> int main()
-> {
->      while (1)
->      {
->          this_thread::sleep_for(chrono::seconds(1));
->          try
->          {
->              HttpServer();
->          }
->          catch (const Exception& e) // 这里捕获父类对象就可以
->          {
->              // 多态
->              cout << e.what() << endl;
->          }
->          catch (...)
->          {
->              cout << "Unkown Exception" << endl;
->          }
->      }
->      return 0;
-> }
-> ~~~
->
-> 
+
+![image-20221121203926757](%E5%9B%BE%E7%89%87/README/image-20221121203926757.png)
+
+~~~C++
+// 服务器开发中通常使用的异常继承体系
+class Exception
+{
+public:
+  Exception(const string& errmsg, int id)
+  :_errmsg(errmsg)
+  ,_id(id)
+  {}
+  virtual string what() const
+  {
+      return _errmsg;
+  }
+protected:
+  string _errmsg;
+  int _id;
+};
+class SqlException : public Exception
+{
+public:
+  SqlException(const string& errmsg, int id, const string& sql)
+  :Exception(errmsg, id)
+  , _sql(sql)
+  {}
+  virtual string what() const
+  {
+      string str = "SqlException:";
+      str += _errmsg;
+      str += "->";
+      str += _sql;
+      return str;
+  }
+private:
+	const string _sql;
+};
+class CacheException : public Exception
+{
+public:
+  CacheException(const string& errmsg, int id)
+  :Exception(errmsg, id)
+  {}
+  virtual string what() const
+  {
+      string str = "CacheException:";
+      str += _errmsg;
+      return str;
+  }
+};
+class HttpServerException : public Exception
+{
+public:
+  HttpServerException(const string& errmsg, int id, const string& type)
+  :Exception(errmsg, id)
+  , _type(type)
+  {}
+  virtual string what() const
+  {
+      string str = "HttpServerException:";
+      str += _type;
+      str += ":";
+      str += _errmsg;
+      return str;
+  }
+private:
+	const string _type;
+};
+void SQLMgr()
+{
+srand(time(0));
+if (rand() % 7 == 0)
+{
+	throw SqlException("权限不足", 100, "select * from name = '张三'");
+}
+//throw "xxxxxx";
+}
+void CacheMgr()
+{
+  srand(time(0));
+  if (rand() % 5 == 0)
+  {
+  	throw CacheException("权限不足", 100);
+  }
+  else if (rand() % 6 == 0)
+  {
+  	throw CacheException("数据不存在", 101);
+  }
+  SQLMgr();
+}
+void HttpServer()
+{
+  // ...
+  srand(time(0));
+  if (rand() % 3 == 0)
+  {
+  	throw HttpServerException("请求资源不存在", 100, "get");
+  }
+  else if (rand() % 4 == 0)
+  {
+  	throw HttpServerException("权限不足", 101, "post");
+  }
+  CacheMgr();
+}
+int main()
+{
+  while (1)
+  {
+      this_thread::sleep_for(chrono::seconds(1));
+      try
+      {
+          HttpServer();
+      }
+      catch (const Exception& e) // 这里捕获父类对象就可以
+      {
+          // 多态
+          cout << e.what() << endl;
+      }
+      catch (...)
+      {
+          cout << "Unkown Exception" << endl;
+      }
+  }
+  return 0;
+}
+~~~
+
+
 
 #### C++标准库的异常体系
 
-> C++ 提供了一系列标准的异常，定义在 中，我们可以在程序中使用这些标准的异常。它们是以父 子类层次结构组织起来的，如下所示：
+> C++ 提供了一系列标准的异常，定义在std中，我们可以在程序中使用这些标准的异常。它们是以父 子类层次结构组织起来的，如下所示：
 >
-> ![image-20221121204319127](%E5%9B%BE%E7%89%87/README/image-20221121204319127.png)
->
-> ![image-20221121204338057](%E5%9B%BE%E7%89%87/README/image-20221121204338057.png)
->
-> **说明：**实际中我们可以可以去继承exception类实现自己的异常类。但是实际中很多公司像上面一 样自己定义一套异常继承体系。因为C++标准库设计的不够好用。
->
-> ~~~C++
-> int main()
-> {
->      try
->      {
->          vector<int> v(10, 5);
->          // 这里如果系统内存不够也会抛异常
->          v.reserve(1000000000);
->          // 这里越界会抛异常
->          v.at(10) = 100; 
->      }
->      catch (const exception& e) // 这里捕获父类对象就可以
->      {
->      	cout << e.what() << endl;
->      }
->      catch (...)
->      {
->      	cout << "Unkown Exception" << endl;
->      }
->      return 0;
-> }
-> ~~~
->
-> 
+
+![image-20221121204319127](%E5%9B%BE%E7%89%87/README/image-20221121204319127.png)
+
+![image-20221121204338057](%E5%9B%BE%E7%89%87/README/image-20221121204338057.png)
+
+**说明：**实际中我们可以可以去继承exception类实现自己的异常类。但是实际中很多公司像上面一 样自己定义一套异常继承体系。因为C++标准库设计的不够好用。
+
+~~~C++
+int main()
+{
+  try
+  {
+      vector<int> v(10, 5);
+      // 这里如果系统内存不够也会抛异常
+      v.reserve(1000000000);
+      // 这里越界会抛异常
+      v.at(10) = 100; 
+  }
+  catch (const exception& e) // 这里捕获父类对象就可以
+  {
+  	cout << e.what() << endl;
+  }
+  catch (...)
+  {
+  	cout << "Unkown Exception" << endl;
+  }
+  return 0;
+}
+~~~
+
+
 
 #### 异常的优缺点▲
 
 ##### C++异常的优点：
 
-> 1. 异常对象定义好了，相比错误码的方式可以清晰准确的展示出错误的各种信息，甚至可以包 含堆栈调用的信息，这样可以帮助更好的定位程序的bug。
->
-> 2. 返回错误码的传统方式有个很大的问题就是，在函数调用链中，深层的函数返回了错误，那 么我们得层层返回错误，最外层才能拿到错误，具体看下面的详细解释。
->
->     ~~~C++
->     // 1.下面这段伪代码我们可以看到ConnnectSql中出错了，先返回给ServerStart，ServerStart再返回给main函数，main函数再针对问题处理具体的错误。
->       // 2.如果是异常体系，不管是ConnnectSql还是ServerStart及调用函数出错，都不用检查，因为抛出的异常异常会直接跳到main函数中catch捕获的地方，main函数直接处理错误。
->     int ConnnectSql()
->     {
->         // 用户名密码错误
->         if (...)
->             return 1;
->     
->         // 权限不足
->         if (...)
->             return 2;
->     }
->     
->     int ServerStart() 
->     {
->         if (int ret = ConnnectSql() < 0)
->             return ret;
->         int fd = socket();
->         if（fd < 0）
->             return errno;
->     }
->       
->     int main()
->     {
->         if(ServerStart()<0)
->             ...
->     
->          return 0;
->     }
->     ~~~
->
-> 3. 很多的第三方库都包含异常，比如boost、gtest、gmock等等常用的库，那么我们使用它们 也需要使用异常。 
->
-> 4. 部分函数使用异常更好处理，比如构造函数没有返回值，不方便使用错误码方式处理。比如 T& operator这样的函数，如果pos越界了只能使用异常或者终止程序处理，没办法通过返回 值表示错误。
+1. 异常对象定义好了，相比错误码的方式可以清晰准确的展示出错误的各种信息，甚至可以包 含堆栈调用的信息，这样可以帮助更好的定位程序的bug。
+
+2. 返回错误码的传统方式有个很大的问题就是，在函数调用链中，深层的函数返回了错误，那 么我们得层层返回错误，最外层才能拿到错误，具体看下面的详细解释。
+
+    ~~~C++
+    // 1.下面这段伪代码我们可以看到ConnnectSql中出错了，先返回给ServerStart，ServerStart再返回给main函数，main函数再针对问题处理具体的错误。
+      // 2.如果是异常体系，不管是ConnnectSql还是ServerStart及调用函数出错，都不用检查，因为抛出的异常异常会直接跳到main函数中catch捕获的地方，main函数直接处理错误。
+    int ConnnectSql()
+    {
+        // 用户名密码错误
+        if (...)
+            return 1;
+    
+        // 权限不足
+        if (...)
+            return 2;
+    }
+    
+    int ServerStart() 
+    {
+        if (int ret = ConnnectSql() < 0)
+            return ret;
+        int fd = socket();
+        if（fd < 0）
+            return errno;
+    }
+    
+    int main()
+    {
+        if(ServerStart()<0)
+            ...
+    
+         return 0;
+    }
+    ~~~
+
+3. 很多的第三方库都包含异常，比如boost、gtest、gmock等等常用的库，那么我们使用它们也需要使用异常。 
+
+4. 部分函数使用异常更好处理，比如构造函数没有返回值，不方便使用错误码方式处理。比如 T& operator这样的函数，如果pos越界了只能使用异常或者终止程序处理，没办法通过返回 值表示错误。
+
+
 
 ##### C++异常的缺点：
 
-> 1. 异常会导致程序的执行流乱跳，并且非常的混乱，并且是运行时出错抛异常就会乱跳。这会 导致我们跟踪调试时以及分析程序时，比较困难。
-> 2. 异常会有一些性能的开销。当然在现代硬件速度很快的情况下，这个影响基本忽略不计。
-> 3.  C++没有垃圾回收机制，资源需要自己管理。有了异常非常容易导致内存泄漏、死锁等异常 安全问题。这个需要使用RAII来处理资源的管理问题。学习成本较高。
-> 4.  C++标准库的异常体系定义得不好，导致大家各自定义各自的异常体系，非常的混乱。 
-> 5. 异常尽量规范使用，否则后果不堪设想，随意抛异常，外层捕获的用户苦不堪言。所以异常 规范有两点 
->     - 抛出异常类型都继承自一个基类。
->     - 函数是否抛异常、抛什么异常，都 使用 func()，throw();的方式规范化。
+1. 异常会导致程序的执行流乱跳，并且非常的混乱，并且是运行时出错抛异常就会乱跳。这会 导致我们跟踪调试时以及分析程序时，比较困难。
+2. 异常会有一些性能的开销。当然在现代硬件速度很快的情况下，这个影响基本忽略不计。
+3.  C++没有垃圾回收机制，资源需要自己管理。有了异常非常容易导致内存泄漏、死锁等异常 安全问题。这个需要使用RAII来处理资源的管理问题。学习成本较高。
+4.  C++标准库的异常体系定义得不好，导致大家各自定义各自的异常体系，非常的混乱。 
+5. 异常尽量规范使用，否则后果不堪设想，随意抛异常，外层捕获的用户苦不堪言。所以异常 规范有两点 
+    - 抛出异常类型都继承自一个基类。
+    - 函数是否抛异常、抛什么异常，都 使用 func()，throw();的方式规范化。
 
-**总结：**异常总体而言，利大于弊，所以工程中我们还是鼓励使用异常的。另外OO的语言基本都是 用异常处理错误，这也可以看出这是大势所趋。
+> **总结：**异常总体而言，利大于弊，所以工程中我们还是鼓励使用异常的。另外OO的语言基本都是 用异常处理错误，这也可以看出这是大势所趋。
 
 ------
 
@@ -8258,48 +8282,50 @@ int main()
 
 #### 智能指针的产生原因
 
-> 下面我们先分析一下下面这段程序有没有什么内存方面的问题？提示一下：注意分析MergeSort 函数中的问题。
->
-> ~~~C++
-> int div()
-> {
->      int a, b;
->      cin >> a >> b;
->      if (b == 0)
->      throw invalid_argument("除0错误");
->      return a / b;
-> }
-> void Func()
-> {
->     // 1、如果p1这里new 抛异常会如何？
->     // 2、如果p2这里new 抛异常会如何？
->     // 3、如果div调用这里又会抛异常会如何？
->      int* p1 = new int;
->     int* p2 = new int;
->      cout << div() << endl;
->      delete p1;
->     delete p2;
-> }
-> int main()
-> {
->      try
->      {
->      	Func();
->      }
->      catch (exception& e)
->      {
->      	cout << e.what() << endl;
->     }
->      return 0;
-> }
-> ~~~
->
-> 问题分析：上面的问题分析出来我们发现有什么问题？
->
-> ~~~
-> p1，p2申请的资源未能正常是否
-> ~~~
->
+下面我们先分析一下下面这段程序有没有什么内存方面的问题？
+
+提示一下：注意分析Func函数中的问题。
+
+~~~C++
+int div()
+{
+  int a, b;
+  cin >> a >> b;
+  if (b == 0)
+  	throw invalid_argument("除0错误");
+  return a / b;
+}
+void Func()
+{
+ // 1、如果p1这里new 抛异常会如何？
+ // 2、如果p2这里new 抛异常会如何？
+ // 3、如果div调用这里又会抛异常会如何？
+  int* p1 = new int;
+  int* p2 = new int;
+  cout << div() << endl;
+  delete p1;
+  delete p2;
+}
+int main()
+{
+  try
+  {
+  	Func();
+  }
+  catch (exception& e)
+  {
+  	cout << e.what() << endl;
+ }
+  return 0;
+}
+~~~
+
+问题分析：上面的问题分析出来我们发现有什么问题？
+
+~~~
+p1，p2申请的资源未能正常是否
+~~~
+
 > **智能指针就是用来解决此类问题的**
 
 #### 智能指针思想
@@ -8312,549 +8338,563 @@ int main()
 > - 不需要显式地释放资源。
 > - 采用这种方式，对象所需的资源在其生命期内始终保持有效。
 >
-> ~~~C++
-> // 使用RAII思想设计的SmartPtr类
-> template<class T>
-> class SmartPtr {
-> public:
->     SmartPtr(T* ptr = nullptr)
->        : _ptr(ptr)
->    {}
->     ~SmartPtr()
->    {
->         if(_ptr)
->             delete _ptr;
->    }
->     
-> private:
->     T* _ptr;
-> };
-> int div()
-> {
->  int a, b;
->  cin >> a >> b;
->  if (b == 0)
->  throw invalid_argument("除0错误");
->  return a / b;
-> }
-> void Func()
-> {
->  ShardPtr<int> sp1(new int);
->     ShardPtr<int> sp2(new int);
->  cout << div() << endl;
-> }
-> int main()
-> {
->     try {
->  Func();
->    }
->     catch(const exception& e)
->    {
->         cout<<e.what()<<endl;
->    }
->  return 0;
-> }
-> ~~~
->
-> 
+
+~~~C++
+// 使用RAII思想设计的SmartPtr类
+template<class T>
+class SmartPtr {
+public:
+    SmartPtr(T* ptr = nullptr)
+       : _ptr(ptr)
+   {}
+    ~SmartPtr()
+   {
+        if(_ptr)
+            delete _ptr;
+   }
+
+private:
+    T* _ptr;
+};
+int div()
+{
+ int a, b;
+ cin >> a >> b;
+ if (b == 0)
+ 	throw invalid_argument("除0错误");
+ return a / b;
+}
+void Func()
+{
+ 	SmartPtr<int> sp1(new int);
+    SmartPtr<int> sp2(new int);
+ 	cout << div() << endl;
+}
+int main()
+{
+    try {
+ Func();
+   }
+    catch(const exception& e)
+   {
+        cout<<e.what()<<endl;
+   }
+ return 0;
+}
+~~~
+
+
 
 ##### 智能指针原理
 
-> 上述的SmartPtr还不能将其称为智能指针，因为它还不具有指针的行为。指针可以解引用，也可 以通过->去访问所指空间中的内容，因此：**AutoPtr模板类中还得需要将* 、->重载下，才可让其 像指针一样去使用。**
+> 上述的SmartPtr还不能将其称为智能指针，因为它还不具有指针的行为。指针可以解引用，也可以通过->去访问所指空间中的内容，因此：**AutoPtr模板类中还得需要将* 、->重载下，才可让其 像指针一样去使用。**
 >
-> ~~~C++
-> template<class T>
-> class SmartPtr {
-> public:
-> SmartPtr(T* ptr = nullptr)
->      : _ptr(ptr)
->  {}
-> ~SmartPtr()
->  {
->      if(_ptr)
->          delete _ptr;
->  }
-> T& operator*() {return *_ptr;}
-> T* operator->() {return _ptr;}
-> private:
-> T* _ptr;
-> };
-> struct Date
-> {
->     int _year;
->  int _month;
->  int _day;
-> };
-> int main()
-> {
-> SmartPtr<int> sp1(new int);
-> *sp1 = 10
-> cout<<*sp1<<endl;
-> SmartPtr<int> sparray(new Date);
-> // 需要注意的是这里应该是sparray.operator->()->_year = 2018;
-> // 本来应该是sparray->->_year这里语法上为了可读性，省略了一个->
-> sparray->_year = 2018;
-> sparray->_month = 1;
-> sparray->_day = 1;
-> }
-> ~~~
->
-> **总结一下智能指针的原理：** 
->
-> 1. RAII特性 
-> 2. 重载operator*和opertaor->，具有像指针一样的行为。
 
-#### 智能指针的使用
+~~~C++
+template<class T>
+class SmartPtr {
+public:
+SmartPtr(T* ptr = nullptr)
+  : _ptr(ptr)
+{}
+~SmartPtr()
+{
+  if(_ptr)
+      delete _ptr;
+}
+T& operator*() {return *_ptr;}
+T* operator->() {return _ptr;}
+private:
+T* _ptr;
+};
+struct Date
+{
+ int _year;
+int _month;
+int _day;
+};
+int main()
+{
+SmartPtr<int> sp1(new int);
+*sp1 = 10
+cout<<*sp1<<endl;
+SmartPtr<int> sparray(new Date);
+// 需要注意的是这里应该是sparray.operator->()->_year = 2018;
+// 本来应该是sparray->->_year这里语法上为了可读性，省略了一个->
+sparray->_year = 2018;
+sparray->_month = 1;
+sparray->_day = 1;
+}
+~~~
+
+**总结一下智能指针的原理：** 
+
+1. RAII特性 
+2. 重载operator*和opertaor->，具有像指针一样的行为。
+
+#### 智能指针的使用及实现；
 
 ##### std::auto_ptr
 
-> https://cplusplus.com/reference/memory/auto_ptr/
->
-> C++98版本的库中就提供了auto_ptr的智能指针。下面演示的auto_ptr的使用及问题。
->
-> auto_ptr的实现原理：管理权转移的思想，下面简化模拟实现了一份bit::auto_ptr来了解它的原理
->
-> ~~~C++
-> // C++98 管理权转移 auto_ptr
-> namespace bit
-> {
->  template<class T>
->  class auto_ptr
->  {
->  public:
->  auto_ptr(T* ptr)
->  :_ptr(ptr)
->  {}
->  auto_ptr(auto_ptr<T>& sp)
->  :_ptr(sp._ptr)
->  {
->  // 管理权转移
->  sp._ptr = nullptr;
->  }
->  auto_ptr<T>& operator=(auto_ptr<T>& ap)
->  {
->  // 检测是否为自己给自己赋值
->  if (this != &ap)
->  {
->  // 释放当前对象中资源
->  if (_ptr)
->  delete _ptr;
->  // 转移ap中资源到当前对象中
->  _ptr = ap._ptr;
->  ap._ptr = NULL;
->  }
->  return *this;
->  }
->  ~auto_ptr()
->  {
->  if (_ptr)
->  {
->  cout << "delete:" << _ptr << endl;
->  delete _ptr;
->       }
->  }
->  // 像指针一样使用
->  T& operator*()
->  {
->  return *_ptr;
->  }
->  T* operator->()
->  {
->  return _ptr;
->  }
->  private:
->  T* _ptr;
->  };
-> }
-> // 结论：auto_ptr是一个失败设计，很多公司明确要求不能使用auto_ptr
-> //int main()
-> //{
-> // std::auto_ptr<int> sp1(new int);
-> // std::auto_ptr<int> sp2(sp1); // 管理权转移
-> //
-> // // sp1悬空
-> // *sp2 = 10;
-> // cout << *sp2 << endl;
-> // cout << *sp1 << endl;
-> // return 0;
-> //}
-> 
-> ~~~
->
-> 
+> auto_ptr的实现原理：管理权转移的思想
+
+https://cplusplus.com/reference/memory/auto_ptr/
+
+C++98版本的库中就提供了auto_ptr的智能指针。下面演示的auto_ptr的使用及问题。
+
+下面简化模拟实现了一份bit::auto_ptr来了解它的原理
+
+~~~C++
+// C++98 管理权转移 auto_ptr
+namespace autoPtr
+{
+	template<class T>
+	class my_auto_ptr
+	{
+	public:
+		my_auto_ptr(T* ptr = nullptr)
+			:_ptr(ptr)
+		{}
+		my_auto_ptr(my_auto_ptr<T>& autoPtr)
+			:_ptr(autoPtr._ptr)
+		{
+			autoPtr._ptr = nullptr;//将autoPtr的资源，转移给*this
+		}
+		my_auto_ptr<T>& operator=(my_auto_ptr<T>& autoPtr)
+		{
+			//检测是否自己给自己赋值
+			if (this != &autoPtr)
+			{
+				//检测当前智能指针是否有资源---1
+				if (_ptr)
+				{
+					delete _ptr;
+				}
+				_ptr = autoPtr._ptr;
+				autoPtr._ptr = nullptr; // --2
+
+				/* 如果没有检测自己给自己赋值
+				* 第一个语句会将管理的资源释放
+				* 第二个语句会将资源指针置空
+				* 则原先那份资源被释放，泄露了
+				*/
+			}
+		}
+
+		~my_auto_ptr()
+		{
+			if (_ptr)
+			{
+				cout << "delete:" << _ptr << endl;
+				delete _ptr;
+			}
+		}
+		// 像指针一样使用
+		T& operator*()
+		{
+			return *_ptr;
+		}
+		T* operator->()
+		{
+			return _ptr;
+		}
+
+	private:
+		T* _ptr;
+
+	};
+
+	void func1()
+	{
+		my_auto_ptr<int> sp1(new int);
+		my_auto_ptr<int> sp2(sp1); // 管理权转移
+
+		// sp1悬空
+		*sp2 = 10;
+		cout << *sp2 << endl;
+		//cout << *sp1 << endl; *sp1 == *nullptr
+	}
+}
+~~~
+
+> 结论：禁止使用auto_ptr
 
 ##### std::unique_ptr
 
 > C++11中开始提供更靠谱的unique_ptr 
 >
-> https://cplusplus.com/reference/memory/unique_ptr/
->
 > unique_ptr的实现原理：**简单粗暴的防拷贝，下面简化模拟实现了一份UniquePtr来了解它的原 理**
->
-> ~~~C++
-> // C++11库才更新智能指针实现
-> // C++11出来之前，boost搞除了更好用的scoped_ptr/shared_ptr/weak_ptr
-> // C++11将boost库中智能指针精华部分吸收了过来
-> // C++11->unique_ptr/shared_ptr/weak_ptr
-> // unique_ptr/scoped_ptr
-> // 原理：简单粗暴 -- 防拷贝
-> namespace bit
-> {
->  template<class T>
->  class unique_ptr
->  {
->  public:
->  unique_ptr(T* ptr)
->  :_ptr(ptr)
->  {}
->  ~unique_ptr()
->      {
->  if (_ptr)
->  {
->  cout << "delete:" << _ptr << endl;
->  delete _ptr;
->  }
->  }
->  // 像指针一样使用
->  T& operator*()
->  {
->  return *_ptr;
->  }
->  T* operator->()
->  {
->  return _ptr;
->  }
->  unique_ptr(const unique_ptr<T>& sp) = delete;
->  unique_ptr<T>& operator=(const unique_ptr<T>& sp) = delete;
->  private:
->  T* _ptr;
->  };
-> }
-> //int main()
-> //{
-> // /*bit::unique_ptr<int> sp1(new int);
-> // bit::unique_ptr<int> sp2(sp1);*/
-> //
-> // std::unique_ptr<int> sp1(new int);
-> // //std::unique_ptr<int> sp2(sp1);
-> //
-> // return 0;
-> //}
-> 
-> ~~~
->
-> 
 
-##### shared_ptr
+https://cplusplus.com/reference/memory/unique_ptr/
+
+~~~C++
+// C++11出来之前，boost搞除了更好用的scoped_ptr/shared_ptr/weak_ptr
+// C++11将boost库中智能指针精华部分吸收了过来
+// C++11->unique_ptr/shared_ptr/weak_ptr
+
+// 原理：简单粗暴 -- 防拷贝
+
+namespace uniquePtr
+{
+	template<class T>
+	class my_unique_ptr
+	{
+	public:
+		my_unique_ptr(T* ptr)
+			:_ptr(ptr)
+		{}
+		~my_unique_ptr()
+		{
+			if (_ptr)
+			{
+				cout << "delete:" << _ptr << endl;
+				delete _ptr;
+			}
+		}
+		// 像指针一样使用
+		T& operator*()
+		{
+			return *_ptr;
+		}
+		T* operator->()
+		{
+			return _ptr;
+		}
+		my_unique_ptr(const my_unique_ptr<T>& sp) = delete;
+		my_unique_ptr<T>& operator=(const my_unique_ptr<T>& sp) = delete;
+	private:
+		T* _ptr;
+	};
+}
+void func1()
+{
+    uniquePtr::my_unique_ptr<int> sp1(new int);
+    //uniquePtr::my_unique_ptr<int> sp2(sp1);
+
+    std::unique_ptr<int> sp11(new int);
+    //std::unique_ptr<int> sp2(sp1);
+}
+~~~
+
+> 结论：简单粗暴
+
+##### shared_ptr + weak_ptr
 
 ###### 使用
 
 > C++11中开始提供更靠谱的并且支持拷贝的shared_ptr 
 >
-> https://cplusplus.com/reference/memory/shared_ptr/
->
 > shared_ptr的原理：是通过引用计数的方式来实现多个shared_ptr对象之间共享资源。
 >
-> 例如： 比特老师晚上在下班之前都会通知，让最后走的学生记得把门锁下。 
+> https://cplusplus.com/reference/memory/shared_ptr/
 >
-> 1. shared_ptr在其内部，给每个资源都维护了着一份计数，用来记录该份资源被几个对象共 享。 
-> 2. 在对象被销毁时(也就是析构函数调用)，就说明自己不使用该资源了，对象的引用计数减 一。
-> 3. 如果引用计数是0，就说明自己是最后一个使用该资源的对象，必须释放该资源； 
-> 4. 如果不是0，就说明除了自己还有其他对象在使用该份资源，不能释放该资源，否则其他对 象就成野指针了。
->
-> ~~~C++
-> // 引用计数支持多个拷贝管理同一个资源，最后一个析构对象释放资源
-> namespace bit
-> {
->  template<class T>
->  class shared_ptr
->  {
->  public:
->  shared_ptr(T* ptr = nullptr)
->  :_ptr(ptr)
->  , _pRefCount(new int(1))
->  , _pmtx(new mutex)
->  {}
->  shared_ptr(const shared_ptr<T>& sp)
->  :_ptr(sp._ptr)
->  , _pRefCount(sp._pRefCount)
->  , _pmtx(sp._pmtx)
->  {
->  AddRef();
->  }
->  void Release()
->  {
->  _pmtx->lock();
->  bool flag = false;
->  if (--(*_pRefCount) == 0 && _ptr)
->  {
->  cout << "delete:" << _ptr << endl;
->  delete _ptr;
->  delete _pRefCount;
->  flag = true;
->  }
->  _pmtx->unlock();
->  if (flag == true)
->  {
->  delete _pmtx;
->  }
->  }
->  void AddRef()
->  {
->  _pmtx->lock();
->  ++(*_pRefCount);
->  _pmtx->unlock();
->  }
->  shared_ptr<T>& operator=(const shared_ptr<T>& sp)
->  {
->  //if (this != &sp)
->  if (_ptr != sp._ptr)
->  {
->  Release();
->      _ptr = sp._ptr;
->  _pRefCount = sp._pRefCount;
->  _pmtx = sp._pmtx;
->  AddRef();
->  }
->  return *this;
->  }
->  int use_count()
->  {
->  return *_pRefCount;
->  }
->  ~shared_ptr()
->  {
->  Release();
->  }
->  // 像指针一样使用
->  T& operator*()
->  {
->  return *_ptr;
->  }
->  T* operator->()
->  {
->  return _ptr;
->  }
->  T* get() const
->  {
->  return _ptr;
->  }
->  private:
->  T* _ptr;
->  int* _pRefCount;
->  mutex* _pmtx;
->  };
->     
->     // 简化版本的weak_ptr实现
->  template<class T>
->  class weak_ptr
->  {
->  public:
->  weak_ptr()
->  :_ptr(nullptr)
->  {}
->  weak_ptr(const shared_ptr<T>& sp)
->  :_ptr(sp.get())
->  {}
->  weak_ptr<T>& operator=(const shared_ptr<T>& sp)
->  {
->  _ptr = sp.get();
->  return *this;
-> }
->  T& operator*()
->  {
->  return *_ptr;
->  }
->  T* operator->()
->  {
->  return _ptr;
->  }
->  private:
->  T* _ptr;
->  };
-> }
-> // shared_ptr智能指针是线程安全的吗？
-> // 是的，引用计数的加减是加锁保护的。但是指向资源不是线程安全的
-> // 指向堆上资源的线程安全问题是访问的人处理的，智能指针不管，也管不了
-> // 引用计数的线程安全问题，是智能指针要处理的
-> //int main()
-> //{
-> // bit::shared_ptr<int> sp1(new int);
-> // bit::shared_ptr<int> sp2(sp1);
-> // bit::shared_ptr<int> sp3(sp1);
-> //
-> // bit::shared_ptr<int> sp4(new int);
-> // bit::shared_ptr<int> sp5(sp4);
-> //
-> // //sp1 = sp1;
-> // //sp1 = sp2;
-> //
-> // //sp1 = sp4;
-> // //sp2 = sp4;
-> // //sp3 = sp4;
-> //
-> // *sp1 = 2;
-> // *sp2 = 3;
-> //
-> // return 0;
-> //}
-> 
-> ~~~
+
+1. shared_ptr在其内部，给**每个资源都维护了着一份计数，用来记录该份资源被几个对象共享**。 
+2. 在**对象被销毁时(也就是析构函数调用)**，就说明自己不使用该资源了，对象的引用计数减 一。
+3. 如果**引用计数是0**，就说明自己是最后一个使用该资源的对象，**必须释放该资源**； 
+4. 如果**不是0**，就说明除了自己还有其他对象在使用该份资源，不能释放该资源，否则其他对象就成野指针了。
+
+> weak_ptr的原理：向shared_ptr借使用权，不参与资源的管理，不会增加引用计数
+
+1. 只使用，不负责
+2. 解决shared_ptr的循环引用问题
+
+~~~C++
+// 引用计数支持多个拷贝管理同一个资源，最后一个析构对象释放资源
+namespace sharedPtr
+{
+    template<class T>
+    class my_shared_ptr
+    {
+    public:
+        my_shared_ptr(T* ptr = nullptr)
+            :_ptr(ptr)
+            , _pRefCount(new int(1))
+            , _pmtx(new mutex)
+        {}
+        my_shared_ptr(const my_shared_ptr<T>& sp)
+            :_ptr(sp._ptr)
+            , _pRefCount(sp._pRefCount)
+            , _pmtx(sp._pmtx)
+        {
+            AddRef();
+        }
+        void Release()
+        {
+            _pmtx->lock();
+            bool flag = false;
+            if (--(*_pRefCount) == 0 && _ptr)
+            {
+                cout << "delete:" << _ptr << endl;
+                delete _ptr;
+                delete _pRefCount;
+                flag = true;
+            }
+            _pmtx->unlock();
+            if (flag == true)
+            {
+                delete _pmtx;
+            }
+        }
+        void AddRef()
+        {
+            _pmtx->lock();
+            ++(*_pRefCount);
+            _pmtx->unlock();
+        }
+        my_shared_ptr<T>& operator=(const my_shared_ptr<T>& sp)
+        {
+            //if (this != &sp) //不同的智能指针，可能指向同一份资源，用资源指针判断合理
+            if (_ptr != sp._ptr)//如果不是同一份资源
+            {
+                Release();
+                _ptr = sp._ptr;
+                _pRefCount = sp._pRefCount;
+                _pmtx = sp._pmtx;
+                AddRef();
+            }
+            return *this;
+        }
+        int use_count()
+        {
+            return *_pRefCount;
+        }
+        ~my_shared_ptr()
+        {
+            Release();
+        }
+        // 像指针一样使用
+        T& operator*()
+        {
+            return *_ptr;
+        }
+        T* operator->()
+        {
+            return _ptr;
+        }
+        T* get() const
+        {
+            return _ptr;
+        }
+    private:
+        T* _ptr;
+        int* _pRefCount;
+        mutex* _pmtx;
+    };
+
+    // 简化版本的weak_ptr实现
+    template<class T>
+    class weak_ptr
+    {
+    public:
+        weak_ptr()
+            :_ptr(nullptr)
+        {}
+        weak_ptr(const shared_ptr<T>& sp)
+            :_ptr(sp.get())
+        {}
+        weak_ptr<T>& operator=(const my_shared_ptr<T>& sp)
+        {
+            _ptr = sp.get();
+            return *this;
+        }
+        T& operator*()
+        {
+            return *_ptr;
+        }
+        T* operator->()
+        {
+            return _ptr;
+        }
+    private:
+        T* _ptr;
+    };
 
 
+    void func1()
+    {
+
+        my_shared_ptr<int> sp1(new int);// 语句1
+        my_shared_ptr<int> sp2(sp1);
+        my_shared_ptr<int> sp3(sp1);
+
+        cout << sp1.use_count() << ' ' << sp2.use_count() << ' ' << sp3.use_count() << endl;
+
+        my_shared_ptr<int> sp4(new int);// 语句2
+        my_shared_ptr<int> sp5(sp4);
+
+        cout << sp4.use_count() << ' ' << sp5.use_count() << endl;
+
+        sp1 = sp1;
+        cout << sp1.use_count() << ' ' << sp3.use_count() << endl;
+        sp1 = sp2;
+        cout << sp1.use_count() << ' ' << sp2.use_count() << ' ' << sp3.use_count() << endl;
+
+        sp1 = sp4;
+        cout << sp3.use_count() << ' ' << sp4.use_count() << endl;
+        sp2 = sp4;
+        cout << sp1.use_count() << ' ' << sp2.use_count() << ' ' << sp3.use_count() << endl;
+        sp3 = sp4;// 此时 语句1 生成的资源 使用者为0 触发释放条件
+        cout << sp1.use_count() << ' ' << sp4.use_count() << ' ' << sp3.use_count() << endl;
+
+        *sp1 = 2;
+        *sp2 = 3;
+
+        // 函数结束时，智能指针全部析构了， 释放 语句2 生成的资源
+    }
+}
+~~~
 
 ###### std::shared_ptr的线程安全问题 
 
-> 通过下面的程序我们来测试shared_ptr的线程安全问题。需要注意的是shared_ptr的线程安全分 为两方面： 
->
-> 1. 智能指针对象中引用计数是多个智能指针对象共享的，两个线程中智能指针的引用计数同时 ++或--，这个操作不是原子的，引用计数原来是1，++了两次，可能还是2。这样引用计数就错 乱了。会导致资源未释放或者程序崩溃的问题。所以只能指针中引用计数++、--是需要加锁 的，也就是说引用计数的操作是线程安全的。 
-> 2. 智能指针管理的对象存放在堆上，两个线程中同时去访问，会导致线程安全问题。
->
-> ~~~C++
-> // 1.演示引用计数线程安全问题，就把AddRefCount和SubRefCount中的锁去掉
-> // 2.演示可能不出现线程安全问题，因为线程安全问题是偶现性问题，main函数的n改大一些概率就
-> 变大了，就容易出现了。
-> // 3.下面代码我们使用SharedPtr演示，是为了方便演示引用计数的线程安全问题，将代码中的
-> SharedPtr换成shared_ptr进行测试，可以验证库的shared_ptr，发现结论是一样的。
-> struct Date
-> {
->  int _year = 0;
->  int _month = 0;
->  int _day = 0;
-> };
-> void SharePtrFunc(bit::shared_ptr<Date>& sp, size_t n, mutex& mtx)
-> {
->  cout << sp.get() << endl;
->  for (size_t i = 0; i < n; ++i)
->  {
->  // 这里智能指针拷贝会++计数，智能指针析构会--计数，这里是线程安全的。
->  bit::shared_ptr<Date> copy(sp);
->  // 这里智能指针访问管理的资源，不是线程安全的。所以我们看看这些值两个线程++了2n
-> 次，但是最终看到的结果，并一定是加了2n
->  {
->  unique_lock<mutex> lk(mtx);
->  copy->_year++;
->  copy->_month++;
->  copy->_day++;
->  }
->  }
-> }
-> int main()
-> {
->  bit::shared_ptr<Date> p(new Date);
->  cout << p.get() << endl;
->  const size_t n = 100000;
->  mutex mtx;
->  thread t1(SharePtrFunc, std::ref(p), n, std::ref(mtx));
->  thread t2(SharePtrFunc, std::ref(p), n, std::ref(mtx));
->  t1.join();
->  t2.join();
->  cout << p->_year << endl;
->  cout << p->_month << endl;
->  cout << p->_day << endl;
->  cout << p.use_count() << endl;
->  return 0;
-> }
-> ~~~
+通过下面的程序我们来测试shared_ptr的线程安全问题。需要注意的是shared_ptr的线程安全分为两方面： 
+
+1. 智能指针对象中引用计数是多个智能指针对象共享的，两个线程中智能指针的引用计数同时 ++或--，这个操作不是原子的，引用计数原来是1，++了两次，可能还是2。这样引用计数就错乱了。会导致资源未释放或者程序崩溃的问题。所以只能指针中引用计数++、--是需要加锁的，也就是说引用计数的操作是线程安全的。 
+2. 智能指针管理的对象存放在堆上，两个线程中同时去访问，会导致线程安全问题。
+
+~~~C++
+// 1.演示引用计数线程安全问题，就把AddRefCount和SubRefCount中的锁去掉
+// 2.演示可能不出现线程安全问题，因为线程安全问题是偶现性问题，main函数的n改大一些概率就变大了，就容易出现了。
+// 3.下面代码我们使用SharedPtr演示，是为了方便演示引用计数的线程安全问题，将代码中的SharedPtr换成shared_ptr进行测试，可以验证库的shared_ptr，发现结论是一样的。
+struct Date
+{
+    int _year = 0;
+    int _month = 0;
+    int _day = 0;
+};
+void SharePtrFunc(bit::shared_ptr<Date>& sp, size_t n, mutex& mtx)
+{
+    cout << sp.get() << endl;
+    for (size_t i = 0; i < n; ++i)
+    {
+        // 这里智能指针拷贝会++计数，智能指针析构会--计数，这里是线程安全的。
+        bit::shared_ptr<Date> copy(sp);
+        // 这里智能指针访问管理的资源，不是线程安全的。所以我们看看这些值两个线程++了2n次，但是最终看到的结果，并不一定是加了2n
+        {
+            unique_lock<mutex> lk(mtx);
+            copy->_year++;
+            copy->_month++;
+            copy->_day++;
+        }
+    }
+}
+int main()
+{
+    bit::shared_ptr<Date> p(new Date);
+    cout << p.get() << endl;
+    const size_t n = 100000;
+    mutex mtx;
+    thread t1(SharePtrFunc, std::ref(p), n, std::ref(mtx));
+    thread t2(SharePtrFunc, std::ref(p), n, std::ref(mtx));
+    t1.join();
+    t2.join();
+    cout << p->_year << endl;
+    cout << p->_month << endl;
+    cout << p->_day << endl;
+    cout << p.use_count() << endl;
+    return 0;
+}
+~~~
 
 ###### std::shared_ptr的循环引用
 
-> ~~~C++
-> struct ListNode
-> {
->  int _data;
->     shared_ptr<ListNode> _prev;
->  shared_ptr<ListNode> _next;
->  ~ListNode(){ cout << "~ListNode()" << endl; }
-> };
-> int main()
-> {
->  shared_ptr<ListNode> node1(new ListNode);
->  shared_ptr<ListNode> node2(new ListNode);
->  cout << node1.use_count() << endl;
->  cout << node2.use_count() << endl;
->  node1->_next = node2;
->  node2->_prev = node1;
->  cout << node1.use_count() << endl;
->  cout << node2.use_count() << endl;
->  return 0;
-> }
-> ~~~
->
-> 循环引用分析： 
->
-> 1. node1和node2两个智能指针对象指向两个节点，引用计数变成1，我们不需要手动 delete。
-> 2.  node1的_next指向node2，node2的_prev指向node1，引用计数变成2。 
-> 3.  node1和node2析构，引用计数减到1，但是_next还指向下一个节点。但是_prev还指向上 一个节点。 
-> 4. 也就是说_next析构了，node2就释放了。 _
-> 5. _也就是说_prev析构了，node1就释放了。 
-> 6. 但是_next属于node的成员，node1释放了，_next才会析构，而node1由_prev管理，_prev 属于node2成员，所以这就叫循环引用，谁也不会释放。
->
-> ![image-20221206215000656](%E5%9B%BE%E7%89%87/README/image-20221206215000656.png)
->
-> ![image-20221203212218744](%E5%9B%BE%E7%89%87/README/image-20221203212218744.png)
->
-> ~~~C++
-> // 解决方案：在引用计数的场景下，把节点中的_prev和_next改成weak_ptr就可以了
-> // 原理就是，node1->_next = node2;和node2->_prev = node1;时weak_ptr的_next和
-> _prev不会增加node1和node2的引用计数。
-> struct ListNode
->     {
->  int _data;
->  weak_ptr<ListNode> _prev;
->  weak_ptr<ListNode> _next;
->  ~ListNode(){ cout << "~ListNode()" << endl; }
-> };
-> int main()
-> {
->  shared_ptr<ListNode> node1(new ListNode);
->  shared_ptr<ListNode> node2(new ListNode);
->  cout << node1.use_count() << endl;
->  cout << node2.use_count() << endl;
->  node1->_next = node2;
->  node2->_prev = node1;
->  cout << node1.use_count() << endl;
->  cout << node2.use_count() << endl;
->  return 0;
-> }
-> 
-> ~~~
+~~~C++
+struct ListNode
+{
+    int _data;
+    my_shared_ptr<ListNode> _prev;
+    my_shared_ptr<ListNode> _next;
+    ~ListNode() { cout << "~ListNode()" << endl; }
+};
+int main()
+{
+    my_shared_ptr<ListNode> node1(new ListNode);
+    my_shared_ptr<ListNode> node2(new ListNode);
+    cout << node1.use_count() << endl;
+    cout << node2.use_count() << endl;
+    node1->_next = node2;
+    node2->_prev = node1;
+    cout << node1.use_count() << endl;
+    cout << node2.use_count() << endl;
+    return 0;
+}
+~~~
+
+循环引用分析： 
+
+1. node1和node2两个智能指针对象指向两个节点，引用计数变成1，我们不需要手动 delete。
+2.  node1的_next指向node2，node2的_prev指向node1，引用计数变成2。 
+3.  node1和node2析构，引用计数减到1，但是_next还指向下一个节点。但是_prev还指向上 一个节点。 
+4. 也就是说_next析构了，node2就释放了。 
+5. _也就是说_prev析构了，node1就释放了。 
+6. 但是_next属于node的成员，node1释放了，_next才会析构，而node1由_prev管理，_prev 属于node2成员，所以这就叫循环引用，谁也不会释放。
+
+![image-20221206215000656](%E5%9B%BE%E7%89%87/README/image-20221206215000656.png)
+
+![image-20221203212218744](%E5%9B%BE%E7%89%87/README/image-20221203212218744.png)
+
+~~~C++
+// 解决方案：在引用计数的场景下，把节点中的_prev和_next改成weak_ptr就可以了
+// 原理就是，node1->_next = node2;和node2->_prev = node1;时weak_ptr的_next和_prev不会增加node1和node2的引用计数。
+
+struct ListNode
+{
+    int _data;
+    my_weak_ptr<ListNode> _prev;
+    my_weak_ptr<ListNode> _next;
+    ~ListNode() { cout << "~ListNode()" << endl; }
+};
+int main()
+{
+    my_shared_ptr<ListNode> node1(new ListNode);
+    my_shared_ptr<ListNode> node2(new ListNode);
+    cout << node1.use_count() << endl;
+    cout << node2.use_count() << endl;
+    node1->_next = node2;
+    node2->_prev = node1;
+    cout << node1.use_count() << endl;
+    cout << node2.use_count() << endl;
+    return 0;
+}
+~~~
 
 ###### 定制删除器
 
 > **如果不是new出来的对象如何通过智能指针管理呢？其实shared_ptr设计了一个删除器来解决这 个问题（ps：删除器这个问题我们了解一下**）
 >
+> new出来的可以通过析构函数操作，malloc需要自己调用free
+>
 > ~~~C++
 > // 仿函数的删除器
 > template<class T>
 > struct FreeFunc {
->  void operator()(T* ptr)
->  {
->  cout << "free:" << ptr << endl;
->  free(ptr);
->  }
+>     void operator()(T* ptr)
+>     {
+>         cout << "free:" << ptr << endl;
+>         free(ptr);
+>     }
 > };
 > template<class T>
 > struct DeleteArrayFunc {
->  void operator()(T* ptr)
->  { 
->  cout << "delete[]" << ptr << endl;
->  delete[] ptr; 
->  }
+>     void operator()(T* ptr)
+>     {
+>         cout << "delete[]" << ptr << endl;
+>         delete[] ptr;
+>     }
 > };
 > int main()
 > {
->  FreeFunc<int> freeFunc;
->  std::shared_ptr<int> sp1((int*)malloc(4), freeFunc);
->  DeleteArrayFunc<int> deleteArrayFunc;
->  std::shared_ptr<int> sp2((int*)malloc(4), deleteArrayFunc);
->     
->     
->  std::shared_ptr<A> sp4(new A[10], [](A* p){delete[] p; });
-> std::shared_ptr<FILE> sp5(fopen("test.txt", "w"), [](FILE* p)
-> {fclose(p); });
->  
->  return 0;
+>     FreeFunc<int> freeFunc;
+>     std::shared_ptr<int> sp1((int*)malloc(4), freeFunc);
+>     DeleteArrayFunc<int> deleteArrayFunc;
+>     std::shared_ptr<int> sp2((int*)malloc(4), deleteArrayFunc);
+> 
+> 
+>     std::shared_ptr<A> sp4(new A[10], [](A* p) {delete[] p; });
+>     std::shared_ptr<FILE> sp5(fopen("test.txt", "w"), [](FILE* p)
+>         {fclose(p); });
+> 
+>     return 0;
 > }
 > ~~~
 >
