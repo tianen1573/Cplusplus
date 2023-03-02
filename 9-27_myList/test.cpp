@@ -3,15 +3,15 @@
 #include "myList.h"
 
 
-//struct type1 {
-//	int val = 0;
-//	int ele = 0;
-//};
-//
-//struct type2 {
-//	type1 _str;
-//	int val = 1;
-//};
+struct type1 {
+	int val = 0;
+	int ele = 0;
+};
+
+struct type2 {
+	type1 _str;
+	int val = 1;
+};
 
 template<class T>
 void PrintList(const qlz::list<T>& l)
@@ -111,7 +111,8 @@ void TestqlzList4()
 	qlz::list<int> l(array, array + sizeof(array) / sizeof(array[0]));
 
 	auto rit = l.rbegin();
-	while (rit != l.rend())
+	auto ritend = l.rend();
+	while (rit != ritend)
 	{
 		cout << *rit << " ";
 		++rit;
@@ -156,25 +157,25 @@ int main()
 	/*qlz::test1();*/
 
 
-	/*qlz::test1();
+	qlz::test11();
 	cout << endl;
 
-	qlz::test2();
+	qlz::test22();
 	cout << endl;
 
-	qlz::test3();
+	qlz::test33();
 	cout << endl;
 
-	qlz::test4();
-	cout << endl;*/
+	qlz::test44();
+	cout << endl;
 
-	/*qlz::test5();*/
+	qlz::test55();
 
-	//TestqlzList1();
-	//TestqlzList2();
+	TestqlzList1();
+	TestqlzList2();
 	TestqlzList3();
 	cout << endl;
-	//TestqlzList4();
+	TestqlzList4();
 
 
 	return 0;

@@ -9,10 +9,10 @@ using namespace std;
 
 namespace qlz
 {
-	
+
 	template<typename T>//数据类型
 	//节点结构
-	struct list_node 
+	struct list_node
 	{
 		T _data;//元素
 		list_node<T>* _next;//后指针
@@ -25,14 +25,14 @@ namespace qlz
 		{}
 
 	};
-	
+
 
 	/*
 	* 1. 以 函数重载的方式, 实现返回 成员变量的const引用 和 非const引用, 两种迭代器属于相同的类型
 	* 2. 通过实例化的区别, 生成const迭代器, 和非const迭代器, 两种迭代器属于不同的类型, 指定 引用返回, 指针返回的类型
 	* typedef _list_iterator<T, T&, T*>             iterator;
 	* typedef _list_iterator<T, const T&, const T*> const_iterator;
-	* 
+	*
 	* List 的迭代器
 	* 迭代器有两种实现方式，具体应根据容器底层数据结构实现：
 	*   1. 原生态指针，比如：vector
@@ -293,7 +293,7 @@ namespace qlz
 
 		iterator _rit;
 	};
-	
+
 	//List
 	template<typename T>
 	class list//双向带头循环链表
@@ -303,12 +303,12 @@ namespace qlz
 		typedef list_node<T> Node;
 		//通过实例化的区别, 生成const迭代器, 和非const迭代器
 		typedef _list_iterator<T, T&, T*> iterator;
-		typedef _list_iterator<T, const T&, const T*> const_iterator;		
+		typedef _list_iterator<T, const T&, const T*> const_iterator;
 		/*
 		* 仍然可以 以 函数重载的方式, 实现返回 成员变量的const引用 和 非const引用
 		* eg
 		* typedef const _list_iterator<T, T&, T*> const_iterator;
-		* 
+		*
 		* const iterator begin() const
 		* {
 		* 	return const iterator(_head->_next);
@@ -318,7 +318,7 @@ namespace qlz
 		* {
 		* 	return const iterator(_head);
 		* }
-		* 
+		*
 		* T& operator*()
 		* {
 		* 	return (it->_data);
@@ -335,8 +335,8 @@ namespace qlz
 		/*反向迭代器(复用)*/
 		typedef _reverse_list_iterator<iterator> reverse_iterator;
 		typedef _reverse_list_iterator<const_iterator> const_reverse_iterator;
-		
-	
+
+
 
 #pragma region 构造函数
 		list()
@@ -618,56 +618,44 @@ namespace qlz
 	/*void ttest1()
 		{
 			list<int> lis1;
-
 			lis1.push_back(1);
 			lis1.push_back(2);
 			lis1.push_back(3);
-
-
 		}
-
 		struct pPos
 		{
 			int _a1;
 			int _a2;
-
 			pPos(int a1 = 0, int a2 = 0)
 				:_a1(a1)
 				, _a2(a2)
 			{}
 		};
-
 		void ttest2()
 		{
 			int x = 10;
 			int* p1 = &x;
-
 			cout << *p1 << endl;
-
 			pPos aa;
 			pPos* p2 = &aa;
 			p2->_a1;
 			p2->_a2;
-
 			list<pPos> lt;
 			lt.push_back(pPos(10, 20));
 			lt.push_back(pPos(10, 21));
-
 			list<pPos>::iterator it = lt.begin();
-		
+
 			cout << endl;
 		}
-
 		void FFunc(const list<int>& l)
 		{
 			list<int>::const_iterator it = l.begin();
-
 			*it;
-		
+
 			cout << endl;
 		}*/
 
-	void test1()
+	void test11()
 	{
 		list<int> lt;
 		lt.push_back(1);
@@ -708,7 +696,7 @@ namespace qlz
 			, _a2(a2)
 		{}
 	};
-	void test2()
+	void test22()
 	{
 		int x = 10;
 		int* p1 = &x;
@@ -734,7 +722,7 @@ namespace qlz
 		}
 		cout << endl;
 	}
-	void Func(const list<int>& l)
+	void Funcc(const list<int>& l)
 	{
 		list<int>::const_iterator it = l.begin();
 		while (it != l.end())
@@ -746,7 +734,7 @@ namespace qlz
 		}
 		cout << endl;
 	}
-	void test3()
+	void test33()
 	{
 		list<int> lt;
 		lt.push_back(1);
@@ -755,9 +743,9 @@ namespace qlz
 		lt.push_back(4);
 		lt.push_back(5);
 
-		Func(lt);
+		Funcc(lt);
 	}
-	void test4()
+	void test44()
 	{
 		list<int> lt;
 		lt.push_back(1);
@@ -817,7 +805,7 @@ namespace qlz
 		}
 		cout << endl;
 	}
-	void test5()
+	void test55()
 	{
 		list<int> l1;
 		l1.push_back(4);
@@ -827,9 +815,7 @@ namespace qlz
 
 		/*auto it = l1.begin();
 		cout << *it << endl;
-
 		auto rit = l1.rbegin();
-
 		cout << *rit;*/
 
 		for (auto rit = l1.rbegin(); rit != l1.rend(); rit++)
