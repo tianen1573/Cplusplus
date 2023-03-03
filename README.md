@@ -8593,11 +8593,15 @@ void func1()
 2. 在**对象被销毁时(也就是析构函数调用)**，就说明自己不使用该资源了，对象的引用计数减 一。
 3. 如果**引用计数是0**，就说明自己是最后一个使用该资源的对象，**必须释放该资源**； 
 4. 如果**不是0**，就说明除了自己还有其他对象在使用该份资源，不能释放该资源，否则其他对象就成野指针了。
+5. 为什么不能使用静态变量计数?
+
+    > 因为，静态成员属于整个类，但计数是相对于资源即变量来说的，而静态成员是相对于类型来说的，同类型的不同资源使用的是同一个计数变量，不符合不同资源不同计数变量的要求
 
 > weak_ptr的原理：向shared_ptr借使用权，不参与资源的管理，不会增加引用计数
 
 1. 只使用，不负责
 2. 解决shared_ptr的循环引用问题
+3. weak_ptr和shared_ptr可以互相引用，weak_ptr作为辅助型指针使用，没有使用RAII思想
 
 ~~~C++
 // 引用计数支持多个拷贝管理同一个资源，最后一个析构对象释放资源
@@ -8860,71 +8864,59 @@ int main()
 
 ###### 定制删除器
 
-> **如果不是new出来的对象如何通过智能指针管理呢？其实shared_ptr设计了一个删除器来解决这 个问题（ps：删除器这个问题我们了解一下**）
->
-> new出来的可以通过析构函数操作，malloc需要自己调用free
->
-> ~~~C++
-> // 仿函数的删除器
-> template<class T>
-> struct FreeFunc {
->     void operator()(T* ptr)
->     {
->         cout << "free:" << ptr << endl;
->         free(ptr);
->     }
-> };
-> template<class T>
-> struct DeleteArrayFunc {
->     void operator()(T* ptr)
->     {
->         cout << "delete[]" << ptr << endl;
->         delete[] ptr;
->     }
-> };
-> int main()
-> {
->     FreeFunc<int> freeFunc;
->     std::shared_ptr<int> sp1((int*)malloc(4), freeFunc);
->     DeleteArrayFunc<int> deleteArrayFunc;
->     std::shared_ptr<int> sp2((int*)malloc(4), deleteArrayFunc);
-> 
-> 
->     std::shared_ptr<A> sp4(new A[10], [](A* p) {delete[] p; });
->     std::shared_ptr<FILE> sp5(fopen("test.txt", "w"), [](FILE* p)
->         {fclose(p); });
-> 
->     return 0;
-> }
-> ~~~
->
+**如果不是new出来的对象如何通过智能指针管理呢？其实shared_ptr设计了一个删除器来解决这 个问题（ps：删除器这个问题我们了解一下**）
+
+new出来的可以通过析构函数操作，malloc需要自己调用free
+
+~~~C++
+// 仿函数的删除器
+template<class T>
+struct FreeFunc {
+    void operator()(T* ptr)
+    {
+        cout << "free:" << ptr << endl;
+        free(ptr);
+    }
+};
+template<class T>
+struct DeleteArrayFunc {
+    void operator()(T* ptr)
+    {
+        cout << "delete[]" << ptr << endl;
+        delete[] ptr;
+    }
+};
+int main()
+{
+    FreeFunc<int> freeFunc;
+    std::shared_ptr<int> sp1((int*)malloc(4), freeFunc);
+    DeleteArrayFunc<int> deleteArrayFunc;
+    std::shared_ptr<int> sp2((int*)malloc(4), deleteArrayFunc);
+
+
+    std::shared_ptr<A> sp4(new A[10], [](A* p) {delete[] p; });
+    std::shared_ptr<FILE> sp5(fopen("test.txt", "w"), [](FILE* p)
+        {fclose(p); });
+
+    return 0;
+}
+~~~
+
 > **定制删除器即构造智能指针对象时，指定析构资源的方式**
-
-###### 其他
-
-> ~~~C++
-> 为什么不能使用静态变量计数
->  因为，静态成员属于整个类，但计数是相对于资源即变量来说的，而静态成员是相对于类型来说的，同类型的不同资源使用的是同一个计数变量，不符合不同资源不同计数变量的要求
-> ~~~
->
-> ![image-20221203212726997](%E5%9B%BE%E7%89%87/README/image-20221203212726997.png)
->
-> weak_ptr和shared_ptr可以互相引用，weak_ptr作为辅助型指针使用，没有使用PAII思想
 
 ###### 再谈new与delete
 
-> ![image-20221203223921978](%E5%9B%BE%E7%89%87/README/image-20221203223921978.png)
->
-> ~~~
-> delete和delete[] 底层都是调用 op delete(), 而op delete()是调用析构函数 + free， 若不存在析构函数，delete 和 delete[] 都只是调用 free， 所以对于内置类型， vs平台(以下都是vs平台)new和delete不匹配不会报错 。
-> 但对于自定义类型，是需要析构函数的，对于new[]，调用op new时， op new知道[]中的参数，因此调用参数次的构造函数，但对于析构函数，delete[]中并不存在参数，不知道调用几次析构函数。所以，nwe[]在申请空间时，会在实际空间的头部额外申请四个字节空间用来保存变量个数，new[]返回的是实际需要的空间的地址，delete[]时，会找到存放个数的空间，读取内容后正确调用够析构函数。
-> 也就是说，new申请的是实际大小的空间，返回实际需要空间的地址，一次析构函数
->         new[]申请的是实际大小 + 4的空间，返回的也是实际需要空间的地址，n次析构函数
->     	delete会直接调用一次西沟啊还能输，释放ptr的空间
->        而delete[]会先去头部读取个数，再调用实际次数的析构函数，再释放实际大小+4的空间
-> ~~~
->
-> 
+![image-20221203223921978](%E5%9B%BE%E7%89%87/README/image-20221203223921978.png)
+
+- delete和delete[] 底层都是调用 op delete(), 而op delete()是调用析构函数 + free， 若不存在析构函数，delete 和 delete[] 都只是调用 free， 所以对于内置类型， vs平台(以下都是vs平台)new和delete不匹配不会报错 。
+- 但对于自定义类型，是需要析构函数的，对于new[]，调用op new时， **op new知道[]中的参数**，因此调用参数次的构造函数，但对于析构函数，delete[]中并不存在参数，不知道调用几次析构函数。所以，new[]在申请空间时，会在实际空间的头部**额外申请四个字节空间用来保存变量个数**，
+- new[]返回的是实际需要的空间的地址+ 4，delete[]时，会找到存放个数的空间，读取内容后正确调用够析构函数。
+- 也就是说，**new申请的是实际大小的空间，返回实际需要空间的地址，一次析构函数**
+- new[]申请的是实际大小 + 4的空间，返回的也是实际需要空间的地址，n次析构函数
+- delete会**直接调用一次析构函数**，释放ptr的空间
+- 而delete[]会**先去头部读取个数**，再调用实际次数的析构函数，再释放实际大小+4的空间
+
+
 
 #### C++11和boost中智能指针的关系
 
@@ -8945,55 +8937,56 @@ int main()
 >
 > 内存泄漏的危害：长期运行的程序出现内存泄漏，影响很大，如操作系统、后台服务等等，出现 内存泄漏会导致响应越来越慢，最终卡死。
 >
-> ~~~C++
-> void MemoryLeaks()
-> {
->    // 1.内存申请了忘记释放
->   int* p1 = (int*)malloc(sizeof(int));
->   int* p2 = new int;
->   
->   // 2.异常安全问题
->   int* p3 = new int[10];
->   
->   Func(); // 这里Func函数抛异常导致 delete[] p3未执行，p3没被释放.
->   
->   delete[] p3;
-> }
-> ~~~
+
+~~~C++
+void MemoryLeaks()
+{
+// 1.内存申请了忘记释放
+int* p1 = (int*)malloc(sizeof(int));
+int* p2 = new int;
+
+// 2.异常安全问题
+int* p3 = new int[10];
+
+Func(); // 这里Func函数抛异常导致 delete[] p3未执行，p3没被释放.
+
+delete[] p3;
+}
+~~~
+
+
 
 #### 内存泄漏分类（了解）
 
-> C/C++程序中一般我们关心两种方面的内存泄漏：
->
-> **堆内存泄漏(Heap leak)** 
->
-> ~~~c++
-> 堆内存指的是程序执行中依据须要分配通过malloc / calloc / realloc / new等从堆中分配的一 块内存，用完后必须通过调用相应的 free或者delete 删掉。假设程序的设计错误导致这部分 内存没有被释放，那么以后这部分空间将无法再被使用，就会产生Heap Leak。
-> ~~~
->
-> 系统资源泄漏 
->
-> ~~~C++
-> 指程序使用系统分配的资源，比方套接字、文件描述符、管道等没有使用对应的函数释放 掉，导致系统资源的浪费，严重可导致系统效能减少，系统执行不稳定。
-> ~~~
+C/C++程序中一般我们关心两种方面的内存泄漏：
+
+- **堆内存泄漏(Heap leak)** 
+
+~~~c++
+堆内存指的是程序执行中依据须要分配通过malloc / calloc / realloc / new等从堆中分配的一 块内存，用完后必须通过调用相应的 free或者delete 删掉。假设程序的设计错误导致这部分 内存没有被释放，那么以后这部分空间将无法再被使用，就会产生Heap Leak。
+~~~
+
+- **系统资源泄漏** 
+
+~~~C++
+指程序使用系统分配的资源，比方套接字、文件描述符、管道等没有使用对应的函数释放 掉，导致系统资源的浪费，严重可导致系统效能减少，系统执行不稳定。
+~~~
 
 #### 如何检测内存泄漏（了解）
 
-> - 在linux下内存泄漏检测：[(15条消息) Linux下几款C++程序中的内存泄露检查工具_CHENG Jian的博客-CSDN博客](https://blog.csdn.net/gatieme/article/details/51959654)
-> - 在windows下使用第三方工具：[(15条消息) VS编程内存泄漏：VLD(Visual LeakDetector)内存泄露库_波波在学习的博客-CSDN博客](https://blog.csdn.net/GZrhaunt/article/details/56839765)
-> - 其他工具：[内存泄露检测工具比较 - 默默淡然 - 博客园 (cnblogs.com)](https://www.cnblogs.com/liangxiaofeng/p/4318499.html)
+- 在linux下内存泄漏检测：[(15条消息) Linux下几款C++程序中的内存泄露检查工具_CHENG Jian的博客-CSDN博客](https://blog.csdn.net/gatieme/article/details/51959654)
+- 在windows下使用第三方工具：[(15条消息) VS编程内存泄漏：VLD(Visual LeakDetector)内存泄露库_波波在学习的博客-CSDN博客](https://blog.csdn.net/GZrhaunt/article/details/56839765)
+- 其他工具：[内存泄露检测工具比较 - 默默淡然 - 博客园 (cnblogs.com)](https://www.cnblogs.com/liangxiaofeng/p/4318499.html)
 
 #### 如何避免内存泄漏
 
-> - 工程前期良好的设计规范，养成良好的编码规范，申请的内存空间记着匹配的去释放。ps： 这个理想状态。但是如果碰上异常时，就算注意释放了，还是可能会出问题。需要下一条智 能指针来管理才有保证。
-> -  采用RAII思想或者智能指针来管理资源。
-> - 有些公司内部规范使用内部实现的私有内存管理库。这套库自带内存泄漏检测的功能选项。 
-> - 出问题了使用内存泄漏工具检测。ps：不过很多工具都不够靠谱，或者收费昂贵。
-> - 总结一下: 内存泄漏非常常见，解决方案分为两种：1、事前预防型。如智能指针等。2、事后查错型。如泄 漏检测工具。
+- 工程前期良好的设计规范，养成良好的编码规范，申请的内存空间记着匹配的去释放。ps： 这个理想状态。但是如果碰上异常时，就算注意释放了，还是可能会出问题。需要下一条智 能指针来管理才有保证。
+-  采用RAII思想或者智能指针来管理资源。
+- 有些公司内部规范使用内部实现的私有内存管理库。这套库自带内存泄漏检测的功能选项。 
+- 出问题了使用内存泄漏工具检测。ps：不过很多工具都不够靠谱，或者收费昂贵。
+- 总结一下: 内存泄漏非常常见，解决方案分为两种：1、事前预防型。如智能指针等。2、事后查错型。如泄 漏检测工具。
 
 ### 特殊类设计
-
-
 
 #### 只能在堆上创建对象
 
@@ -9160,7 +9153,7 @@ c++中， const int a 属于常变量， 不存放在常量区，而是在栈上
 使用volatile 修饰a， 可以禁止编译器优化， 两个都是3
 ~~~
 
-###### dynamic_cast\<type>(value)
+###### 4. dynamic_cast\<type>(value)
 
 ![image-20221204220230262](%E5%9B%BE%E7%89%87/README/image-20221204220230262.png)
 
