@@ -39,19 +39,19 @@
 //    sparray->_day = 1;
 //}
 
-#include"autoPtr.h"
-#include"uniquePtr.h"
-#include"sharedPtr.h"
-
-int main()
-{
-	//autoPtr::func1();
-
-	//uniquePtr::func1();
-
-	//sharedPtr::func1();
-	sharedPtr::func2();
-
-
-	return 0;
-}
+//#include"autoPtr.h"
+//#include"uniquePtr.h"
+//#include"sharedPtr.h"
+//
+//int main()
+//{
+//	//autoPtr::func1();
+//
+//	//uniquePtr::func1();
+//
+//	//sharedPtr::func1();
+//	sharedPtr::func2();
+//
+//
+//	return 0;
+//}

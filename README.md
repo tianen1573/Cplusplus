@@ -6491,7 +6491,7 @@ return 0;
 >         Derive* p3 = &d;
 >         return 0;
 >     }
->                                                                                                                                                                                                         
+>                                                                                                                                                                                                             
 >     ~~~
 >
 >     A：p1 == p2 == p3 B：p1 < p2 < p3 C：p1 == p3 != p2 D：p1 != p2 != p3
@@ -6506,13 +6506,13 @@ return 0;
 >         virtual void func(int val = 1){ std::cout<<"A->"<< val <<std::endl;}
 >         virtual void test(){ func();}
 >     };
->                                                                                                                                                                                                         
+>                                                                                                                                                                                                             
 >     class B : public A
 >     {
 >         public:
 >         void func(int val=0){ std::cout<<"B->"<< val <<std::endl; }
 >     };
->                                                                                                                                                                                                         
+>                                                                                                                                                                                                             
 >     int main(int argc ,char* argv[])
 >     {
 >         B*p = new B;
@@ -8988,137 +8988,296 @@ C/C++程序中一般我们关心两种方面的内存泄漏：
 
 ### 特殊类设计
 
-#### 只能在堆上创建对象
+#### 不能被拷贝的类
+
+> 这里的拷贝是广义上的拷贝，是不能把整个对象的内容拷贝给另一个对象，则拷贝只会发生在拷贝构造和赋值中
+>
+> 因此，想要让一个类禁止拷贝，**只需要让该类的拷贝构造函数和赋值运算符重载不能被调用**即可
+
+**C++98**
+
+> 将拷贝构造函数与赋值运算符重载只声明不定义，并且将其访问权限设置为私有。
+>
+> 则外界无法调用私有成员函数，但类内仍允许，因为函数没有实体，会报错。
+
+~~~C++
+class CopyBan
+{
+    // ...
+    
+private:
+    CopyBan(const CopyBan&);
+    CopyBan& operator=(const CopyBan&);
+    //...
+};
+~~~
+
+**C++11**
+
+> C++11扩展delete的用法，delete除了释放new申请的资源外，如果在默认成员函数后跟上=delete，表示禁止编译器生成该默认成员函数。则类内不存在拷贝构造函数和赋值运算符重载。
 
 ~~~c++
-1. 将析构函数私有化，栈上创建对象时，对象是由函数调用析构函数对对象进行析构的，若私有化析构函数，则函数无法去调用析构函数，就无法在栈上创建对象。而在堆上创建后，可以提供一个封装了析构函数的public函数，手动释放动态申请的资源。
-2. 将构造函数私有化，则函数里创建栈上对象和new创建堆上对象都无法创建，因为他们都需要调用构造函数。 创建一个静态的公有的Create函数，Create函数里去new对象，此时这个new可以调用构造函数，返回这个对象的地址，用这个静态类成员函数去创建堆上对象，需要把拷贝构造函数给私有。
+class CopyBan
+{
+    // ...
+    CopyBan(const CopyBan&)=delete;
+    CopyBan& operator=(const CopyBan&)=delete;
+    //...
+};
 ~~~
+
+
+
+#### 只能在堆上创建对象
+
+1. 将析构函数私有化
+
+    > 栈上创建对象时，构造函数和析构函数都是由系统调用的，若私有化析构函数，则无法去调用析构函数，无法释放栈空间，就无法在栈上创建对象。这个方法禁止了栈上和静态区调用对象，但在堆上创建对象时，需要提供一个额外的公有函数‘手动’释放资源，如公有调用析构，公有直接释放。
+
+    ~~~C++
+    class HeapOnly
+    {
+    public:
+        void DeleteHeap()//1
+        {
+            delete this;//类内可调用析构
+        }
+    
+        static void s_DeleteHeap(HeapOnly* p)//2
+        {
+            delete p;//类内可调用析构
+        }
+        
+    private:
+        ~HeapOnly()
+        {
+            cout << "~HeapOnly" << endl;
+        }
+    };
+    
+    int main()
+    {
+        //HeapOnly ho;
+    
+        HeapOnly* ho1 = new HeapOnly();
+        ho1->DeleteHeap();
+    
+        HeapOnly* ho2 = new HeapOnly();
+        ho2->s_DeleteHeap(ho2);
+    
+        return 0;
+    }
+    ~~~
+
+    
+
+2. 将构造函数私有化
+
+    > 则创建栈上对象和new创建堆上对象都无法创建，因为他们都需要调用构造函数。则需要创建一个静态的公有的Create函数，Create函数里去new对象，此时这个new可以调用构造函数，返回这个对象的指针。
+
+    ~~~C++
+    class HeapOnly
+    {
+    public:
+        static HeapOnly* CreateObject()
+        {
+            return new HeapOnly;
+        }
+    
+        HeapOnly(const HeapOnly&)
+        {
+            cout << "CopyHeapOnly()" << endl;
+        }
+        /*HeapOnly& operator=(const HeapOnly& ho)
+        {
+            cout << "operator=HeapOnly()" << endl;
+    
+            return *this;
+        }*/
+    private:
+        HeapOnly() 
+        {
+            cout << "HeapOnly()" << endl;
+        }
+    
+        void operator=(const HeapOnly& ho);
+        //HeapOnly(const HeapOnly& ho) = delete;
+    
+    };
+    
+    int main()
+    {
+        //HeapOnly ho;
+    
+        HeapOnly* ho1 = HeapOnly::CreateObject();
+    
+        HeapOnly ho2(*ho1);
+        ho2 = *ho1;
+    
+    
+        return 0;
+    }
+    ~~~
+
+    > 将构造函数私有化并不能完全禁止在栈上创建对象，还**需要私有化拷贝构造函数和赋值运算符重载**
+    >
+    > ps：初始化赋值会优化为拷贝构造
 
 #### 只能在栈上创建对象
 
-~~~
-1. 将构造函数私有化，则函数里创建栈上对象和new创建堆上对象都无法创建，因为他们都需要调用构造函数。 创建一个静态的公有的Create函数，Create函数里去创建对象，此时这个栈上对象可以调用构造函数，传值返回。用这个静态类成员函数去创建栈上对象，需要把禁止op new 和 op delete，即把它俩私有化，是new和delete调不到底层的op。
-~~~
+1. 将构造函数私有化，
+
+    > 则函数里创建栈上对象和new创建堆上对象都无法创建，因为他们都需要调用构造函数。 创建一个静态的公有的Create函数，Create函数里去创建对象，此时这个静态函数可以调用构造函数，传值返回。用这个静态类成员函数去创建栈上对象，需要把禁止op new 和 op delete，即把它俩私有化，是new和delete调不到底层的op。
+
+    ~~~C++
+    class StackOnly
+    {
+    public:
+        static StackOnly CreateObj()
+        {
+            return StackOnly();
+        }
+    
+        // 禁掉operator new可以把下面用new 调用拷贝构造申请对象给禁掉
+        // StackOnly obj = StackOnly::CreateObj();
+        // StackOnly* ptr3 = new StackOnly(obj);//拷贝构造
+        //为什么不禁止拷贝构造？
+        //静态函数返回的是值返回，会调用拷贝函数，会失败，只能禁止底层的new/delete
+        void* operator new(size_t size) = delete;
+        void operator delete(void* p) = delete;
+    private:
+        StackOnly()
+            :_a(0)
+        {}
+    private:
+        int _a;
+    };
+    ~~~
+
+    
 
 #### 不能被继承
 
-~~~
-1. c++98， 将构造函数私有化，因为子类在构造时需要调用父类的构造函数，无法调用，就会语法错误
-2. c++11， final关键字
-~~~
+> 1. c++98， 将构造函数私有化，因为子类在构造时需要调用父类的构造函数，无法调用，就会语法错误
+> 2. c++11， final关键字
 
 #### 单例模式：设计一个类，只能创建一个对象
 
-> **设计模式：** 设计模式（Design Pattern）是一套被反复使用、多数人知晓的、经过分类的、代码设计经验的 总结。为什么会产生设计模式这样的东西呢？就像人类历史发展会产生兵法。最开始部落之间打 仗时都是人拼人的对砍。后来春秋战国时期，七国之间经常打仗，就发现打仗也是有套路的，后 来孙子就总结出了《孙子兵法》。孙子兵法也是类似。 
+> **设计模式：** 设计模式（Design Pattern）是一套被反复使用、多数人知晓的、经过分类的、代码设计经验的总结。为什么会产生设计模式这样的东西呢？就像人类历史发展会产生兵法。最开始部落之间打仗时都是人拼人的对砍。后来春秋战国时期，七国之间经常打仗，就发现打仗也是有套路的，后来孙子就总结出了《孙子兵法》。孙子兵法也是类似。 
 >
-> 使用设计模式的目的：为了代码可重用性、让代码更容易被他人理解、保证代码可靠性。 设计模 式使代码编写真正工程化；设计模式是软件工程的基石脉络，如同大厦的结构一样。 
+> 使用设计模式的目的：为了代码可重用性、让代码更容易被他人理解、保证代码可靠性。 设计模式使代码编写真正工程化；设计模式是软件工程的基石脉络，如同大厦的结构一样。 
 >
-> **单例模式：** 一个类只能创建一个对象，即单例模式，该模式可以保证系统中该类只有一个实例，并提供一个 访问它的全局访问点，该实例被所有程序模块共享。比如在某个服务器程序中，该服务器的配置 信息存放在一个文件中，这些配置数据由一个单例对象统一读取，然后服务进程中的其他对象再 通过这个单例对象获取这些配置信息，这种方式简化了在复杂环境下的配置管理。 
->
-> 单例模式有两种实现模式：
+
+**单例模式：** 
+
+> 一个类只能创建一个对象，即单例模式，该模式可以保证系统中该类只有一个实例，并提供一个 访问它的全局访问点，该实例被所有程序模块共享。比如在某个服务器程序中，该服务器的配置 信息存放在一个文件中，这些配置数据由一个单例对象统一读取，然后服务进程中的其他对象再 通过这个单例对象获取这些配置信息，这种方式简化了在复杂环境下的配置管理。 
+
+单例模式有两种实现模式：
 
 ##### 饿汉模式
 
 > 就是说不管你将来用不用，程序启动时就创建一个唯一的实例对象。
 >
-> ~~~C++
-> // 饿汉模式
-> // 优点：简单
-> // 缺点：可能会导致进程启动慢，且如果有多个单例类对象实例启动顺序不确定。
->   class Singleton
->  {
->   public:
->       static Singleton* GetInstance()
->      {
->           return &m_instance;
->      }
->         
->   private:
->      // 构造函数私有
->     Singleton(){};
->     
->     // C++98 防拷贝
->     Singleton(Singleton const&); 
->     Singleton& operator=(Singleton const&); 
->       
->     // or
->       
->     // C++11
->     Singleton(Singleton const&) = delete; 
->     Singleton& operator=(Singleton const&) = delete; 
->   
->     static Singleton m_instance;
->  };
->   
->   Singleton Singleton::m_instance;  // 在程序入口之前就完成单例对象的初始化
-> ~~~
->
-> 如果这个单例对象在多线程高并发环境下频繁使用，性能要求较高，那么显然使用饿汉模式来避 免资源竞争，提高响应速度更好。
+
+~~~C++
+// 饿汉模式
+// 优点：简单，没有线程安全
+// 缺点：可能会导致进程启动慢，且如果有多个单例类对象实例启动顺序不确定。
+class Singleton
+{
+public:
+    static Singleton* GetInstance()
+    {
+        return &m_instance;
+    }
+
+private:
+    // 构造函数私有
+    Singleton() {};
+
+    // C++98 防拷贝
+    Singleton(Singleton const&);
+    Singleton& operator=(Singleton const&);
+    // or
+    // C++11
+    Singleton(Singleton const&) = delete;
+    Singleton& operator=(Singleton const&) = delete;
+
+    static Singleton m_instance;
+};
+
+Singleton Singleton::m_instance;  // 在程序入口之前就完成单例对象的初始化
+//静态成员变量对象m_instance属于类，所以系统对它初始化时，调用私有的构造函数相当于调用成员函数调用私有函数
+~~~
+
+如果这个单例对象在多线程高并发环境下频繁使用，性能要求较高，那么显然使用饿汉模式来避 免资源竞争，提高响应速度更好。
+
+
 
 ##### 懒汉模式
 
-> 如果单例对象构造十分耗时或者占用很多资源，比如加载插件啊， 初始化网络连接啊，读取 文件啊等等，而有可能该对象程序运行时不会用到，那么也要在程序一开始就进行初始化， 就会导致程序启动时非常的缓慢。 所以这种情况使用懒汉模式（**延迟加载**）更好。
->
-> ~~~C++
-> // 懒汉
-> // 优点：第一次使用实例对象时，创建对象。进程启动无负载。多个单例实例启动顺序自由控
-> 制。
-> // 缺点：复杂
-> #include <iostream>
-> #include <mutex>
-> #include <thread>
-> using namespace std;
-> class Singleton
-> {
-> public:
->  static Singleton* GetInstance() {
->  // 注意这里一定要使用Double-Check的方式加锁，才能保证效率和线程安全
->  if (nullptr == m_pInstance) {
->  m_mtx.lock();
->  if (nullptr == m_pInstance) {
->  m_pInstance = new Singleton();
->  }
->  m_mtx.unlock();
->  }
->  return m_pInstance;
->  }
->  // 实现一个内嵌垃圾回收类    
->  class CGarbo {
->  public:
->      ~CGarbo(){
->  if (Singleton::m_pInstance)
->  delete Singleton::m_pInstance;
->  }
->  };
->  // 定义一个静态成员变量，程序结束时，系统会自动调用它的析构函数从而释放单例对象
->  static CGarbo Garbo;
-> private:
->  // 构造函数私有
->  Singleton(){};
->  // 防拷贝
->  Singleton(Singleton const&);
->  Singleton& operator=(Singleton const&);
->  static Singleton* m_pInstance; // 单例对象指针
->  static mutex m_mtx;   //互斥锁
-> };
-> Singleton* Singleton::m_pInstance = nullptr;
-> Singleton::CGarbo Garbo;
-> mutex Singleton::m_mtx;
-> int main()
-> {
->  thread t1([]{cout << &Singleton::GetInstance() << endl; });
->  thread t2([]{cout << &Singleton::GetInstance() << endl; });
->  t1.join();
->  t2.join();
->  cout << &Singleton::GetInstance() << endl;
->  cout << &Singleton::GetInstance() << endl;
->  return 0;
-> }
-> 
-> ~~~
->
-> 
+如果单例对象构造十分耗时或者占用很多资源，比如加载插件啊， 初始化网络连接啊，读取文件啊等等，而有可能该对象程序运行时不会用到，那么也要在程序一开始就进行初始化， 就会导致程序启动时非常的缓慢。 所以这种情况使用懒汉模式（**延迟加载**）更好。
+
+~~~C++
+// 懒汉
+// 优点：第一次使用实例对象时，创建对象。进程启动无负载。多个单例实例启动顺序自由控制。
+// 缺点：复杂
+#include <iostream>
+#include <mutex>
+#include <thread>
+using namespace std;
+class Singleton
+{
+public:
+	static Singleton* GetInstance() {
+		// 注意这里一定要使用Double-Check的方式加锁，才能保证效率和线程安全
+		if (nullptr == m_pInstance) {
+			m_mtx.lock();
+			if (nullptr == m_pInstance) {
+				m_pInstance = new Singleton();
+			}
+			m_mtx.unlock();
+		}
+		return m_pInstance;
+	}
+	// 实现一个内嵌垃圾回收类    
+	// 后构造的先析构
+	class CGarbo {
+	public:
+		~CGarbo() {
+			if (Singleton::m_pInstance)
+				delete Singleton::m_pInstance;
+		}
+	};
+	// 定义一个静态成员变量，程序结束时，系统会自动调用它的析构函数从而释放单例对象
+	static CGarbo Garbo;
+private:
+	// 构造函数私有
+	Singleton() {};
+	// 防拷贝
+	Singleton(Singleton const&);
+	Singleton& operator=(Singleton const&);
+
+	static Singleton* m_pInstance; // 单例对象指针
+	static mutex m_mtx;   //互斥锁
+};
+Singleton* Singleton::m_pInstance = nullptr;
+Singleton::CGarbo Garbo;
+mutex Singleton::m_mtx;
+int main()
+{
+	thread t1([] {cout << Singleton::GetInstance() << endl; });
+	thread t2([] {cout << Singleton::GetInstance() << endl; });
+	t1.join();
+	t2.join();
+	cout << Singleton::GetInstance() << endl;
+	cout << Singleton::GetInstance() << endl;
+	return 0;
+}
+
+~~~
+
+
 
 ### C++类型转换
 
