@@ -127,58 +127,83 @@ using namespace std;
 //
 //Singleton Singleton::m_instance;  // 在程序入口之前就完成单例对象的初始化
 
-// 懒汉
-// 优点：第一次使用实例对象时，创建对象。进程启动无负载。多个单例实例启动顺序自由控制。
-// 缺点：复杂
-#include <iostream>
-#include <mutex>
-#include <thread>
-using namespace std;
-class Singleton
+//// 懒汉
+//// 优点：第一次使用实例对象时，创建对象。进程启动无负载。多个单例实例启动顺序自由控制。
+//// 缺点：复杂
+//#include <iostream>
+//#include <mutex>
+//#include <thread>
+//using namespace std;
+//class Singleton
+//{
+//public:
+//	static Singleton* GetInstance() {
+//		// 注意这里一定要使用Double-Check的方式加锁，才能保证效率和线程安全
+//		if (nullptr == m_pInstance) {
+//			m_mtx.lock();
+//			if (nullptr == m_pInstance) {
+//				m_pInstance = new Singleton();
+//			}
+//			m_mtx.unlock();
+//		}
+//		return m_pInstance;
+//	}
+//	// 实现一个内嵌垃圾回收类    
+//	// 后构造的先析构
+//	class CGarbo {
+//	public:
+//		~CGarbo() {
+//			if (Singleton::m_pInstance)
+//				delete Singleton::m_pInstance;
+//		}
+//	};
+//	// 定义一个静态成员变量，程序结束时，系统会自动调用它的析构函数从而释放单例对象
+//	static CGarbo Garbo;
+//private:
+//	// 构造函数私有
+//	Singleton() {};
+//	// 防拷贝
+//	Singleton(Singleton const&);
+//	Singleton& operator=(Singleton const&);
+//
+//	static Singleton* m_pInstance; // 单例对象指针
+//	static mutex m_mtx;   //互斥锁
+//};
+//Singleton* Singleton::m_pInstance = nullptr;
+//Singleton::CGarbo Garbo;
+//mutex Singleton::m_mtx;
+//int main()
+//{
+//	thread t1([] {cout << Singleton::GetInstance() << endl; });
+//	thread t2([] {cout << Singleton::GetInstance() << endl; });
+//	t1.join();
+//	t2.join();
+//	cout << Singleton::GetInstance() << endl;
+//	cout << Singleton::GetInstance() << endl;
+//	return 0;
+//}
+
+class A
 {
 public:
-	static Singleton* GetInstance() {
-		// 注意这里一定要使用Double-Check的方式加锁，才能保证效率和线程安全
-		if (nullptr == m_pInstance) {
-			m_mtx.lock();
-			if (nullptr == m_pInstance) {
-				m_pInstance = new Singleton();
-			}
-			m_mtx.unlock();
-		}
-		return m_pInstance;
-	}
-	// 实现一个内嵌垃圾回收类    
-	// 后构造的先析构
-	class CGarbo {
-	public:
-		~CGarbo() {
-			if (Singleton::m_pInstance)
-				delete Singleton::m_pInstance;
-		}
-	};
-	// 定义一个静态成员变量，程序结束时，系统会自动调用它的析构函数从而释放单例对象
-	static CGarbo Garbo;
-private:
-	// 构造函数私有
-	Singleton() {};
-	// 防拷贝
-	Singleton(Singleton const&);
-	Singleton& operator=(Singleton const&);
-
-	static Singleton* m_pInstance; // 单例对象指针
-	static mutex m_mtx;   //互斥锁
+	virtual void f() {}
 };
-Singleton* Singleton::m_pInstance = nullptr;
-Singleton::CGarbo Garbo;
-mutex Singleton::m_mtx;
+class B : public A
+{};
+void fun(A* pa)
+{
+	// dynamic_cast会先检查是否能转换成功，能成功则转换，不能则返回
+	B* pb1 = static_cast<B*>(pa);
+	B* pb2 = dynamic_cast<B*>(pa);
+	cout << "pb1:" << pb1 << endl;
+	cout << "pb2:" << pb2 << endl;
+}
 int main()
 {
-	thread t1([] {cout << Singleton::GetInstance() << endl; });
-	thread t2([] {cout << Singleton::GetInstance() << endl; });
-	t1.join();
-	t2.join();
-	cout << Singleton::GetInstance() << endl;
-	cout << Singleton::GetInstance() << endl;
+	A a;
+	B b;
+	fun(&a); // 地址， nullptr
+	fun(&b); // 地址， 地址
 	return 0;
 }
+

@@ -15,7 +15,7 @@ namespace qlz
 	{
     public:
 
-        //建堆往下走
+        //建堆往下走--小树向大数
         void adjust_down(size_t parent)
         {
             size_t child = parent * 2 + 1;

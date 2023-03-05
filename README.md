@@ -1761,10 +1761,6 @@ Vector<double> s2;
 
 ##### 模板的特化
 
-
-
-
-
 ------
 
 #### STL容器
@@ -1812,7 +1808,7 @@ struct _Rep_base
 延迟拷贝奇数, 当构造对象只进行读操作时, 和被拷贝对象共享空间, 当需要进行写操作时, 才进行拷贝[写时拷贝就是一种拖延症，是在浅拷贝的基础之上增加了引用计数的方式来实现的。 引用计数：用来记录资源使用者的个数。在构造时，将资源的计数给成1，每增加一个对象使用该资源，就给 计数增加1，当某个对象被销毁时，先给该计数减1，然后再检查是否需要释放资源，如果计数为1，说明该 对象时资源的最后一个使用者，将该资源释放；否则就不能释放，因为还有其他对象在使用该资源。]
 ```
 
-###### 全代码
+###### 模拟实现
 
 [String模拟实现参考](https://gitee.com/ailiangshilove/cpp-class/blob/master/%E8%AF%BE%E4%BB%B6%E4%BB%A3%E7%A0%81/C++%E8%AF%BE%E4%BB%B6V6/string%E7%9A%84%E6%A8%A1%E6%8B%9F%E5%AE%9E%E7%8E%B0/String.h)
 
@@ -1825,9 +1821,10 @@ struct _Rep_base
 #include<algorithm>
 using namespace std;
 
-namespace Bit
+namespace qlz
 {
 
+	//命名空间的使用
 	/*using std::cout;
 	using std::cin;
 	using std::endl;*/
@@ -1839,8 +1836,7 @@ namespace Bit
 		typedef const char* const_iterator;
 	public:
 
-#pragma region 其他
-		//swap
+		//swap，string的swap
 		void swap(string& str)
 		{
 			std::swap(_str, str._str);
@@ -1848,17 +1844,17 @@ namespace Bit
 			std::swap(_capacity, str._capacity);
 		}
 
-		//c指针
+		//c指针，返回stringC语言下的指针
 		const char* c_str() const
 		{
 			return _str;
-		}	 
-#pragma endregion
+		}
+		 
 
-#pragma region 构造函数
 		//无参
 		// _str(nullptr) 错误: 转换成c指针 用cout输出的结束条件为 *p = '\0', 解引用了空指针
 		// _str("\0") 错误: 常量字符串默认存在'\0'
+		// 无参构造是应该是空字符串,即字符串只存在一个'\0'
 		string()
 			: _str(new char[1])
 			, _size(0)
@@ -1870,13 +1866,14 @@ namespace Bit
 		//常量字符串
 		string(const char* str)
 		{
-			size_t len = strlen(str);
+			size_t len = strlen(str);//strlen不包含\0
 			_size = len;
 			_capacity = len;
 			_str = new char[len + 1];
 
 			strcpy(_str, str);
 		}
+
 		////常量字符串全缺省默认构造
 		//string(const char* str = "")
 		//{
@@ -1885,7 +1882,7 @@ namespace Bit
 		//	_capacity = len;
 		//	_str = new char[len + 1];
 		//	
-		//	strcpy(_str, str);
+		//	strcpy(_str, str);//拷贝函数，遇到str的'\0'停止
 		//}
 
 		//常量字符串前n个字符
@@ -1906,7 +1903,7 @@ namespace Bit
 
 		}
 
-		//n个字符 ch
+		//n个字符ch
 		string(size_t n, char ch)
 			:_str(new char[n + 1])
 			, _size(n)
@@ -1927,28 +1924,29 @@ namespace Bit
 		//	, _capacity(str._capacity)
 		//{
 		//	//string对象可包含'\0', 而strcpy无法copy'\0'
-		//	memcpy(_str, str._str, _capacity + 1);
+		//	memcpy(_str, str._str, _capacity + 1);//按字节拷贝
 		//}
-		//
+		
 		//现代写法
+		//调用了c指针构造对象，然后交换内容
 		string(const string& str)
 			: _str(nullptr)
 			, _size(0)
 			, _capacity(0)
 		{
-			string tmp(str._str);//C指针构造
+			string tmp(str._str);//C指针构造，不是拷贝构造
 			swap(tmp);
 		}
 
 		//sting对象 第 pos位置的 后n个字符
 		string(const string& str, size_t pos, size_t n = npos)
-
+			
 		{
 			assert(pos < str._size);//合法下标
-			*this = str.substr(pos, n);
+			*this = str.substr(pos, n);//调用赋值
 
 			//*this += str.substr(pos, n);
-
+			
 			//错误语句
 			// substr的返回值具有const属性, 无法修改, 不能作为swap的实参传递
 			//swap(str.substr(pos, n));
@@ -1961,9 +1959,7 @@ namespace Bit
 			_str = nullptr;
 			_size = _capacity = 0;
 		}
-#pragma endregion
 
-#pragma region 空间操作
 		//reserve
 		void reserve(size_t n)
 		{
@@ -1978,6 +1974,7 @@ namespace Bit
 			tmp = nullptr;
 			_capacity = n;
 		}
+
 		//resize
 		void resize(size_t n, char ch = '\0')
 		{
@@ -2002,6 +1999,7 @@ namespace Bit
 		{
 			return _size;
 		}
+
 		//capacity
 		size_t capacity() const
 		{
@@ -2014,9 +2012,6 @@ namespace Bit
 			_str[0] = '\0';
 			_size = 0;
 		}
-#pragma endregion
-
-#pragma region 增删改查
 
 		//push_back
 		void push_back(char ch)
@@ -2031,6 +2026,7 @@ namespace Bit
 			_size++;
 			_str[_size] = '\0';
 		}
+
 		//append
 		void append(const char* str)
 		{
@@ -2152,6 +2148,7 @@ namespace Bit
 
 			return *this;
 		}
+
 		/*
 		* 复用
 		* 对于substring 和 buffer 可以通过 (转换成string)截断 + substr 实现
@@ -2206,10 +2203,8 @@ namespace Bit
 
 			return *this;
 		}
-#pragma endregion
 
-#pragma region 操作符重载
-
+		
 		//逻辑操作符
 		bool operator>(const string& str) const
 		{
@@ -2242,7 +2237,6 @@ namespace Bit
 			swap(str);
 			return *this;
 		}
-
 		string& operator+=(const char ch)
 		{
 			push_back(ch);
@@ -2276,7 +2270,7 @@ namespace Bit
 			tmp.append(str);
 			return tmp;
 		}
-
+		
 		//[]
 		char& operator[](size_t pos)
 		{
@@ -2287,11 +2281,9 @@ namespace Bit
 		{
 			assert(pos < _size);
 			return _str[pos];
-		}		
-#pragma endregion
-
-#pragma region 迭代器
-
+		}
+		
+		
 		iterator begin()
 		{
 			return _str;
@@ -2302,7 +2294,6 @@ namespace Bit
 			return _str + _size;
 		}
 
-
 		const_iterator begin() const
 		{
 			return _str;
@@ -2312,9 +2303,8 @@ namespace Bit
 		{
 			return _str + _size;
 		}
-#pragma endregion
 
-#pragma region 成员变量
+
 	private:
 		size_t _capacity;//最大有效存储长度
 		size_t _size;//实际长度
@@ -2325,7 +2315,6 @@ namespace Bit
 		static size_t npos;
 		//C++11特性 : 加上const可直接在类内定义静态变量
 		//const static size_t npos = -1;  
-#pragma endregion
 
 	};
 
@@ -2360,7 +2349,7 @@ namespace Bit
 	//
 	//	return in;
 	//}
-
+	
 	//升级版--减少扩容操作
 	istream& operator>>(istream& in, string& str)
 	{
@@ -2371,9 +2360,9 @@ namespace Bit
 		const int N = 32;
 		char buff[N];
 		size_t i = 0;
-
+	
 		char ch;
-
+	
 		ch = in.get();
 		while (ch != ' ' && ch != '\n')
 		{
@@ -2391,9 +2380,10 @@ namespace Bit
 
 		buff[i] = '\0';
 		str += buff;
-
+	
 		return in;
 	}
+
 #pragma endregion
 
 	//构造
@@ -2432,12 +2422,12 @@ namespace Bit
 		string s2("Mystring");
 
 		cout << s1 + '!' << endl;
-		cout << s1 + " Bit" << endl;
+		cout << s1 + " qlz" << endl;
 		cout << s1 + s2 << endl;
 
 
 		cout << (s1 += '!') << endl;
-		cout << (s1 += " Bit") << endl;
+		cout << (s1 += " qlz") << endl;
 		cout << (s1 += s2) << endl;
 	}
 	//增删改查
@@ -2501,572 +2491,14 @@ namespace Bit
 
 }
 
-
-
-
-```
-
-###### 构造函数
-```c++
-//无参
-	//---------注意
-	// _str(nullptr) 错误: 转换成c指针 用cout输出的结束条件为 *p = '\0', 解引用了空指针
-	// _str("\0") 错误: 常量字符串默认存在'\0'
-	string()
-		: _str(new char[1])
-		, _size(0)
-		, _capacity(0)
-	{
-		_str[0] = '\0';
-	}
-
-//常量字符串
-	string(const char* str)
-	{
-		size_t len = strlen(str);
-		_size = len;
-		_capacity = len;
-		_str = new char[len + 1];
-		//使用strcpy拷贝, 符合常量字符串以'\0'结尾的规范
-		strcpy(_str, str);
-	}
-	////常量字符串全缺省默认构造
-	//string(const char* str = "")
-	//{
-	//	size_t len = strlen(str);
-	//	_size = len;
-	//	_capacity = len;
-	//	_str = new char[len + 1];
-	//	
-	//	strcpy(_str, str);
-	//}
-
-//常量字符串前n个字符
-	string(const char* str, size_t n)
-	{
-		//确定实际长度
-		size_t len = strlen(str);
-		len = len > n ? n : len;
-
-		_size = _capacity = len;
-		_str = new char[_capacity + 1];
-
-		//strcpy 遇到\0结束, 不支持提前结束
-		for (size_t i = 0; i < _size; i++)
-		{
-			_str[i] = str[i];
-		}
-		_str[_size] = '\0';
-
-	}
-
-//n个字符 ch
-	string(size_t n, char ch)
-		:_str(new char[n + 1])//初始化列表初始化
-		, _size(n)
-		, _capacity(n)
-	{
-		for (size_t i = 0; i < _size; i++)
-		{
-			_str[i] = ch;
-		}
-		_str[_size] = '\0';
-	}
-
-/*拷贝构造*/
-	////传统写法
-	//string(const string& str)
-	//	:_str(new char[str._capacity + 1])
-	//	, _size(str._size)
-	//	, _capacity(str._capacity)
-	//{
-	//	//string对象可包含'\0', 而strcpy无法copy'\0'
-	//	memcpy(_str, str._str, _capacity + 1);
-	//}
-	//
-
-	//现代写法
-	string(const string& str)
-		: _str(nullptr)
-		, _size(0)
-		, _capacity(0)
-	{
-		string tmp(str._str);//调用常量字符串构造, 复用代码
-		swap(tmp);//交换
-	}
-
-//sting对象 第 pos位置的 后n个字符
-	string(const string& str, size_t pos, size_t n = npos)
-
-	{
-		assert(pos < str._size);//合法下标
-
-		*this = str.substr(pos, n);//调用substr, 此处偷懒
-
-		//*this += str.substr(pos, n);
-
-		//错误语句
-		// substr的返回值具有const属性, 无法修改, 不能作为swap的实参传递
-		//swap(str.substr(pos, n));
-	}  
-
-//析构函数
-	~string()
-	{
-		delete[] _str;
-		_str = nullptr;
-		_size = _capacity = 0;
-	}
-```
-
-###### 空间操作
-```c++
-//reserve
-	//仅扩充空间大小
-	void reserve(size_t n)
-	{
-		//仅扩充, 不缩小
-		if (n <= _size) return;
-
-		char* tmp = new char[n + 1];
-
-		//string中可包含'\0', strcpy遇到'\0', 可能发生截断,应该按字节拷贝
-		memcpy(tmp, _str, _capacity + 1);
-
-		delete[] _str;
-		_str = tmp;
-		tmp = nullptr;
-		_capacity = n;
-	}
-//resize
-	//扩充/缩减长度 ---> 扩充空间
-	void resize(size_t n, char ch = '\0')
-	{
-		if (n > _size)
-		{
-			//判断扩容
-			reserve(n);
-			//填充字符
-			for (_size; _size < n; _size++)
-			{
-				_str[_size] = ch;
-			}
-			_str[_size] = '\0';
-		}
-		else//缩减长度
-		{
-			_str[n] = '\0';
-			_size = n;
-		}
-	}
-//size
-	size_t size() const
-	{
-		return _size;
-	}
-//capacity
-	size_t capacity() const
-	{
-		return _capacity;
-	}
-//clear()
-	//仅改变字符串长度
-	void clear()
-	{
-		_str[0] = '\0';
-		_size = 0;
-	}
-```
-
-###### 增删改查
-```c++	
-//push_back
-	void push_back(char ch)
-	{
-		//是否扩容
-		if (_size == _capacity)
-		{
-			reserve(_capacity == 0 ? 4 : _capacity * 2);
-		}
-
-		_str[_size] = ch;
-		_size++;
-		_str[_size] = '\0';
-	}
-//append
-	void append(const char* str)
-	{
-		size_t len = strlen(str);
-
-		//是否扩容
-		if (len + _size > _capacity)
-		{
-			reserve(len + _size);
-		}
-
-		strcpy(_str + _size, str);
-		//strcat(_str + _size, str);
-
-		_size += len;
-	}
-	void append(const string& str)
-	{
-		size_t len = str._size;
-
-		if (len + _size > _capacity)
-		{
-			reserve(len + _size);
-		}
-
-		memcpy(_str + _size, str._str, str._size + 1);
-
-		_size += len;
-	}
-//substr
-	string substr(size_t pos, size_t len = npos) const
-	{
-		assert(pos < _size);//合法下标
-		size_t realLen = len;
-
-		//判断是否超出string长度
-		//len = 1, 对应的是 提取pos位置的元素
-		if (len == npos || pos + len > _size)
-		{
-			realLen = _size - pos;
-		}
-
-		string tmp;
-		for (size_t i = 0; i < realLen; i++)
-		{
-			tmp += _str[pos + i];
-		}
-
-		return tmp;//返回的临时对象为const属性
-	}
-//instert -- 引用返回值 可作为 右值或参数
-	string& insert(size_t pos, char ch)
-	{
-		assert(pos < _size);
-
-		if (_size == _capacity)
-		{
-			reserve(_capacity == 0 ? 4 : _capacity * 2);
-		}
-
-		size_t end = ++_size;
-
-		while (end > pos)
-		{
-			_str[end] = _str[end - 1];
-			end--;
-		}
-
-		_str[pos] = ch;
-
-		return *this;
-	}
-	string& insert(size_t pos, const char* str)
-	{
-		assert(pos < _size);
-
-		size_t len = strlen(str);
-
-		if (_size + len > _capacity)
-		{
-			reserve(_size + len);
-		}
-
-		size_t end = _size + len;
-
-		while (end >= pos + len)
-		{
-			_str[end] = _str[end - len];
-			end--;
-		}
-
-		strncpy(_str + pos, str, len);//不拷贝'\0', 只拷贝有效字符
-		//memcpy(_str + pos, str, len);
-		_size += len;
-
-		return *this;
-	}
-	string& insert(size_t pos, const string& str)
-	{
-		assert(pos < _size);
-
-		size_t len = str._size;
-
-		if (_size + len > _capacity)
-		{
-			reserve(_size + len);
-		}
-
-		size_t end = _size + len;
-
-		while (end >= pos + len)
-		{
-			_str[end] = _str[end - len];
-			end--;
-		}
-
-		memcpy(_str + pos, str._str, len);
-		_size += len;
-
-		return *this;
-	}
-	/*
-	* 复用
-	* 对于substring 和 buffer 可以通过 (转换成string)截断 + substr 实现
-	*/
-
-//find
-	size_t find(char ch, size_t pos = 0) const
-	{
-		assert(pos < _size);
-
-		for (size_t i = pos; i < _size; ++i)
-		{
-			if (ch == _str[i])
-			{
-				return i;
-			}
-		}
-
-		return npos;
-	}
-	size_t find(const char* sub, size_t pos = 0) const
-	{
-		assert(sub);
-		assert(pos < _size);
-
-		const char* ptr = strstr(_str + pos, sub);//cstrig库函数, 返回匹配的第一个字符的地址
-		if (ptr == nullptr)
-		{
-			return npos;
-		}
-		else
-		{
-			return ptr - _str;
-		}
-	}
-
-//erase
-	string& erase(size_t pos = 0, size_t len = npos)
-	{
-		assert(pos < _size);
-
-		if (len == npos || pos + len >= _size)
-		{
-			_str[pos] = '\0';
-			_size = pos;
-		}
-		else
-		{
-			memcpy(_str + pos, _str + pos + len, _size - pos - len + 1);
-			_size -= len;
-		}
-
-		return *this;
-	}
-```
-
-###### 操作符重载
-```c++	
-//逻辑操作符
-	bool operator>(const string& str) const
-	{
-		return strcmp(_str, str._str) > 0;
-	}
-	bool operator==(const string& str) const
-	{
-		return strcmp(_str, str._str) == 0;
-	}
-	bool operator>=(const string& str) const
-	{
-		return *this > str || *this == str;
-	}
-	bool operator<=(const string& str) const
-	{
-		return !(*this > str);
-	}
-	bool operator<(const string& str) const
-	{
-		return !(*this >= str);
-	}
-	bool operator!=(const string& str) const
-	{
-		return !(*this == str);
-	}
-
-//运算操作符
-	string& operator=(string str)
-	{
-		swap(str);
-		return *this;
-	}
-
-	string& operator+=(const char ch)
-	{
-		push_back(ch);
-		return *this;
-	}
-	string operator+(const char ch)
-	{
-		string tmp(*this);
-		tmp += ch;
-		return tmp;
-	}
-
-	string& operator+=(const string& str)
-	{
-		append(str);
-		return *this;
-	}
-	string operator+(const string& str)
-	{
-		string tmp(*this);
-		tmp.append(str);
-		return tmp;
-	}
-
-	string& operator+=(const char* str)
-	{
-		append(str);
-		return *this;
-	}
-	string operator+(const char* str)
-	{
-		string tmp(*this);
-		tmp.append(str);
-		return tmp;
-	}
-
-//[]
-	char& operator[](size_t pos)
-	{
-		assert(pos < _size);
-		return _str[pos];
-	}
-	const char& operator[](size_t pos) const
-	{
-		assert(pos < _size);
-		return _str[pos];
-	}		
-```
-
-###### 迭代器/其他
-```c++
-//迭代器	
-	iterator begin()
-	{
-		return _str;
-	}
-
-	iterator end()
-	{
-		return _str + _size;
-	}
-
-
-	const_iterator begin() const
-	{
-		return _str;
-	}
-
-	const_iterator end() const
-	{
-		return _str + _size;
-	}
-//其他
-	//swap
-	void swap(string& str)
-	{
-		std::swap(_str, str._str);
-		std::swap(_size, str._size);
-		std::swap(_capacity, str._capacity);
-	}
-
-	//c指针
-	const char* c_str() const
-	{
-		return _str;
-	}	 
-```
-
-###### 输入输出
-```c++
-//<<
-	ostream& operator<<(std::ostream& out, const string& str)
-	{
-		for (size_t i = 0; i < str.size(); ++i)
-		{
-			out << str[i];
-		}
-		return out;
-	}
-
-//>> 
-	//基础版本
-	//istream& operator>>(istream& in, string& str)
-	//{
-	//	//清理并设置初始容量
-	//	str.clear();
-	//	str.reserve(64);
-	//
-	//	char ch;
-	//
-	//	ch = in.get();
-	//	while (ch != ' ' && ch != '\n')
-	//	{
-	//		str += ch;
-	//		ch = in.get();
-	//	}
-	//
-	//	return in;
-	//}
-
-	//升级版--减少前期扩容操作
-	istream& operator>>(istream& in, string& str)
-	{
-		//清理并设置初始容量
-		str.clear();
-		str.reserve(64);
-
-		const int N = 32;
-		char buff[N];
-		size_t i = 0;
-
-		char ch;
-
-		ch = in.get();
-		while (ch != ' ' && ch != '\n')
-		{
-			buff[i++] = ch;
-
-			if (i == N - 1)
-			{
-				buff[i] = '\0';
-				str += buff;
-				i = 0;
-			}
-
-			ch = in.get();
-		}
-
-		buff[i] = '\0';
-		str += buff;
-
-		return in;
-	}
 ```
 
 ###### 阅读推荐
+
 <a href = "https://coolshell.cn/articles/10478.html">酷壳-陈浩-C++面试中string类的一种正确写法</a>
-<a href = "https://blog.csdn.net/haoel/article/details/1491219?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166368282316782414956992%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=166368282316782414956992&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-1491219-null-null.nonecase&utm_term=string%E7%B1%BB%E5%88%B0%E5%BA%95%E6%80%8E%E4%B9%88%E5%95%A6&spm=1018.2226.3001.4450">strig类到底怎么啦</a>
-[C++ STL string的Copy-On-Write技术](https://coolshell.cn/articles/12199.html) 
-[C++的std::string的“读时也拷贝”技术](https://coolshell.cn/articles/1443.html)
-
-
+		<a href = "https://blog.csdn.net/haoel/article/details/1491219?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166368282316782414956992%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=166368282316782414956992&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-1491219-null-null.nonecase&utm_term=string%E7%B1%BB%E5%88%B0%E5%BA%95%E6%80%8E%E4%B9%88%E5%95%A6&spm=1018.2226.3001.4450">strig类到底怎么啦</a>
+		[C++ STL string的Copy-On-Write技术](https://coolshell.cn/articles/12199.html) 
+		[C++的std::string的“读时也拷贝”技术](https://coolshell.cn/articles/1443.html)
 
 ##### vector
 
@@ -3096,7 +2528,7 @@ capacity的代码在vs和g++下分别运行会发现，vs下capacity是按1.5倍
 
 [Vector模拟实现](https://gitee.com/ailiangshilove/cpp-class/blob/master/%E8%AF%BE%E4%BB%B6%E4%BB%A3%E7%A0%81/C++%E8%AF%BE%E4%BB%B6V6/vector%E7%9A%84%E6%A8%A1%E6%8B%9F%E5%AE%9E%E7%8E%B0/Vector.h)
 
-```c++
+~~~c++
 #pragma once
 
 #include<iostream>
@@ -3112,7 +2544,7 @@ namespace qlz
 	class vector
 	{
 	public:
-#pragma region TypedefAndIterator
+
 		//vector迭代器是原生指针, 我们声明两个迭代器, 类型为模板类型指针;
 		typedef T* iterator;
 		typedef const T* const_iterator;
@@ -3136,9 +2568,6 @@ namespace qlz
 			return _finish;
 		}
 
-#pragma endregion
-
-#pragma region 构造函数
 
 		//无参默认构造
 		vector()
@@ -3192,8 +2621,9 @@ namespace qlz
 		* 理论上将，提供了vector(size_t n, const T& value = T())之后
 		* vector(int n, const T& value = T())就不需要提供了，但是对于：
 		* vector<int> v(10, 10);
-		* 编译器在编译时，认为T已经被实例化为int，而10和5编译器会默认其为int类型
-		* 就不会走vector(size_t n, const T& value = T())这个构造方法，
+		* 编译器在编译时，认为T已经被实例化为int，而10和10编译器会默认其为int类型,这两个类型相同
+		* 本意是构造10个10，但是size_t 和 int 不是相同类型，恰好迭代器构造的两个模板参数是同一类型
+		* 所以，就不会走vector(size_t n, const T& value = T())这个构造方法，而是迭代器构造
 		* 因为 vector(InputIterator first, InputIterator last) 模板Inpu实例化为int时, 形参列表更符合
 		* 但是10 和 10根本不是一个区间，编译时就报错了
 		* 故需要该构造方法, 防止跑到迭代器构造函数
@@ -3230,10 +2660,6 @@ namespace qlz
 			_start = _finish = _endOfStorage = nullptr;
 		}
 
-
-#pragma endregion
-
-#pragma region 空间
 
 	private:
 		bool Full()
@@ -3311,21 +2737,16 @@ namespace qlz
 			}
 		}
 
-#pragma endregion
-
-#pragma region Other
 
 		//接受形参的引用, 将形参替换为空对象
 		void swap(vector<T>& vec)
 		{
-			::swap(_start, vec._start);
+			::swap(_start, vec._start);//std
 			::swap(_finish, vec._finish);
 			::swap(_endOfStorage, vec._endOfStorage);
 		}
 
-#pragma endregion
 
-#pragma region 增删改查
 
 		//传元素引用, 防止无意义的深拷贝
 		iterator insert(iterator it, const T& val)
@@ -3382,11 +2803,6 @@ namespace qlz
 			erase(_finish - 1);
 		}
 
-#pragma endregion
-
-
-#pragma region 操作符AND访问
-
 		vector<T>& operator= (vector<T> vec)
 		{
 			swap(vec);
@@ -3425,7 +2841,6 @@ namespace qlz
 			return *(_finish - 1);
 		}
 
-#pragma endregion
 
 
 	private:
@@ -3508,6 +2923,20 @@ namespace qlz
 			cout << e << " ";
 		}
 		cout << endl;
+
+		/*qlz::vector<int> vvv;
+		vvv.push_back(1);
+		vvv.push_back(2);
+		vvv.push_back(3);
+		vvv.push_back(4);
+		vvv.push_back(5);
+
+		qlz::vector<char> vv;
+		vv.push_back('a');
+		vv.push_back('b');
+		vv.push_back('c');
+		vv.push_back('d');*/
+
 	}
 
 	void Test3()
@@ -3526,337 +2955,78 @@ namespace qlz
 
 	}
 }
-```
+~~~
 
-###### 构造函数
-```c++
-//无参默认构造
-	vector()
-		:_start(nullptr)
-		, _finish(nullptr)
-		, _endOfStorage(nullptr)
-	{}
+###### 注意
 
-//拷贝构造
-	vector(const vector<T>& vec)
-		:_start(nullptr)
-		, _finish(nullptr)
-		, _endOfStorage(nullptr)
-	{
-		reverse(vec.capacity());
-
-		/*for (size_t i = 0; i < vec.size(); i++)
-		{
-			_start[i] = vec._start[i];
-		}
-
-		_finish = _start + vec.size();
-		_endOfStorage = _start + vec.capacity();*/
-
-		//迭代器实现
-		iterator it = begin();
-		const_iterator vit = vec.cbegin();
-		while (vit != vec.cend())
-		{
-			//已设置容量
-			*it++ = *vit++;
-		}
-		_finish = it;
-
-	}
-
+~~~C++
 //n个元素
-	vector(size_t n, const T& val = T())
-		//注意成员变量声明顺序
-		:_start(new T[n])
-		, _finish(_start + n)
-		, _endOfStorage(_start + n)
-	{
-		for (size_t i = 0; i < n; i++)
+		vector(size_t n, const T& val = T())
+			//注意成员变量声明顺序
+			:_start(new T[n])
+			, _finish(_start + n)
+			, _endOfStorage(_start + n)
 		{
-			//已设置容量
-			_start[i] = val;
-		}
-	}
-	/*
-	* 理论上将，提供了vector(size_t n, const T& value = T())之后
-	* vector(int n, const T& value = T())就不需要提供了，但是对于：
-	* vector<int> v(10, 10);
-	* 编译器在编译时，认为T已经被实例化为int，而10和5编译器会默认其为int类型
-	* 就不会走vector(size_t n, const T& value = T())这个构造方法，
-	* 因为 vector(InputIterator first, InputIterator last) 模板Inpu实例化为int时, 形参列表更符合
-	* 但是10 和 10根本不是一个区间，编译时就报错了
-	* 故需要该构造方法, 防止跑到迭代器构造函数
-	*/
-	vector(int n, const T& val = T())
-		//注意成员变量声明顺序
-		:_start(new T[n])
-		, _finish(_start + n)
-		, _endOfStorage(_start + n)
-	{
-		for (int i = 0; i < n; i++)
-		{
-			//已设置容量
-			_start[i] = val;
-		}
-	}
-
-//迭代器构造
-	template<class InputIterator>//迭代器模板
-	vector(InputIterator first, InputIterator last)
-	{
-		//复用push_back
-		while (first != last)
-		{
-			//未确定容量, 调用push_back, 每次询问是否需要扩容
-			push_back(*first);
-			++first;
-		}
-	}
-//析构
-	~vector()
-	{
-		delete[] _start;
-		_start = _finish = _endOfStorage = nullptr;
-	}
-```
-
-###### 空间操作
-```c++
-private:
-	bool Full()//私有化
-	{
-		if (_finish == _endOfStorage)
-		{
-			return true;
-		}
-
-		return false;
-	}
-public:
-	size_t capacity() const
-	{
-		return _endOfStorage - _start;
-	}
-
-	size_t size() const
-	{
-		return _finish - _start;
-	}
-
-	bool empty() const
-	{
-		if (_finish == _start)
-		{
-			return true;
-		}
-
-		return false;
-	}
-
-	void reverse(size_t n)
-	{
-		if (n <= capacity())
-		{
-			return;
-		}
-
-		size_t oldSize = size();
-
-		T* tmp = new T[n];
-
-		for (size_t i = 0; i < oldSize; i++)
-		{
-			tmp[i] = _start[i];//模板类型T的赋值运算
-		}
-		delete[] _start;
-
-		_start = tmp;
-		tmp = nullptr;
-		_finish = _start + oldSize;
-		_endOfStorage = _start + n;
-
-	}
-
-	void resize(size_t n, const T& val = T())
-	{
-		if (n <= _finish - _start)
-		{
-			_finish = _start + n;
-		}
-		else
-		{
-			reverse(n);
-
-			iterator cur = _finish;
-			_finish = _start + n;
-			while (cur != _finish)
+			for (size_t i = 0; i < n; i++)
 			{
-				//已经确定容量到位, 直接使用赋值, 减少调用
-				*cur = val;
-				cur++;
+				//已设置容量
+				_start[i] = val;
 			}
 		}
-	}
-```
-
-###### 增删改查
-```c++
-//传元素引用, 防止无意义的深拷贝
-	iterator insert(iterator it, const T& val)
-	{
-		assert(it <= _finish);//合法插入
-
-		if (Full())
+		/*
+		* 理论上将，提供了vector(size_t n, const T& value = T())之后
+		* vector(int n, const T& value = T())就不需要提供了，但是对于：
+		* vector<int> v(10, 10);
+		* 编译器在编译时，认为T已经被实例化为int，而10和10编译器会默认其为int类型,这两个类型相同
+		* 本意是构造10个10，但是size_t 和 int 不是相同类型，恰好迭代器构造的两个模板参数是同一类型
+		* 所以，就不会走vector(size_t n, const T& value = T())这个构造方法，而是迭代器构造
+		* 因为 vector(InputIterator first, InputIterator last) 模板Inpu实例化为int时, 形参列表更符合
+		* 但是10 和 10根本不是一个区间，编译时就报错了
+		* 故需要该构造方法, 防止跑到迭代器构造函数
+		*/
+		vector(int n, const T& val = T())
+			//注意成员变量声明顺序
+			:_start(new T[n])
+			, _finish(_start + n)
+			, _endOfStorage(_start + n)
 		{
-			size_t pos = it - _start;
-
-			reverse(capacity() == 0 ? 2 : capacity() * 2);
-
-			it = _start + pos;//重置插入位置迭代器, 防止迭代器失效
+			for (int i = 0; i < n; i++)
+			{
+				//已设置容量
+				_start[i] = val;
+			}
 		}
 
-		iterator end = _finish - 1;//_finish所在地址, 为新的vector最后一个元素的位置
-
-		while (end >= it)
+		//迭代器构造
+		template<class InputIterator>//迭代器模板
+		vector(InputIterator first, InputIterator last)
 		{
-			*(end + 1) = *end;
-			end--;
+			//复用push_back
+			while (first != last)
+			{
+				//未确定容量, 调用push_back, 每次询问是否需要扩容
+				push_back(*first);
+				++first;
+			}
 		}
-
-		*it = val;
-		_finish++;
-		return it;//返回插入位置的迭代器
-	}
-
-//复用insert
-	void push_back(const T& val)
-	{
-		insert(_finish, val);
-	}
-
-//返回被删除的位置的迭代器
-	iterator erase(iterator it)
-	{
-		assert(!empty());//非空
-
-		// 挪动数据进行删除
-		iterator begin = it;
-		while (begin != _finish - 1) {
-			*begin = *(begin + 1);
-			++begin;
-		}
-
-		--_finish;
-		return it;
-	}
-
-//复用erase
-	void pop_back()
-	{
-		erase(_finish - 1);
-	}
-```
-
-###### 操作符重载
-```c++
-vector<T>& operator= (vector<T> vec)
-	{
-		swap(vec);
-		return *this;
-	}
-
-	T& operator[](size_t pos)
-	{
-		assert(pos < size());
-		return _start[pos];
-	}
-
-	const T& operator[](size_t pos)const
-	{
-		assert(pos < size());
-		return _start[pos];
-	}
-
-	T& front()
-	{
-		return *_start;
-	}
-
-	const T& front()const
-	{
-		return *_start;
-	}
-
-	T& back()
-	{
-		return *(_finish - 1);
-	}
-
-	const T& back()const
-	{
-		return *(_finish - 1);
-	}
-```
-
-###### 迭代器/其他
-```c++
-//vector迭代器是原生指针, 我们声明两个迭代器, 类型为模板类型指针;
-	typedef T* iterator;
-	typedef const T* const_iterator;
-
-	iterator begin()
-	{
-		return _start;
-	}
-	iterator end()
-	{
-		return _finish;
-	}
-	//const_iterator begin() const, 构成函数重载
-	//因为第一个形参, 即对象的指针是不同类型, 一个是非const指针, 一个是const指针
-	const_iterator cbegin() const
-	{
-		return _start;
-	}
-	const_iterator cend() const
-	{
-		return _finish;
-	}
-
-//接受形参的引用, 将形参替换为空对象
-	void swap(vector<T>& vec)
-	{
-		::swap(_start, vec._start);
-		::swap(_finish, vec._finish);
-		::swap(_endOfStorage, vec._endOfStorage);
-	}
-```
-
-
-
-
+~~~
 
 ##### list
 
 ###### 新思想
 
 ```
-泛型编程---通过模板类型列表的不同,形参实例化不同, 最终实现泛型编程
-
-复用思想---适配器
-
+泛型编程--通过模板类型列表的不同,形参实例化不同, 最终实现泛型编程
+复用思想--适配器
 非原生指针迭代器--封装原生指针, 形成迭代器类, 并重载运算符, 向原生指针靠拢
-
-重点迭代器
-
+--重点迭代器
 ```
 
 ###### 全代码
 
 [List的模拟实现](https://gitee.com/ailiangshilove/cpp-class/blob/master/%E8%AF%BE%E4%BB%B6%E4%BB%A3%E7%A0%81/C++%E8%AF%BE%E4%BB%B6V6/List%E7%9A%84%E6%A8%A1%E6%8B%9F%E5%AE%9E%E7%8E%B0/List.h)
 
-```
+~~~C++
 #pragma once
 
 #include<assert.h>
@@ -3868,10 +3038,9 @@ using namespace std;
 
 namespace qlz
 {
-
-	template<typename T>//数据类型
 	//节点结构
-	struct list_node 
+	template<typename T>//数据类型
+	struct list_node
 	{
 		T _data;//元素
 		list_node<T>* _next;//后指针
@@ -3886,12 +3055,13 @@ namespace qlz
 	};
 
 
+	//迭代器知识点
 	/*
 	* 1. 以 函数重载的方式, 实现返回 成员变量的const引用 和 非const引用, 两种迭代器属于相同的类型
 	* 2. 通过实例化的区别, 生成const迭代器, 和非const迭代器, 两种迭代器属于不同的类型, 指定 引用返回, 指针返回的类型
 	* typedef _list_iterator<T, T&, T*>             iterator;
 	* typedef _list_iterator<T, const T&, const T*> const_iterator;
-	* 
+	*
 	* List 的迭代器
 	* 迭代器有两种实现方式，具体应根据容器底层数据结构实现：
 	*   1. 原生态指针，比如：vector
@@ -3899,9 +3069,10 @@ namespace qlz
 	* 	 1. 指针可以解引用，迭代器的类中必须重载operator*()
 	* 	 2. 指针可以通过->访问其所指空间成员，迭代器类中必须重载oprator->()
 	* 	 3. 指针可以++向后移动，迭代器类中必须重载operator++()与operator++(int)
-	* 		至于operator--()/operator--(int)释放需要重载，根据具体的结构来抉择，双向链表可以向前             移动，所以需要重载，如果是forward_list就不需要重载--
+	* 		至于operator--()/operator--(int)释放需要重载，根据具体的结构来抉择，双向链表可以向前移动，所以需要重载，如果是forward_list就不需要重载--
 	* 	 4. 迭代器需要进行是否相等的比较，因此还需要重载operator==()与operator!=()
 	*/
+
 	//正向迭代器
 	template<typename T, typename Ref, typename Ptr>//数据类型, 数据类型的引用, 数据类型的指针
 	struct _list_iterator
@@ -4099,7 +3270,6 @@ namespace qlz
 			: _rit(it)
 		{}
 
-		//////////////////////////////////////////////
 		// 具有指针类似行为
 		Ref operator*()
 		{
@@ -4163,12 +3333,12 @@ namespace qlz
 		typedef list_node<T> Node;
 		//通过实例化的区别, 生成const迭代器, 和非const迭代器
 		typedef _list_iterator<T, T&, T*> iterator;
-		typedef _list_iterator<T, const T&, const T*> const_iterator;		
+		typedef _list_iterator<T, const T&, const T*> const_iterator;
 		/*
 		* 仍然可以 以 函数重载的方式, 实现返回 成员变量的const引用 和 非const引用
 		* eg
 		* typedef const _list_iterator<T, T&, T*> const_iterator;
-		* 
+		*
 		* const iterator begin() const
 		* {
 		* 	return const iterator(_head->_next);
@@ -4178,7 +3348,7 @@ namespace qlz
 		* {
 		* 	return const iterator(_head);
 		* }
-		* 
+		*
 		* T& operator*()
 		* {
 		* 	return (it->_data);
@@ -4198,7 +3368,6 @@ namespace qlz
 
 
 
-#pragma region 构造函数
 		list()
 		{
 			_head = new Node;
@@ -4215,6 +3384,7 @@ namespace qlz
 			for (int i = 0; i < n; ++i)
 				push_back(value);
 		}
+
 		list(int n, const T& value = T())
 		{
 			_head = new Node;
@@ -4256,9 +3426,6 @@ namespace qlz
 			return *this;
 		}
 
-#pragma endregion
-
-#pragma region 空间
 
 		//内置交换
 		void swap(list<T>& l)
@@ -4325,9 +3492,6 @@ namespace qlz
 			_head->_next = _head->_prev = _head;
 		}
 
-#pragma endregion
-
-#pragma region 迭代器
 		const_iterator begin() const//const对象
 		{
 			return const_iterator(_head->_next);
@@ -4383,9 +3547,8 @@ namespace qlz
 		{
 			return reverse_iterator(begin());
 		}
-#pragma endregion
 
-#pragma region 增删
+
 		void push_back(const T& val)
 		{
 			Node* node = new Node(val);
@@ -4444,9 +3607,8 @@ namespace qlz
 		{
 			erase(begin());
 		}
-#pragma endregion
 
-#pragma region 访问
+
 		//不支持[]
 		T& front()
 		{
@@ -4464,7 +3626,6 @@ namespace qlz
 		{
 			return _head->_prev->_val;
 		}
-#pragma endregion
 
 
 	private:
@@ -4478,56 +3639,44 @@ namespace qlz
 	/*void ttest1()
 		{
 			list<int> lis1;
-
 			lis1.push_back(1);
 			lis1.push_back(2);
 			lis1.push_back(3);
-
-
 		}
-
 		struct pPos
 		{
 			int _a1;
 			int _a2;
-
 			pPos(int a1 = 0, int a2 = 0)
 				:_a1(a1)
 				, _a2(a2)
 			{}
 		};
-
 		void ttest2()
 		{
 			int x = 10;
 			int* p1 = &x;
-
 			cout << *p1 << endl;
-
 			pPos aa;
 			pPos* p2 = &aa;
 			p2->_a1;
 			p2->_a2;
-
 			list<pPos> lt;
 			lt.push_back(pPos(10, 20));
 			lt.push_back(pPos(10, 21));
-
 			list<pPos>::iterator it = lt.begin();
 
 			cout << endl;
 		}
-
 		void FFunc(const list<int>& l)
 		{
 			list<int>::const_iterator it = l.begin();
-
 			*it;
 
 			cout << endl;
 		}*/
 
-	void test1()
+	void test11()
 	{
 		list<int> lt;
 		lt.push_back(1);
@@ -4568,7 +3717,7 @@ namespace qlz
 			, _a2(a2)
 		{}
 	};
-	void test2()
+	void test22()
 	{
 		int x = 10;
 		int* p1 = &x;
@@ -4594,7 +3743,7 @@ namespace qlz
 		}
 		cout << endl;
 	}
-	void Func(const list<int>& l)
+	void Funcc(const list<int>& l)
 	{
 		list<int>::const_iterator it = l.begin();
 		while (it != l.end())
@@ -4606,7 +3755,7 @@ namespace qlz
 		}
 		cout << endl;
 	}
-	void test3()
+	void test33()
 	{
 		list<int> lt;
 		lt.push_back(1);
@@ -4615,9 +3764,9 @@ namespace qlz
 		lt.push_back(4);
 		lt.push_back(5);
 
-		Func(lt);
+		Funcc(lt);
 	}
-	void test4()
+	void test44()
 	{
 		list<int> lt;
 		lt.push_back(1);
@@ -4677,7 +3826,7 @@ namespace qlz
 		}
 		cout << endl;
 	}
-	void test5()
+	void test55()
 	{
 		list<int> l1;
 		l1.push_back(4);
@@ -4687,9 +3836,7 @@ namespace qlz
 
 		/*auto it = l1.begin();
 		cout << *it << endl;
-
 		auto rit = l1.rbegin();
-
 		cout << *rit;*/
 
 		for (auto rit = l1.rbegin(); rit != l1.rend(); rit++)
@@ -4700,568 +3847,1698 @@ namespace qlz
 	}
 #pragma endregion
 
-
 }
+~~~
 
-```
 
-###### 构造函数
-```C++
-list()
+
+###### 适配器--反向迭代器
+
+~~~C++
+#define _CRT_SECURE_NO_WARNINGS 1
+
+//此.h为反向迭代器适配器代码
+
+namespace qlz
 {
-	_head = new Node;
-	_head->_next = _head;
-	_head->_prev = _head;
-}
-
-list(size_t n, const T& value = T())
-{
-	_head = new Node;
-	_head->_next = _head;
-	_head->_prev = _head;
-
-	for (int i = 0; i < n; ++i)
-		push_back(value);
-}
-list(int n, const T& value = T())
-{
-	_head = new Node;
-	_head->_next = _head;
-	_head->_prev = _head;
-
-	for (int i = 0; i < n; ++i)
-		push_back(value);
-}
-
-template <class Iterator>
-list(Iterator first, Iterator last)
-{
-	_head = new Node;
-	_head->_next = _head;
-	_head->_prev = _head;
-
-	while (first != last)
+	//_iterator<class T>::iterator, T&, T*
+	//_iterator<class T>::iterator, const T&, const T*
+	template<class iterator>
+	struct _reverse_iterator
 	{
-		push_back(*first);
-		++first;
-	}
-}
+	public:
+		// 注意：此处typename的作用是明确告诉编译器，Ref是Iterator类中的一个类型，而不是静态成员变量
+		// 否则编译器编译时就不知道Ref是Iterator中的类型还是静态成员变量
+		// 因为静态成员变量也是按照 类名::静态成员变量名 的方式访问的
+		typedef typename iterator::Ref Ref;
+		typedef typename iterator::Ptr Ptr;
+		typedef _reverse_iterator<iterator> reverse_iterator;
+	public:
+		// 构造
+		_reverse_iterator(iterator it)
+			: _rit(it)
+		{}
 
-list(const list<T>& l)
-{
-	_head = new Node;
-	_head->_next = _head;
-	_head->_prev = _head;
-
-	// 用l中的元素构造临时的temp,然后与当前对象交换
-	list<T> temp(l.begin(), l.end());
-	this->swap(temp);
-}
-
-list<T>& operator=(list<T> l)
-{
-	this->swap(l);
-	return *this;
-}
-```
-
-###### 空间操作
-```c++
-//内置交换
-void swap(list<T>& l)
-{
-	std::swap(_head, l._head);
-}
-
-//判空
-bool empty()const
-{
-	return _head->_next == _head;
-}
-
-//元素个数
-size_t size()const
-{
-	Node* cur = _head->_next;
-	size_t count = 0;
-	while (cur != _head)
-	{
-		count++;
-		cur = cur->_next;
-	}
-
-	return count;
-}
-
-//设置元素个数
-void resize(size_t newsize, const T& val = T())
-{
-	size_t oldsize = size();
-	if (newsize <= oldsize)
-	{
-		// 有效元素个数减少到newsize
-		while (newsize < oldsize)
+		// 具有指针类似行为
+		Ref operator*()
 		{
-			pop_back();
-			oldsize--;
+			iterator temp(_rit);
+			--temp;
+			return *temp;
 		}
-	}
-	else
-	{
-		while (oldsize < newsize)
+
+		Ptr operator->()
 		{
-			push_back(val);
-			oldsize++;
+			return &(operator*());
 		}
-	}
+
+		// 迭代器支持移动
+		reverse_iterator& operator++()
+		{
+			--_rit;
+			return *this;
+		}
+
+		reverse_iterator operator++(int)
+		{
+			reverse_iterator temp(*this);
+			--_rit;
+			return temp;
+		}
+
+		reverse_iterator& operator--()
+		{
+			++_rit;
+			return *this;
+		}
+
+		reverse_iterator operator--(int)
+		{
+			reverse_iterator temp(*this);
+			++_rit;
+			return temp;
+		}
+
+		// 迭代器支持比较
+		bool operator!=(const reverse_iterator& l)const
+		{
+			return _rit != l._rit;
+		}
+
+		bool operator==(const reverse_iterator& l)const
+		{
+			return _rit == l._rit;
+		}
+
+		iterator _rit;
+	};
+}
+~~~
+
+##### stack/queue/priority_queue
+
+> 这三个容器使用的都是复用思想，模板参数需要变量+实现了对应操作的数据结构
+>
+> 不关心底层的数据结构如何实现的
+>
+> 复用STL的双端队列queue
+
+###### stack
+
+~~~C++
+#define _CRT_SECURE_NO_WARNINGS 1
+
+#include<iostream>
+#include<vector>
+#include<deque>
+#include<list>
+
+using namespace std;
+
+
+namespace qlz
+{
+	template<typename T, typename Container = deque<T> >
+	class stack
+	{
+	public:
+		void push(const T& x)
+		{
+			_con.push_back(x);
+		}
+
+		void pop()
+		{
+			_con.pop_back();
+		}
+
+		T& top()
+		{
+			return _con.back();
+		}
+
+		const T& top() const
+		{
+			return _con.back();
+		}
+
+		bool empty()  const
+		{
+			return _con.empty();
+		}
+
+		size_t size() const
+		{
+			return _con.size();
+		}
+	private:
+		Container _con;
+	};
+}
+~~~
+
+
+
+###### queue
+
+~~~C++
+#pragma once
+
+#include<iostream>
+#include<vector>
+#include<deque>
+#include<list>
+
+using namespace std;
+
+//适配器模式
+namespace qlz
+{
+	template<class T, class Container = deque<T> >
+	class queue
+	{
+	public:
+		void push(const T& x)
+		{
+			_con.push_back(x);
+		}
+
+		void pop()
+		{
+			_con.pop_front();
+		}
+
+		T& back()
+		{
+			return _con.back();
+		}
+
+		T& front()
+		{
+			return _con.front();
+		}
+
+		const T& back() const
+		{
+			return _con.back();
+		}
+
+		const T& front() const
+		{
+			return _con.front();
+		}
+
+
+		bool empty()  const
+		{
+			return _con.empty();
+		}
+
+		size_t size() const
+		{
+			return _con.size();
+		}
+	private:
+		Container _con;
+	};
+}
+~~~
+
+
+
+###### priority_queue
+
+> 优先队列使用的是堆思想，需要随机读取，这里我们使用vector
+
+~~~C++
+#pragma once
+
+#include<iostream>
+#include<vector>
+#include<deque>
+#include<list>
+
+using namespace std;
+
+namespace qlz
+{
+	template <class T, class Container = vector<T>, class Compare = less<T> >
+    //以下注释逻辑按大堆描述
+	class priority_queue
+	{
+    public:
+
+        //建堆往下走--小树向大数
+        void adjust_down(size_t parent)
+        {
+            size_t child = parent * 2 + 1;
+            while (child < _con.size())
+            {
+                // 选出左右孩子中大的那一个, 将大的升上去替换为父节点
+                if (child + 1 < _con.size() && _cmp(_con[child], _con[child + 1]))
+                {
+                    ++child;
+                }
+
+                //判断是否比父节点大
+                if (_cmp(_con[parent], _con[child]))
+                {
+                    std::swap(_con[child], _con[parent]);
+
+                    //原节点下沉, 继续判断是否需要下沉
+                    parent = child;
+                    child = parent * 2 + 1;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
+        //插入往上走: 一直往上走, 找到属于自己的位置
+        void adjust_up(size_t child)
+        {
+            size_t parent = (child - 1) / 2;
+            while (child > 0)
+            {
+                //if (_con[child] > _con[parent])
+                //如果比父节点大, 交换
+                if (_cmp(_con[parent], _con[child]))
+                {
+                    std::swap(_con[child], _con[parent]);
+                    //往上走, 判断交换后是否比新的父节点大
+                    child = parent;
+                    parent = (child - 1) / 2;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
+        priority_queue()
+        {
+            ;
+        }
+
+        template <class InputIterator>
+        priority_queue(InputIterator first, InputIterator last)
+        {
+            while (first != last)
+            {
+                _con.push(*first);               
+                ++first;
+            }
+            //减一次得到真实下标, 再减一次除以2, 为得到父节点.
+            //先建小的堆, 再根据得到的堆建大的堆
+            for (int i = (_con.size() - 1 - 1) / 2; i >= 0; --i)
+            {
+                adjust_down(i);
+            }
+        }
+
+        bool empty() const
+        {
+            return _con.empty();
+        }
+
+        size_t size() const
+        {
+            return _con.size();
+        }
+
+        const T& top() const 
+        {
+            return _con.front();
+        }
+
+        void push(const T& x)
+        {
+            _con.push_back(x);
+
+            adjust_up(_con.size() - 1);//往上走, 找位置
+        }
+
+        void pop()
+        {
+            std::swap(_con[0], _con[_con.size() - 1]);
+            _con.pop_back();
+
+            adjust_down(0);//交换上去的为小元素, 从头建一次堆
+        }
+
+    private:
+
+        Container _con;
+
+        Compare _cmp;
+	};
 }
 
-//清空
-void clear()
-{
-	Node* cur = _head->_next;
-
-	// 采用头删除删除
-	while (cur != _head)
-	{
-		_head->_next = cur->_next;
-		delete cur;
-		cur = _head->_next;
-	}
-	//只保留头节点
-	_head->_next = _head->_prev = _head;
-}
-```
-
-###### 增删
-```c++
-void push_back(const T& val)
-{
-	Node* node = new Node(val);
-
-	Node* tail = _head->_prev;
-	tail->_next = node;
-	node->_prev = tail;
-	node->_next = _head;
-	_head->_prev = node;
-}
-
-//返回当前节点迭代器
-iterator insert(iterator pos, const T& x)
-{
-	Node* cur = pos._node;
-	Node* prev = cur->_prev;
-
-	Node* newnode = new Node(x);
-
-	// prev newnode cur
-	prev->_next = newnode;
-	newnode->_prev = prev;
-	newnode->_next = cur;
-	cur->_prev = newnode;
-
-	return iterator(newnode);
-}
-
-//返回下一个节点的迭代器
-iterator erase(iterator pos)
-{
-	assert(pos != end());
-
-	Node* cur = pos._node;
-	Node* prev = cur->_prev;
-	Node* next = cur->_next;
-
-	prev->_next = next;
-	next->_prev = prev;
-	delete cur;
-
-	return iterator(next);
-}
-
-void push_front(const T& x)
-{
-	insert(begin(), x);
-}
-
-void pop_back()
-{
-	erase(--end());
-}
-
-void pop_front()
-{
-	erase(begin());
-}
-```
-
-###### 迭代器
-
-**模板类声明**
-
-```c++
-//迭代器模板类声明
-typedef list_node<T> Node;
-//通过实例化的区别, 生成const迭代器, 和非const迭代器
-typedef _list_iterator<T, T&, T*> iterator;
-typedef _list_iterator<T, const T&, const T*> const_iterator;		
-//仍然可以 以 函数重载的方式, 实现返回 成员变量的const引用 和 非const引用
-
-/*反向迭代器(不复用)*/
-/*typedef _reverse_list_iterator<T, T&, T*> reverse_iterator;
-typedef _reverse_list_iterator<T, const T&, const T*> const_reverse_iterator;*/
-/*反向迭代器(复用)*/
-typedef _reverse_list_iterator<iterator> reverse_iterator;
-typedef _reverse_list_iterator<const_iterator> const_reverse_iterator;
-
-//----------------------------------------------------------------------------
-```
-**模板类**
-
-```c++
-//迭代器模板类
-/*
-* 1. 以 函数重载的方式, 实现返回 成员变量的const引用 和 非const引用, 两种迭代器属于相同的类型
-* 2. 通过实例化的区别, 生成const迭代器, 和非const迭代器, 两种迭代器属于不同的类型, 指定 引用返回, 指针返回的类型
-* typedef _list_iterator<T, T&, T*>             iterator;
-* typedef _list_iterator<T, const T&, const T*> const_iterator;
-* 
-* List 的迭代器
-* 迭代器有两种实现方式，具体应根据容器底层数据结构实现：
-*   1. 原生态指针，比如：vector
-*   2. 将原生态指针进行封装，因迭代器使用形式与指针完全相同，因此在自定义的类中必须实现以下方法：
-* 	 1. 指针可以解引用，迭代器的类中必须重载operator*()
-* 	 2. 指针可以通过->访问其所指空间成员，迭代器类中必须重载oprator->()
-* 	 3. 指针可以++向后移动，迭代器类中必须重载operator++()与operator++(int)
-* 		至于operator--()/operator--(int)释放需要重载，根据具体的结构来抉择，双向链表可以向前             移动，所以需要重载，如果是forward_list就不需要重载--
-* 	 4. 迭代器需要进行是否相等的比较，因此还需要重载operator==()与operator!=()
-*/
-//正向迭代器
-template<typename T, typename Ref, typename Ptr>//数据类型, 数据类型的引用, 数据类型的指针
-struct _list_iterator
-{
-public:
-	typedef list_node<T> Node;
-	typedef _list_iterator<T, Ref, Ptr> iterator;
-
-	//使用 std::find() 需要这些 
-	typedef bidirectional_iterator_tag iterator_category;
-	typedef T value_type;
-	typedef Ptr pointer;
-	typedef Ref reference;
-	typedef ptrdiff_t difference_type;
-
-	//反向迭代器需要这些
-	typedef Ref Ref;
-	typedef Ptr Ptr;
-
-	Node* _node;
-
-	//指针类型, 浅拷贝即可
-	_list_iterator(Node* node = nullptr)
-		:_node(node)
-	{}
-	//默认生成的拷贝构造为浅拷贝, 可使用
-	/*_list_iterator(const iterator& it)
-		:_node(it._node)
-	{}*/
-
-	//!=
-	bool operator!=(const iterator& it) const
-	{
-		return _node != it._node;
-	}
-
-	//==
-	bool operator==(const iterator& it) const
-	{
-		return _node == it._node;
-	}
-
-
-	/* 对于循环双向带头链表
-	* 在逻辑上, Node节点应该就是元素, 而实际上, Node节点 封装了元素和前后指针
-	* 逻辑上, 迭代器为元素的"指针", 若元素为结构体类型, 则可以通过 (*). / -> 访问元素的成员变量
-	* 但实际上, 迭代器为Node节点的指针, (*). / -> 访问的的是 Node节点的 元素和前后指针,
-	* 所以需要对 (*). / -> 重载
-	* ++, -- 同理
-	*/
-
-	//*
-	// 注意模板类型
-	// const T& operator*()
-	// T& operator*()
-	Ref operator*()
-	{
-		return (_node->_data);
-	}
-
-	//->, 注意, 若元素为结构体类型, 编译器进行了优化, it->(得到元素地址)->_val1 -----> it->_val
-	Ptr operator->()
-	{
-		return &(operator*());
-	}
-
-	// ++it
-	iterator& operator++()
-	{
-		_node = _node->_next;
-		return *this;
-	}
-
-	// it++
-	iterator operator++(int)
-	{
-		iterator tmp(*this);
-		_node = _node->_next;
-		return tmp;
-	}
-
-	// --it
-	iterator& operator--()
-	{
-		_node = _node->_prev;
-		return *this;
-	}
-
-	// it--
-	iterator operator--(int)
-	{
-		iterator tmp(*this);
-		_node = _node->_prev;
-		return tmp;
-	}
-
-};
-
-/*反向迭代器(重写逻辑)*/
-//template<typename T, typename Ref, typename Ptr>//数据类型, 数据类型的引用, 数据类型的指针
-//struct _reverse_list_iterator
-//{
-//	typedef list_node<T> Node;
-//	typedef _reverse_list_iterator<T, Ref, Ptr> reverse_iterator;
-//
-//	Node* _node;
-//
-//	//指针类型, 浅拷贝即可
-//	_reverse_list_iterator(Node* node = nullptr)
-//		:_node(node)
-//	{}
-//
-//	//!=
-//	bool operator!=(const reverse_iterator& it) const
-//	{
-//		return _node != it._node;
-//	}
-//
-//	//==
-//	bool operator==(const reverse_iterator& it) const
-//	{
-//		return _node == it._node;
-//	}
-//
-//
-//	/* 对于循环双向带头链表
-//	* 在逻辑上, Node节点应该就是元素, 而实际上, Node节点 封装了元素和前后指针
-//	* 逻辑上, 迭代器为元素的"指针", 若元素为结构体类型, 则可以通过 (*). / -> 访问元素的成员变量
-//	* 但实际上, 迭代器为Node节点的指针, (*). / -> 访问的的是 Node节点的 元素和前后指针,
-//	* 所以需要对 (*). / -> 重载
-//	* ++, -- 同理
-//	*/
-//
-//	//*
-//	// 注意模板类型
-//	// const T& operator*()
-//	// T& operator*()
-//	Ref operator*()
-//	{
-//		Node* tmp= _node->_prev;
-//		return (tmp->_data);
-//	}
-//
-//	//->, 注意, 若元素为结构体类型, 编译器进行了优化, it->(得到元素地址)->_val1 -----> it->_val
-//	Ptr operator->()
-//	{
-//		return &(operator*());
-//	}
-//
-//	// ++it
-//	reverse_iterator& operator++()
-//	{
-//		_node = _node->_prev;
-//		return *this;
-//	}
-//
-//	// it++
-//	reverse_iterator operator++(int)
-//	{
-//		reverse_iterator tmp(*this);
-//		_node = _node->_prev;
-//		return tmp;
-//	}
-//
-//	// --it
-//	reverse_iterator& operator--()
-//	{
-//		_node = _node->_next;
-//		return *this;
-//	}
-//
-//	// it--
-//	reverse_iterator operator--(int)
-//	{
-//		iterator tmp(*this);
-//		_node = _node->_next;
-//		return tmp;
-//	}
-//
-//};
-/*反向迭代器(适配器)*/
-template<class iterator>
-struct _reverse_list_iterator
-{
-public:
-	// 注意：此处typename的作用是明确告诉编译器，Ref是Iterator类中的一个类型，而不是静态成员变量
-	// 否则编译器编译时就不知道Ref是Iterator中的类型还是静态成员变量
-	// 因为静态成员变量也是按照 类名::静态成员变量名 的方式访问的
-	typedef typename iterator::Ref Ref;
-	typedef typename iterator::Ptr Ptr;
-	typedef _reverse_list_iterator<iterator> reverse_iterator;
-public:
-	// 构造
-	_reverse_list_iterator(iterator it)
-		: _rit(it)
-	{}
-
-	//////////////////////////////////////////////
-	// 具有指针类似行为
-	Ref operator*()
-	{
-		iterator temp(_rit);
-		--temp;
-		return *temp;
-	}
-
-	Ptr operator->()
-	{
-		return &(operator*());
-	}
-
-	// 迭代器支持移动
-	reverse_iterator& operator++()
-	{
-		--_rit;
-		return *this;
-	}
-
-	reverse_iterator operator++(int)
-	{
-		reverse_iterator temp(*this);
-		--_rit;
-		return temp;
-	}
-
-	reverse_iterator& operator--()
-	{
-		++_rit;
-		return *this;
-	}
-
-	reverse_iterator operator--(int)
-	{
-		reverse_iterator temp(*this);
-		++_rit;
-		return temp;
-	}
-
-	// 迭代器支持比较
-	bool operator!=(const reverse_iterator& l)const
-	{
-		return _rit != l._rit;
-	}
-
-	bool operator==(const reverse_iterator& l)const
-	{
-		return _rit != l._rit;
-	}
-
-	iterator _rit;
-};
-
-//---------------------------------------------------------------------------------
-```
-**函数**
-```
-//迭代器函数
-const_iterator begin() const//const对象
-{
-	return const_iterator(_head->_next);
-}
-
-const_iterator end() const//const对象
-{
-	return const_iterator(_head);
-}
-
-iterator begin()
-{
-	return iterator(_head->_next);
-}
-
-iterator end()
-{
-	return iterator(_head);
-}
-
-
-/*反向迭代器(不复用正向)*/
-//const_reverse_iterator rbegin() const//const对象
-//{
-//	return const_reverse_iterator(_head);
-//}
-//const_reverse_iterator rend() const//const对象
-//{
-//	return const_reverse_iterator(_head->_next);
-//}
-//reverse_iterator rbegin()
-//{
-//	return reverse_iterator(_head);
-//}
-//reverse_iterator rend()
-//{
-//	return reverse_iterator(_head->_next);
-//}
-/*反向迭代器(复用正向)*/
-const_reverse_iterator rbegin() const//const对象
-{
-	return const_reverse_iterator(end());
-}
-const_reverse_iterator rend() const//const对象
-{
-	return const_reverse_iterator(begin());
-}
-reverse_iterator rbegin()
-{
-	return reverse_iterator(end());
-}
-reverse_iterator rend()
-{
-	return reverse_iterator(begin());
-}
-
-```
+~~~
 
 ##### map/set
 
+> map/set 高度依赖迭代器
+>
+> 复用红黑树树
+
+###### RBTree
+
+> **重难点：红黑树的旋转**
+
+~~~C++
+#pragma once
+
+#define _CRT_SECURE_NO_WARNINGS 1
+
+#include<iostream>
+#include<string>
+#include<vector>
+#include<assert.h>
+#include<set>
+
+using namespace std;
+
+#define x first 
+#define y second 
+
+namespace myRBT
+{
+	enum Colour
+	{
+		RED,
+		BLACK
+	};
+
+	//节点
+	template<typename T>
+	struct RBTNode
+	{
+
+		T _data;
+		Colour _colour;
+		struct RBTNode<T>* _left;
+		struct RBTNode<T>* _right;
+		struct RBTNode<T>* _parent;
+
+		RBTNode(const T& data)
+			:_data(data)
+			, _colour(RED)
+			, _left(nullptr)
+			, _right(nullptr)
+			, _parent(nullptr)
+		{}
+	};
+
+	//迭代器
+	template<typename T, typename Ref, typename Ptr>
+	struct __RBTreeIterator
+	{
+		typedef RBTNode<T> Node;
+		typedef __RBTreeIterator<T, Ref, Ptr> Self;
+
+		Node* _node;
+
+		__RBTreeIterator(Node* node)
+			:_node(node)
+		{}
+
+		Ref operator*()
+		{
+			return _node->_data;
+		}
+
+		Ptr operator->()
+		{
+			return &(_node->_data);
+		}
+
+		bool operator!=(const Self& it) const
+		{
+			return _node != it._node;
+		}
+
+		bool operator==(const Self& it) const
+		{
+			return _node == it._node;
+		}
+
+		Self& operator++()
+		{
+			//左中右， 中序遍历， 
+			
+			//遍历到该节点时， 该节点为 ‘根节点’，访问右子树
+			//若当前节点有右孩子，则++为其右子树的最左节点
+			if (_node->_right)
+			{
+				Node* left = _node->_right;
+
+				while (left->_left)
+				{
+					left = left->_left;
+				}
+
+				_node = left;
+			}
+			//若没有右子树，则这颗子树已经访问完了，向上至父亲为根节点的树
+			//若原树为左子树， 则父节点还未访问， 若为右子树，则父节点的树所在的树也访问完毕
+			//继续向上， 直至 有 作为左子树的节点出现 或者 全部访问完
+			else
+			{
+				Node* parent = _node->_parent;
+				Node* cur = _node;
+
+				//父节点不存在则为根节点
+				//为右子树仍需向上遍历
+				while (parent && cur == parent->_right)
+				{
+					parent = parent->_parent;
+					cur = cur->_parent;
+				}
+
+				_node = parent;
+			}
+
+
+			return *this;
+		}
+
+		Self& operator--()
+		{
+			//左中右， 中序遍历， 
+
+			//遍历到该节点时， 该节点为 ‘根节点’，则其上一个节点为左子树的最右节点
+			//若当前节点有左孩子，则--为其左子树的最右节点
+			if (_node->_left)
+			{
+				Node* right = _node->_left;
+
+				while (right->_right)
+				{
+					right = right->_right;
+				}
+
+				_node = right;
+			}
+			//若没有左子树，则其父节点访问之后， 直接访问了该节点
+			//若原树为左子树， 则父节点还未访问， 若为右子树，则父节点已被访问，且就是--
+			else
+			{
+				Node* parent = _node->_parent;
+				Node* cur = _node;
+
+				while (parent && cur == parent->_left)
+				{
+					cur = cur->_parent;
+					parent = parent->_parent;
+				}
+
+				_node = parent;
+			}
+
+
+			return *this;
+		}
+
+	};
+
+	template<typename K, typename T, typename KeyOfT>
+	struct RBT
+	{
+	public:
+		typedef RBTNode<T> Node;
+		typedef __RBTreeIterator<T, T&, T*> iterator;
+		typedef __RBTreeIterator<T, const T&, const T*> const_iterator;
+
+
+		RBT()
+			:_root(nullptr)
+		{}
+		RBT(const RBT<K, T, KeyOfT>& rbt)
+		{
+			_root = _myCopy(rbt._root);
+		}
+		RBT<K, T, KeyOfT>& operator= (RBT<K, T, KeyOfT> rbt)//形参是深拷贝出来的， 在函数结束时会销毁
+		{
+			swap(_root, rbt._root);
+
+			return (*this);
+		}
+		~RBT()
+		{
+			_Destory(_root);
+		}
+
+		iterator begin()
+		{
+			Node* left = _root;
+
+			while (left && left->_left)
+			{
+				left = left->_left;
+			}
+
+			return iterator(left);
+		}
+		iterator end()
+		{
+			return iterator(nullptr);
+		}
+
+		const_iterator cbegin() const
+		{
+			Node* left = _root;
+
+			while (left && left->_left)
+			{
+				left = left->_left;
+			}
+
+			return (const_iterator)left;
+		}
+		const_iterator cend() const
+		{
+			return (const_iterator)nullptr;
+		}
+
+		pair<iterator, bool> insert(const T& data)
+		{
+			KeyOfT kot;
+
+			if (_root == nullptr)
+			{
+				_root = new Node(data);
+				_root->_colour = BLACK;
+				return make_pair(iterator(_root), true);
+			}
+
+			Node* parent = _root;
+			Node* cur = _root;
+
+			while (cur)
+			{
+
+				if (kot(data) > kot(cur->_data))
+				{
+					parent = cur;
+					cur = cur->_right;
+				}
+				else if (kot(data) < kot(cur->_data))
+				{
+					parent = cur;
+					cur = cur->_left;
+				}
+				else
+				{
+					return make_pair(iterator(cur), false);
+				}
+			}
+
+			//初始化新节点
+			cur = new Node(data);
+			cur->_parent = parent;
+			if (kot(data) > kot(parent->_data))
+			{
+				parent->_right = cur;
+			}
+			else
+			{
+				parent->_left = cur;
+			}
+			Node* ret = cur;
+
+			//控制平衡
+			//父亲存在， 父亲为黑色,符合红黑树; 父亲为红色，进行调整
+			//父亲不存在，则为根节点，只需调整根节点的颜色
+			while (parent && parent->_colour == RED)
+			{
+				Node* grandfat = parent->_parent;
+				assert(grandfat);//因为父节点为红色， 则其一定有一个黑色父节点
+				assert(grandfat->_colour == BLACK);
+
+				//叔叔在右边
+				if (parent == grandfat->_left)
+				{
+					Node* uncle = grandfat->_right;
+					//1. 叔叔存在， 且叔叔为红色
+					//则 将父亲和叔叔变为黑色，爷爷变成红色，继续向上调整
+					if (uncle && uncle->_colour == RED)
+					{
+						parent->_colour = BLACK;
+						uncle->_colour = BLACK;
+						grandfat->_colour = RED;
+						//令 cur = grandfat, 继续向上处理
+						cur = grandfat;
+						parent = cur->_parent;
+					}
+					//叔叔不存在，或者叔叔存在且为黑色
+					//则 需要旋转并变色
+					else
+					{
+						if (cur == parent->_left)
+						{
+							// 2. 左子树的左子树
+							//    g
+							//  p   u
+							//c
+							//爷爷节点右旋，父变黑，祖变红
+							RotateR(grandfat);
+							grandfat->_colour = RED;
+							parent->_colour = BLACK;
+						}
+						else
+						{
+							// 2. 左子树的右子树
+							//      g
+							//  p       u
+							//    c
+							//父亲节点左旋，爷爷节点右旋，自己变黑，祖变红
+							RotateL(parent);
+							RotateR(grandfat);
+							cur->_colour = BLACK;
+							grandfat->_colour = RED;
+						}
+
+						break;// 调整后符合红黑树
+					}
+				}
+				else//叔叔在左边
+				{
+					Node* uncle = grandfat->_left;
+					//1. 叔叔存在， 且叔叔为红色
+					//则 将父亲和叔叔变为黑色，爷爷变成红色，继续向上调整
+					if (uncle && uncle->_colour == RED)
+					{
+						parent->_colour = BLACK;
+						uncle->_colour = BLACK;
+						grandfat->_colour = RED;
+						//令 cur = grandfat, 继续向上处理
+						cur = grandfat;
+						parent = cur->_parent;
+					}
+					//叔叔不存在，或者叔叔存在且为黑色
+					//则 需要旋转并变色
+					else
+					{
+						if (cur == parent->_right)
+						{
+							// 3. 右子树的右子树
+							//    g
+							//  u   p
+							//        c
+							//爷爷节点左旋，父变黑，祖变红
+							RotateL(grandfat);
+							grandfat->_colour = RED;
+							parent->_colour = BLACK;
+						}
+						else
+						{
+							// 2. 右子树的左子树
+							//      g
+							//  u       p
+							//        c
+							//父亲节点右旋，爷爷节点左旋，自己变黑，祖变红
+							RotateR(parent);
+							RotateL(grandfat);
+							cur->_colour = BLACK;
+							grandfat->_colour = RED;
+						}
+
+						break;// 调整后符合红黑树
+					}
+				}
+
+			}
+
+			_root->_colour = BLACK;//根节点一定为黑色
+
+			return make_pair(iterator(ret), true);
+
+		}
+		iterator find(const K& key)
+		{
+			KeyOfT kot;
+
+			Node* cur = _root;
+
+			while (cur)
+			{
+				if (kot(cur->_data) == key)
+				{
+					return (iterator)cur;
+				}
+				else if (key > kot(cur->_data))
+				{
+					cur = cur->_right;
+				}
+				else
+				{
+					cur = cur->_left;
+				}
+			}
+
+			return (iterator)nullptr;
+		}
+
+
+		bool IsBalance()
+		{
+			if (_root == nullptr)
+			{
+				return true;
+			}
+
+			if (_root->_colour == RED)
+			{
+				cout << "根节点的颜色为红色， 违法规则" << endl;
+				return true;
+			}
+
+			// 黑色节点数量基准值
+			int benchmark = 0;
+			Node* cur = _root;
+			while (cur)
+			{
+				if (cur->_colour == BLACK)
+					++benchmark;
+
+				cur = cur->_left;
+			}
+
+			return PrevCheck(_root, 0, benchmark);
+		}
+
+	private:
+		Node* _myCopy(Node* root)
+		{
+			if (root == nullptr)
+			{
+				return nullptr;
+			}
+
+			Node* cur = new Node(root->_data);
+			cur->_left = _myCopy(root->_left);
+			cur->_right = _myCopy(root->_right);
+
+			return cur;
+		}
+		void _Destory(Node* root)
+		{
+			if (root == nullptr)
+			{
+				return;
+			}
+
+			_Destory(root->_left);
+			_Destory(root->_right);
+			delete(root);
+			root = nullptr;
+
+			return;
+		}
+
+		void RotateL(Node* parent)
+		{
+			Node* subR = parent->_right;//待左旋节点的右子树
+			Node* subRL = subR->_left;//右子树的左子树
+
+			parent->_right = subRL;//1. 将右左子树变成父节点的右子树
+			if (subRL)
+			{
+				subRL->_parent = parent;//2. 更换右左子树的父节点
+			}
+
+			Node* Pparent = parent->_parent;//记录父节点的父节点
+
+			subR->_left = parent;//3. 将父节点变成subR的左子树
+			parent->_parent = subR;//4. 更换其父节点
+
+			if (_root == parent)//如果是根节点
+			{
+				_root = subR;
+				subR->_parent = nullptr;
+			}
+			else
+			{
+				subR->_parent = Pparent;// 5. 更换父节点
+				//父节点是左子树
+				if (Pparent->_left == parent)
+				{
+					Pparent->_left = subR;// 6. 
+
+				}
+				else
+				{
+					Pparent->_right = subR;// 6. 
+				}
+			}
+
+
+		}
+		void RotateR(Node* parent)
+		{
+			Node* subL = parent->_left;
+			Node* subLR = subL->_right;
+
+			parent->_left = subLR;
+			if (subLR)
+			{
+				subLR->_parent = parent;
+			}
+
+			Node* Pparent = parent->_parent;
+			subL->_right = parent;
+			parent->_parent = subL;
+
+			if (_root == parent)
+			{
+				_root = subL;
+				subL->_parent = nullptr;
+			}
+			else
+			{
+				subL->_parent = Pparent;
+				if (Pparent->_left == parent)
+				{
+					Pparent->_left = subL;
+				}
+				else
+				{
+					Pparent->_right = subL;
+				}
+			}
+
+		}
+		void RotateLR(Node* parent)
+		{
+			Node* subL = parent->_left;
+
+			RotateL(subL);
+			RotateR(parent);
+
+		}
+		void RotateRL(Node* parent)
+		{
+			Node* subR = parent->_right;
+
+			RotateR(subR);
+			RotateL(parent);
+
+		}
+
+		bool PrevCheck(Node* root, int blackNum, int& benchmark)
+		{
+			if (root == nullptr)
+			{
+
+				if (blackNum != benchmark)
+				{
+					cout << "某条路径的黑色节点的数量不相等" << endl;
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			}
+
+			if (root->_colour == BLACK)
+			{
+				++blackNum;
+			}
+
+			if (root->_colour == RED && root->_parent->_colour == RED)
+			{
+				cout << "存在连续的红色节点" << endl;
+				return false;
+			}
+
+			return PrevCheck(root->_left, blackNum, benchmark)
+				&& PrevCheck(root->_right, blackNum, benchmark);
+		}
+
+	private:
+		Node* _root = nullptr;
+	};
+}
+~~~
+
+###### set
+
+~~~c++
+#pragma once
+
+#include"RBTree.h"
+
+namespace mySet
+{
+	template<typename K>
+	class set
+	{
+
+		struct SetKeyOfT
+		{
+			const K& operator()(const K& key)
+			{
+				return key;
+			}
+		};
+
+	public:
+			typedef typename myRBT::RBT<K, K, SetKeyOfT>::iterator iterator;
+			typedef typename myRBT::RBT<K, K, SetKeyOfT>::const_iterator const_iterator;
+
+			iterator begin()
+			{
+				return _rbt.begin();
+			}
+			iterator end()
+			{
+				return _rbt.end();
+			}
+
+			iterator insert(const K& key)
+			{
+				return _rbt.insert(key).first;
+			}
+
+	private:
+		myRBT::RBT<K, K, SetKeyOfT> _rbt;
+
+	};
+
+	void test_set()
+	{
+		set<int> s;
+
+		set<int>::iterator it = s.begin();
+		while (it != s.end())
+		{
+			cout << *it << " ";
+			++it;
+		}
+		cout << endl;
+
+		s.insert(3);
+		s.insert(2);
+		s.insert(1);
+		s.insert(5);
+		s.insert(3);
+		s.insert(6);
+		s.insert(4);
+		s.insert(9);
+		s.insert(7);
+
+
+		it = s.begin();
+		while (it != s.end())
+		{
+			cout << *it << " ";
+			++it;
+		}
+		cout << endl;
+	}
+
+}
+~~~
+
+
+
+###### map
+
+~~~C++
+#pragma once
+
+#include"RBTree.h"
+
+namespace mySet
+{
+	template<typename K>
+	class set
+	{
+
+		struct SetKeyOfT
+		{
+			const K& operator()(const K& key)
+			{
+				return key;
+			}
+		};
+
+	public:
+			typedef typename myRBT::RBT<K, K, SetKeyOfT>::iterator iterator;
+			typedef typename myRBT::RBT<K, K, SetKeyOfT>::const_iterator const_iterator;
+
+			iterator begin()
+			{
+				return _rbt.begin();
+			}
+			iterator end()
+			{
+				return _rbt.end();
+			}
+
+			iterator insert(const K& key)
+			{
+				return _rbt.insert(key).first;
+			}
+
+	private:
+		myRBT::RBT<K, K, SetKeyOfT> _rbt;
+
+	};
+
+	void test_set()
+	{
+		set<int> s;
+
+		set<int>::iterator it = s.begin();
+		while (it != s.end())
+		{
+			cout << *it << " ";
+			++it;
+		}
+		cout << endl;
+
+		s.insert(3);
+		s.insert(2);
+		s.insert(1);
+		s.insert(5);
+		s.insert(3);
+		s.insert(6);
+		s.insert(4);
+		s.insert(9);
+		s.insert(7);
+
+
+		it = s.begin();
+		while (it != s.end())
+		{
+			cout << *it << " ";
+			++it;
+		}
+		cout << endl;
+	}
+
+}
+~~~
+
 ##### unordered_map/unordered_set
 
-##### hash
+> unordered_map/set底层复用hash
 
-位图
+###### HashBase
 
-布隆过滤器
+~~~C++
+#pragma once
 
-哈希切分
+#include<iostream>
+#include<string>
+#include<vector>
+using namespace std;
+
+namespace myHash_bucket
+{
+
+	template<typename T>
+	struct HashNode
+	{
+		T _data;
+		HashNode<T>* _next;
+
+		HashNode()
+		{}
+
+		HashNode(const T& data)
+			:_data(data)
+			, _next(nullptr)
+		{}
+	};
+
+	//前置声明, 迭代器需要哈希表指针
+	template<typename K, typename T, class ToINT, class KOT>
+	class HashTable;
+
+	template<typename K, typename T, class ToINT, class KOT>
+	struct __hash_iterator
+	{
+	public:
+		typedef HashNode<T> Node;
+		typedef HashTable<K, T, ToINT, KOT> HT;
+		typedef __hash_iterator<K, T, ToINT, KOT> Self;
+
+		__hash_iterator()
+		{}
+		__hash_iterator(Node* node, HT* pht)
+			:_node(node)
+			, _ht(pht)
+		{}
+		__hash_iterator(const Self& it)
+			:_node(it._node)
+			, _ht(it._ht)
+		{}
+		~__hash_iterator()
+		{}
+
+		T& operator*() const
+		{
+			return _node->_data;
+		}
+		T* operator->() const
+		{
+			return &(_node->_data);
+		}
+
+		Self& operator++()
+		{
+			if (_node->_next)
+			{
+				_node = _node->_next;
+			}
+			else
+			{
+				ToINT toint;
+				KOT kot;
+
+				//_tab是私有成员，不允许外界访问， 将迭代器声明为哈希表的友元类，即可
+				size_t hashi = toint(kot(_node->_data)) % _ht->_tab.size();
+				++hashi;
+
+				for (; hashi < _ht->_tab.size(); ++hashi)
+				{
+					if (_ht->_tab[hashi])
+					{
+						_node = _ht->_tab[hashi];
+						break;
+					}
+				}
+
+				if (hashi == _ht->_tab.size())
+				{
+					_node = nullptr;
+				}
+			}
+
+			return *this;
+		}
+		Self& operator++(int)
+		{
+			Self tmp(*this);
+
+			++(*this);
+
+			return tmp;
+		}
+
+		bool operator!=(const Self& s) const
+		{
+			return _node != s._node;
+		}
+
+		bool operator==(const Self& s) const
+		{
+			return _node == s._node;
+		}
+
+	private:
+		Node* _node;
+		HT* _ht;
+	};
+
+	template<typename K, typename T, class ToINT, class KOT>
+	class HashTable
+	{
+		
+	public:
+		
+		typedef HashNode<T> Node;
+
+		//将迭代器声明为哈希表的友元
+		template<class K, class T, class Hash, class KeyOfT>
+		friend struct __hash_iterator;
+
+		typedef __hash_iterator<K, T, ToINT, KOT> iterator;
+
+		//素数表，素数作为被除数， 可以有效减少模相等，减少桶过长的问题
+		inline size_t __stl_next_prime(size_t n)
+		{
+			static const size_t __stl_num_primes = 28;
+			static const size_t __stl_prime_list[__stl_num_primes] =
+			{
+				53, 97, 193, 389, 769,
+				1543, 3079, 6151, 12289, 24593,
+				49157, 98317, 196613, 393241, 786433,
+				1572869, 3145739, 6291469, 12582917, 25165843,
+				50331653, 100663319, 201326611, 402653189, 805306457,
+				1610612741, 3221225473, 4294967291
+			};
+
+			for (size_t i = 0; i < __stl_num_primes; ++i)
+			{
+				if (__stl_prime_list[i] > n)
+				{
+					return __stl_prime_list[i];
+				}
+			}
+
+			return -1;
+		}
+	public:
+		~HashTable()
+		{
+			for (size_t i = 0; i < _tab.size(); ++i)
+			{
+				Node* cur = _tab[i];
+				while (cur)
+				{
+					Node* next = cur->_next;
+					delete cur;
+					cur = next;
+				}
+				_tab[i] = nullptr;
+			}
+		}
+
+		iterator begin()
+		{
+			for (size_t i = 0; i < _tab.size(); ++i)
+			{
+				if (_tab[i])
+				{
+					return iterator(_tab[i], this);
+				}
+			}
+
+			return end();
+		}
+		iterator end()
+		{
+			return iterator(nullptr, this);
+		}
+
+		pair<iterator, bool> insert(const T& data)
+		{
+			KOT kot;
+			ToINT toint;
+
+			auto ret = find(kot(data));
+			if (ret != end())
+			{
+				return make_pair(ret, false);
+			}
+
+			//负载因子为1,表示桶满了， 需要扩容
+			if (_size == _tab.size())
+			{
+				//闭散列哈希表， 扩容时需要复用insert， 所以创建一个临时哈希表
+				//而开散列哈希表， 其数据节点可以进行复用，不需要复用insert，所以只需创建一个临时vector
+				vector<Node*> newTab;
+				newTab.resize(__stl_next_prime(_tab.size()), nullptr);
+
+				//将旧表数据映射迁移到新表
+				for (auto& cur : _tab)
+				{
+					if (cur == nullptr) continue;
+
+					Node* old = cur;
+
+					while (cur)
+					{
+						Node* next = cur->_next;
+
+						//头插
+						size_t hashi = toint(kot(cur->_data)) % newTab.size();
+						cur->_next = newTab[hashi];
+						newTab[hashi] = cur;
+
+						cur = next;
+					}
+
+					//置空
+					old = nullptr;
+				}
+
+				_tab.swap(newTab);
+			}
+
+			//头插
+			size_t hashi = toint(kot(data)) % _tab.size();
+			Node* newNode = new Node(data);
+			newNode->_next = _tab[hashi];
+			_tab[hashi] = newNode;
+			++_size;
+
+			return make_pair(iterator(newNode, this), true);//构造迭代器时，需要哈希表指针
+
+		}
+
+		iterator find(const K& key)
+		{
+			if (_tab.size() == 0)
+			{
+				return end();
+			}
+
+			ToINT toint;
+			KOT kot;
+			size_t hashi = toint(key) % _tab.size();
+			Node* cur = _tab[hashi];
+			while (cur)
+			{
+				if (kot(cur->_data) == key)
+				{
+					return iterator(cur, this);
+				}
+
+				cur = cur->_next;
+			}
+
+
+
+			return end();
+		}
+
+		bool erase(const K& key)
+		{
+			if (_tab.size() == 0)
+			{
+				return false;
+			}
+
+			ToINT toint;
+			KOT kot;
+			size_t hashi = toint(key) % _tab.size();
+			Node* prev = nullptr;
+			Node* cur = _tab[hashi];
+			while (cur)
+			{
+				if (kot(cur->_data) == key)
+				{
+					break;
+				}
+
+				prev = cur;
+				cur = cur->_next;
+			}
+
+			//不存在
+			if (cur == nullptr)
+			{
+				return false;
+			}
+			else if (prev == nullptr)//为第一个
+			{
+				_tab[hashi] = cur->_next;
+			}
+			else
+			{
+				prev->_next = cur->_next;
+			}
+
+			delete cur;
+			cur = nullptr;
+			--_size;
+
+			return true;
+		}
+
+		size_t size()
+		{
+			return _size;
+		}
+
+	private:
+		vector<Node*> _tab;
+		size_t _size = 0;
+	};
+
+
+~~~
+
+###### unordered_map
+
+~~~C++
+#pragma once
+
+#include"HashBase.h"
+
+namespace myUnMap
+{
+	//将key转换为size_t类型
+	template<typename K>
+	struct HashToINT
+	{
+		size_t operator()(const K& key)
+		{
+			return (size_t)key;
+		}
+	};
+	//对string类型进行特化
+	template<>
+	struct HashToINT<string>
+	{
+		//BKDR思想
+		size_t operator()(const string& key)
+		{
+			size_t res = 0;
+			for (auto& ch : key)
+			{
+				res *= 131;
+				res += ch;
+			}
+
+			return res;
+		}
+	};
+
+	template<class K, class V, class ToINT = HashToINT<K>>
+	class unordered_map
+	{
+	private:
+		struct KeyOfT
+		{
+			//可不对K修饰，对pair整体修饰
+			const K& operator()(const pair<const K, V>& kv)
+			{
+				return kv.first;
+			}
+		};
+
+	public:
+		//template<typename K, typename T, class ToINT, class KOT>
+		typedef  myHash_bucket::HashTable<K, pair<const K, V>, HashToINT<K>, KeyOfT> HT;
+		typedef typename HT::iterator iterator;
+
+		iterator begin()
+		{
+			return _ht.begin();
+		}
+		iterator end()
+		{
+			return _ht.end();
+		}
+		pair<iterator, bool> insert(const pair<const K,V>& kv)
+		{
+			return _ht.insert(kv);
+		}
+		bool erase(const K& key)
+		{
+			return _ht.erase(key);
+		}
+		iterator find(const K& key)
+		{
+			return _ht.find(key);
+		}
+		size_t size()
+		{
+			return _ht.size();
+		}
+
+		V& operator[](const K& key)
+		{
+			pair<iterator, bool> ret = _ht.insert(make_pair(key, V()));
+
+			return ret.first->second;
+		}
+
+	private:
+		HT _ht;
+
+	};
+
+	void test_map()
+	{
+		unordered_map<string, string> dict;
+		dict.insert(make_pair("sort", "排序"));
+		dict.insert(make_pair("string", "字符串"));
+		dict.insert(make_pair("left", "左边"));
+
+		unordered_map<string, string>::iterator it = dict.begin();
+		while (it != dict.end())
+		{
+			cout << it->first << ":" << it->second << endl;
+			++it;
+		}
+		cout << endl;
+
+		unordered_map<string, int> countMap;
+		string arr[] = { "苹果", "", "苹果", "梨子", "苹果", "苹果", "西瓜", "苹果", "西瓜", "西瓜", "西瓜" };
+		for (auto e : arr)
+		{
+			countMap[e]++;
+		}
+
+		for (auto& kv : countMap)
+		{
+			cout << kv.first << ":" << kv.second << endl;
+		}
+
+		countMap.erase("苹果");
+		countMap.erase("香蕉");
+		cout << endl;
+
+		auto itt = countMap.find("西瓜");
+		if (itt != countMap.end())
+		{
+			cout << itt->first << ":" << itt->second << endl;
+		}
+		
+
+		for (auto& kv : countMap)
+		{
+			cout << kv.first << ":" << kv.second << endl;
+		}
+	}
+}
+
+~~~
+
+
+
+###### unordered_set
+
+~~~C++
+#pragma once
+
+#include"HashBase.h"
+
+namespace myUnSet
+{
+	//将key转换为size_t类型
+	template<typename K>
+	struct HashToINT
+	{
+		size_t operator()(const K& key)
+		{
+			return (size_t)key;
+		}
+	};
+	//对string类型进行特化
+	template<>
+	struct HashToINT<string>
+	{
+		//BKDR思想
+		size_t operator()(const string& key)
+		{
+			size_t res = 0;
+			for (auto& ch : key)
+			{
+				res *= 131;
+				res += ch;
+			}
+
+			return res;
+		}
+	};
+
+	template<class K, class ToINT = HashToINT<K>>
+	class unordered_set
+	{
+	private:
+		struct KeyOfT
+		{
+			const K& operator()(const K& key)
+			{
+				return key;
+			}
+		};
+		
+	public:
+		//template<typename K, typename T, class ToINT, class KOT>
+		typedef  myHash_bucket::HashTable<K, const K, HashToINT<K>, KeyOfT> HT;
+		typedef typename HT::iterator iterator;
+
+		iterator begin()
+		{
+			return _ht.begin();
+		}
+		iterator end()
+		{
+			return _ht.end();
+		}
+		pair<iterator, bool> insert(const K& key)
+		{
+			return _ht.insert(key);
+		}
+		bool erase(const K& key)
+		{
+			return _ht.erase(key);
+		}
+		iterator find(const K& key)
+		{
+			return _ht.find(key);
+		}
+		size_t size()
+		{
+			return _ht.size();
+		}
+
+	private:
+		HT _ht;
+
+	};
+
+	void test_set()
+	{
+		unordered_set<int> s;
+		s.insert(2);
+		s.insert(3);
+		s.insert(1);
+		s.insert(2);
+		s.insert(5);
+
+		//unordered_set<int>::iterator it = s.begin();
+		auto it = s.begin();
+		while (it != s.end())
+		{
+			cout << *it << " ";
+			++it;
+		}
+
+		auto find_1 = s.find(1);
+		if (find_1 != s.end())
+		{
+			cout << *find_1;
+		}
+
+		cout << endl;
+	}
+}
+
+~~~
+
+###### 思想
+
+~~~
+模板特化
+BKDR
+K-V
+~~~
+
+
 
 ### 继承
 
@@ -6491,7 +6768,7 @@ return 0;
 >         Derive* p3 = &d;
 >         return 0;
 >     }
->                                                                                                                                                                                                             
+>                                                                                                                                                                                                                             
 >     ~~~
 >
 >     A：p1 == p2 == p3 B：p1 < p2 < p3 C：p1 == p3 != p2 D：p1 != p2 != p3
@@ -6506,13 +6783,13 @@ return 0;
 >         virtual void func(int val = 1){ std::cout<<"A->"<< val <<std::endl;}
 >         virtual void test(){ func();}
 >     };
->                                                                                                                                                                                                             
+>                                                                                                                                                                                                                             
 >     class B : public A
 >     {
 >         public:
 >         void func(int val=0){ std::cout<<"B->"<< val <<std::endl; }
 >     };
->                                                                                                                                                                                                             
+>                                                                                                                                                                                                                             
 >     int main(int argc ,char* argv[])
 >     {
 >         B*p = new B;
@@ -7869,9 +8146,1117 @@ int main()
 
 
 
+### Hash应用
+
+#### Hash思想
+
+##### 哈希概念
+
+> 顺序结构以及平衡树中，元素关键码与其存储位置之间没有对应的关系，因此在查找一个元素 时，必须要经过关键码的多次比较。
+>
+> 顺序查找时间复杂度为O(N)，平衡树中为树的高度，即 O($log_2 N$)，搜索的效率取决于搜索过程中元素的比较次数。 
+>
+> 理想的搜索方法：可以不经过任何比较，一次直接从表中得到要搜索的元素。 如果构造一种存储结构，通过某种函数(hashFunc)使元素的存储位置与它的关键码之间能够建立 一一映射的关系，那么在查找时通过该函数可以很快找到该元素。
+>
+> 当向该结构中： 
+>
+> - 插入元素 根据待插入元素的关键码，以此函数计算出该元素的存储位置并按此位置进行存放 
+> - 搜索元素 对元素的关键码进行同样的计算，把求得的函数值当做元素的存储位置，在结构中按此位置 取元素比较，若关键码相等，则搜索成功 
+>
+> 该方式即为**哈希(散列)方法**，哈希方法中使用的**转换函数称为哈希(散列)函数**，构造出来的结构称为**哈希表(Hash Table)(或者称散列表)**
+
+###### eg
+
+eg：数据集合{1，7，6，4，5，9}；
+
+哈希函数设置为：hash(key) = key % capacity; capacity为存储元素底层空间总的大小。
+
+![image-20230305125006484](%E5%9B%BE%E7%89%87/README/image-20230305125006484.png)
+
+用该方法进行搜索不必进行多次关键码的比较，因此搜索的速度比较快 
+
+问题：按照上述哈希方式，向集合中插入元素44，会出现什么问题？
+
+###### 哈希冲突
+
+> 对于两个数据元素的关键字$k_i$和 $k_j$(i != j)，有$k_i$ != $k_j$，但有：Hash($k_i$) ==  Hash($k_j$)，
+>
+> 即：不同关键字通过相同哈希哈数计算出相同的哈希地址，该种现象称为**哈希冲突或哈希碰撞**。
+>
+> **把具有不同关键码而具有相同哈希地址的数据元素称为“同义词”。**
+
+###### 哈希函数
+
+> 引起哈希冲突的一个原因可能是：哈希函数设计不够合理。
+
+哈希函数设计原则： 
+
+- 哈希函数的定义域必须包括需要存储的全部关键码，而如果散列表允许有m个地址时，其值 域必须在0到m-1之间 
+- 哈希函数计算出来的地址能均匀分布在整个空间中 
+- 哈希函数应该比较简单
+
+常见哈希函数
+
+1. 直接定址法--(常用) 
+
+    > 取关键字的某个线性函数为散列地址：Hash（Key）= A*Key + B 
+    >
+    > 优点：简单、均匀 
+    >
+    > 缺点：需要事先知道关键字的分布情况 
+    >
+    > 使用场景：适合查找比较小且连续的情况
+    >
+    > 面试题：[字符串中第一个只出现一次字符](https://leetcode-cn.com/problems/first-unique-character-in-a-string/)
+
+2. 除留余数法--(常用) 
+
+    > 设散列表中允许的地址数为m，取一个不大于m，但最接近或者等于m的质数p作为除数， 按照哈希函数：Hash(key) = key% p(p<=m),将关键码转换成哈希地址 .
+
+3. 平方取中法--(了解) 
+
+    > 假设关键字为1234，对它平方就是1522756，抽取中间的3位227作为哈希地址； 再比如关键字为4321，对它平方就是18671041，抽取中间的3位671(或710)作为哈希地址 平方取中法比较适合：不知道关键字的分布，而位数又不是很大的情况 
+
+4. 折叠法--(了解) 
+
+    > 折叠法是将关键字从左到右分割成位数相等的几部分(最后一部分位数可以短些)，然后将这 几部分叠加求和，并按散列表表长，取后几位作为散列地址。 折叠法适合事先不需要知道关键字的分布，适合关键字位数比较多的情况 
+
+5. 随机数法--(了解) 
+
+    > 选择一个随机函数，取关键字的随机函数值为它的哈希地址，即H(key) = random(key),其中 random为随机数函数。 通常应用于关键字长度不等时采用此法 
+
+6. 数学分析法--(了解) 
+
+    > 设有n个d位数，每一位可能有r种不同的符号，这r种不同的符号在各位上出现的频率不一定 相同，可能在某些位上分布比较均匀，每种符号出现的机会均等，在某些位上分布不均匀只 有某几种符号经常出现。可根据散列表的大小，选择其中各种符号分布均匀的若干位作为散 列地址。例如：
+
+哈希函数设计的越精妙，产生哈希冲突的可能性就越低，但是**无法避免哈希冲突**
+
+解决哈希冲突两种常见的方法是：**闭散列和开散列**
+
+###### 哈希冲突解决-闭散列
+
+> 闭散列：也叫开放定址法，当发生哈希冲突时，如果哈希表未被装满，说明在哈希表中必然还有 空位置，那么可以把key存放到冲突位置中的“下一个” 空位置中去。那如何寻找下一个空位置 呢？
+
+1. 线性探测
+
+    > 比如eg中的场景，现在需要插入元素44，先通过哈希函数计算哈希地址，hashAddr为4， 因此44理论上应该插在该位置，但是该位置已经放了值为4的元素，即发生哈希冲突。 
+    >
+    > 线性探测：**从发生冲突的位置开始，依次向后探测，直到寻找到下一个空位置为止。**
+    >
+    > - 插入
+    >
+    >     - 通过哈希函数获取待插入元素在哈希表中的位置
+    >
+    >     - 如果该位置中没有元素则直接插入新元素，如果该位置中有元素发生哈希冲突， 使用线性探测找到下一个空位置，插入新元素
+    >
+    >         ![image-20230305131838249](%E5%9B%BE%E7%89%87/README/image-20230305131838249.png)
+    >
+    > - 删除
+    >
+    >     > 采用闭散列处理哈希冲突时，不能随便物理删除哈希表中已有的元素，若直接删除元素 会影响其他元素的搜索。比如删除元素4，如果直接删除掉，44查找起来可能会受影 响。因此线性探测**采用标记的伪删除法来删除一个元素**。
+    >
+    > - 思考：哈希表什么情况下进行扩容？如何扩容？
+    >
+    >     ![image-20230305132400077](%E5%9B%BE%E7%89%87/README/image-20230305132400077.png)
+    >     
+    >     ~~~C++
+    >     void CheckCapacity()
+    >     {
+    >         if(_size * 10 / _ht.capacity() >= 7)
+    >        {
+    >             HashTable<K, V, HF> newHt(GetNextPrime(ht.capacity));
+    >             for(size_t i = 0; i < _ht.capacity(); ++i)
+    >            {
+    >                 if(_ht[i]._state == EXIST)
+    >                     newHt.Insert(_ht[i]._val);
+    >            }
+    >             
+    >             Swap(newHt);
+    >        }
+    >     ~~~
+    >     
+    >     线性探测优点：实现非常简单。
+    >     
+    >     线性探测缺点：一旦发生哈希冲突，所有的冲突连在一起，容易产生数据“堆积”，即：不同 关键码占据了可利用的空位置，使得寻找某关键码的位置需要许多次比较，导致搜索效率降 低。如何缓解呢？
+
+2. 二次探测
+
+    > 线性探测的缺陷是产生冲突的数据堆积在一块，这与其找下一个空位置有关系，因为找空位 置的方式就是挨着往后逐个去找，因此二次探测为了避免该问题，找下一个空位置的方法 为：$H_i$ = ($H_0$ + $i^2$ )% m, 或者：$H_i$ = ($H_0$ - $i^2$ )% m。其中：i =  1,2,3…， $H_0$是通过散列函数Hash(x)对元素的关键码 key 进行计算得到的位置，m是表 的大小。
+    >
+    > 即在探测后发生冲突时，下一次探测加上一个额外的数。
+    >
+    > 对于eg中如果要插入44，产生冲突，使用解决后的情况为：![image-20230305132800356](%E5%9B%BE%E7%89%87/README/image-20230305132800356.png)
+    >
+    > 研究表明：当表的长度为质数且表装载因子a不超过0.5时，新的表项一定能够插入，而且任 何一个位置都不会被探查两次。因此只要表中有一半的空位置，就不会存在表满的问题。在 搜索时可以不考虑表装满的情况，但在插入时必须确保表的装载因子a不超过0.5，如果超出 必须考虑增容。
+
+    闭散列最大的缺陷就是空间利用率比较低，这也是哈希的缺陷。
+
+3. 代码实现
+
+    ~~~C++
+    #pragma once
+    
+    #include<iostream>
+    #include<string>
+    #include<vector>
+    using namespace std;
+    
+    namespace myHash_base
+    {
+    	enum State
+    	{
+    		EMPTY,//空
+    		EXIST,//存在
+    		DELETE//已删除
+    	};
+    
+    	template<typename K, typename V>
+    	struct HashElem
+    	{
+    		pair<K, V> _kv;
+    		State _st = EMPTY;
+    
+    		HashElem()
+    		{}
+    
+    		HashElem(const pair<K, V>& kv)
+    			:_kv(kv)
+    		{}
+    	};
+    
+    	//将key转换为size_t类型
+    	template<typename K>
+    	struct HashToINT
+    	{
+    		size_t operator()(const K& key)
+    		{
+    			return (size_t)key;
+    		}
+    	};
+    	//对string类型进行特化
+    	template<>
+    	struct HashToINT<string>
+    	{
+    		//BKDR思想
+    		size_t operator()(const string& key)
+    		{
+    			size_t res = 0;
+    			for (auto& ch : key)
+    			{
+    				res *= 131;
+    				res += ch;
+    			}
+    
+    			return res;
+    		}
+    	};
+    
+    	template<typename K, typename V, class ToINT = HashToINT<K> >
+    	class HashTable
+    	{
+    	public:
+    		bool insert(const pair<K, V>& kv)
+    		{
+    			if (find(kv.first))
+    			{
+    				return false;
+    			}
+    
+    			//负载因子为0.7
+    			if (_tab.size() == 0 || 10 * _size / _tab.size() >= 7)
+    			{
+    				size_t newSize = _tab.size() == 0 ? 10 : _tab.size() * 2;
+    
+    				HashTable<K, V, ToINT> newHT;
+    				newHT._tab.resize(newSize);
+    
+    				//将旧表数据映射迁移到新表
+    				for (auto& e : _tab)
+    				{
+    					if (e._st == EXIST)
+    					{
+    						newHT.insert(e._kv);
+    					}
+    				}
+    
+    				_tab.swap(newHT._tab);
+    			}
+    
+    			//线性探测
+    			ToINT toint;
+    			size_t hashi = toint(kv.first) % _tab.size();
+    			//只有状态为存在， 才不可以占用该位置
+    			while (_tab[hashi]._st == EXIST)
+    			{
+    				hashi++;
+    				hashi %= _tab.size();
+    			}
+    			//更新位置状态
+    			_tab[hashi]._kv = kv;
+    			_tab[hashi]._st = EXIST;
+    			++_size;
+    
+    			////二次探测
+    			//ToINT toint;
+    			//size_t start = toint(kv.first) % _tab.size();
+    			//size_t hashi = start;
+    			//int i = 0;
+    			////只有状态为存在， 才不可以占用该位置
+    			//while (_tab[hashi]._st == EXIST)
+    			//{
+    			//	++i;
+    			//	hashi = start + i * i;
+    			//	hashi %= _tab.size();
+    			//	
+    			//}
+    			////更新位置状态
+    			//_tab[hashi]._kv = kv;
+    			//_tab[hashi]._st = EXIST;
+    			//++_size;
+    			return true;
+    
+    		}
+    
+    		HashElem<K, V>* find(const K& key)
+    		{
+    			if (_tab.size() == 0)
+    			{
+    				return (HashElem<K, V>*)(nullptr);
+    			}
+    
+    			ToINT toint;
+    
+    			size_t start = toint(key) % _tab.size();
+    			size_t hashi = start;
+    			int i = 0;
+    
+    			//当某位置为空时， 则一定不存在
+    			while (_tab[hashi]._st != EMPTY)
+    			{
+    				//1. 当前位置为删除状态，则key可能在其后面
+    				//2. 当前位置不为key， 则key可能在其后面
+    				//3. 只有状态为存在， 且值为key才是存在
+    				if (_tab[hashi]._st != DELETE && _tab[hashi]._kv.first == key)
+    				{
+    					return (HashElem<K, V>*)(&_tab[hashi]);
+    				}
+    
+    				//线性探测
+    				hashi ++;
+    				hashi %= _tab.size();
+    				//存在全为删除态的可能
+    				if (hashi == start)
+    				{
+    					break;//结束
+    				}
+    
+    				////二次探测
+    				//++i;
+    				//hashi = start + i * i;
+    				//hashi %= _tab.size();
+    				////存在全为删除态的可能
+    				//if (hashi == start)
+    				//{
+    				//	break;//结束
+    				//}
+    			}
+    
+    			return (HashElem<K, V>*)(nullptr);
+    		}
+    
+    		bool erase(const K& key)
+    		{
+    			HashElem<K, V>* ret = find(key);
+    
+    			if (ret)
+    			{
+    				ret->_st = DELETE;
+    				--_size;
+    				return true;
+    			}
+    			else
+    			{
+    				return false;
+    			}
+    		}
+    
+    		void Print()
+    		{
+    			for (size_t i = 0; i < _tab.size(); ++i)
+    			{
+    				if (_tab[i]._st == EXIST)
+    				{
+    					printf("[%d:%d] ", i, _tab[i]._kv.first);
+    				}
+    				else
+    				{
+    					printf("[%d:*] ", i);
+    				}
+    			}
+    			cout << endl;
+    		}
+    	private:
+    		vector<HashElem<K, V>> _tab;
+    		size_t _size = 0;
+    	};
+    
+    	void TestHT1()
+    	{
+    		//int a[] = { 1, 11, 4, 15, 26, 7, 44, 9 };
+    		int a[] = { 1, 11, 4, 15, 26, 7, 44 };
+    		HashTable<int, int> ht;
+    		for (auto e : a)
+    		{
+    			ht.insert(make_pair(e, e));
+    		}
+    
+    		ht.Print();
+    
+    		ht.erase(4);
+    		cout << ht.find(44)->_kv.first << endl;
+    		cout << ht.find(4) << endl;
+    		ht.Print();
+    
+    		ht.insert(make_pair(-2, -2));
+    		ht.Print();
+    
+    		cout << ht.find(-2)->_kv.first << endl;
+    	}
+    	void TestHT2()
+    	{
+    		string arr[] = { "苹果", "西瓜", "苹果", "西瓜", "苹果", "苹果", "西瓜", "苹果", "香蕉", "苹果", "香蕉" };
+    
+    		//HashTable<string, int, HashFuncString> countHT;
+    		HashTable<string, int> countHT;
+    		for (auto& str : arr)
+    		{
+    			auto ptr = countHT.find(str);
+    			if (ptr)
+    			{
+    				ptr->_kv.second++;
+    			}
+    			else
+    			{
+    				countHT.insert(make_pair(str, 1));
+    			}
+    		}
+    	}
+    	void TestHT3()
+    	{
+    		HashToINT<string> hash;
+    		cout << hash("abcd") << endl;
+    		cout << hash("bcad") << endl;
+    		cout << hash("eat") << endl;
+    		cout << hash("ate") << endl;
+    		cout << hash("abcd") << endl;
+    		cout << hash("aadd") << endl << endl;
+    
+    		cout << hash("abcd") << endl;
+    		cout << hash("bcad") << endl;
+    		cout << hash("eat") << endl;
+    		cout << hash("ate") << endl;
+    		cout << hash("abcd") << endl;
+    		cout << hash("aadd") << endl << endl;
+    	}
+    
+    }
+    ~~~
+
+    
+
+  ###### 哈希冲突解决-开散列
+
+> 开散列法又叫链地址法(开链法)，首先对关键码集合用散列函数计算散列地址，具有相同地 址的关键码归于同一子集合，每一个子集合称为一个桶，各个桶中的元素通过一个单链表链 接起来，各链表的头结点存储在哈希表中。
+>
+> <img src="%E5%9B%BE%E7%89%87/README/image-20230305133247772.png" alt="image-20230305133247772" style="zoom: 67%;" /><img src="%E5%9B%BE%E7%89%87/README/image-20230305133256239.png" alt="image-20230305133256239" style="zoom: 67%;" />
+>
+> 从上图可以看出，**开散列中每个桶中放的都是发生哈希冲突的元素**。
+
+1. 代码实现
+
+    ~~~C++
+    #pragma once
+    
+    #include<iostream>
+    #include<string>
+    #include<vector>
+    using namespace std;
+    
+    namespace myHash_bucket
+    {
+    
+    	template<typename K, typename V>
+    	struct HashNode
+    	{
+    		pair<K, V> _kv;
+    		HashNode<K, V>* _next;
+    
+    		HashNode()
+    		{}
+    
+    		HashNode(const pair<K, V>& kv)
+    			:_kv(kv)
+    			, _next(nullptr)
+    		{}
+    	};
+    
+    	//将key转换为size_t类型
+    	template<typename K>
+    	struct HashToINT
+    	{
+    		size_t operator()(const K& key)
+    		{
+    			return (size_t)key;
+    		}
+    	};
+    	//对string类型进行特化
+    	template<>
+    	struct HashToINT<string>
+    	{
+    		//BKDR思想
+    		size_t operator()(const string& key)
+    		{
+    			size_t res = 0;
+    			for (auto& ch : key)
+    			{
+    				res *= 131;
+    				res += ch;
+    			}
+    
+    			return res;
+    		}
+    	};
+    
+    	template<typename K, typename V, class ToINT = HashToINT<K> >
+    	class HashTable
+    	{
+    		typedef HashNode<K, V> Node;
+    	public:
+    
+    		//素数表，素数作为被除数， 可以有效减少模相等，减少桶过长的问题
+    		inline size_t __stl_next_prime(size_t n)
+    		{
+    			static const size_t __stl_num_primes = 28;
+    			static const size_t __stl_prime_list[__stl_num_primes] =
+    			{
+    				53, 97, 193, 389, 769,
+    				1543, 3079, 6151, 12289, 24593,
+    				49157, 98317, 196613, 393241, 786433,
+    				1572869, 3145739, 6291469, 12582917, 25165843,
+    				50331653, 100663319, 201326611, 402653189, 805306457,
+    				1610612741, 3221225473, 4294967291
+    			};
+    
+    			for (size_t i = 0; i < __stl_num_primes; ++i)
+    			{
+    				if (__stl_prime_list[i] > n)
+    				{
+    					return __stl_prime_list[i];
+    				}
+    			}
+    
+    			return -1;
+    		}
+    
+    
+    		bool insert(const pair<K, V>& kv)
+    		{
+    			if (find(kv.first))
+    			{
+    				return false;
+    			}
+    
+    			//负载因子为1,表示桶满了， 需要扩容
+    			if (_size == _tab.size())
+    			{	
+    				//闭散列哈希表， 扩容时需要复用insert， 所以创建一个临时哈希表
+    				//而开散列哈希表， 其数据节点可以进行复用，不需要复用insert，所以只需创建一个临时vector
+    				vector<Node*> newTab;
+    				newTab.resize(__stl_next_prime(_tab.size()), nullptr);
+    
+    				//将旧表数据映射迁移到新表
+    				for (auto& cur : _tab)
+    				{
+    					if (cur == nullptr) continue;
+    
+    					Node* old = cur;
+    
+    					while (cur)
+    					{
+    						Node* next = cur->_next;
+    
+    						//头插
+    						size_t hashi = cur->_kv.first % newTab.size();
+    						cur->_next = newTab[hashi];
+    						newTab[hashi] = cur;
+    
+    						cur = next;
+    					}
+    					
+    					//置空
+    					old = nullptr;
+    				}
+    
+    				_tab.swap(newTab);
+    			}
+    
+    			//头插
+    			ToINT toint;
+    			size_t hashi = toint(kv.first) % _tab.size();
+    			Node* newNode = new Node(kv);
+    			newNode->_next = _tab[hashi];
+    			_tab[hashi] = newNode;
+    			++_size;
+    
+    			return true;
+    
+    		}
+    
+    		Node* find(const K& key)
+    		{
+    			if (_tab.size() == 0)
+    			{
+    				return (Node*)(nullptr);
+    			}
+    
+    			ToINT toint;
+    			size_t hashi = toint(key) % _tab.size();
+    			Node* cur = _tab[hashi];
+    			while(cur)
+    			{
+    				if (cur->_kv.first == key)
+    				{
+    					return cur;
+    				}
+    				
+    				cur = cur->_next;
+    			}
+    
+    			
+    
+    			return (Node*)(nullptr);
+    		}
+    
+    		bool erase(const K& key)
+    		{
+    			if (_tab.size() == 0)
+    			{
+    				return (Node*)(nullptr);
+    			}
+    
+    			ToINT toint;
+    			size_t hashi = toint(key) % _tab.size();
+    			Node* prev = nullptr;
+    			Node* cur = _tab[hashi];
+    			while (cur)
+    			{
+    				if (cur->_kv.first == key)
+    				{
+    					break;
+    				}
+    
+    				prev = cur;
+    				cur = cur->_next;
+    			}
+    
+    			//不存在
+    			if (cur == nullptr)
+    			{
+    				return false;
+    			}
+    			else if(prev == nullptr)//为第一个
+    			{
+    				_tab[hashi] = cur->_next;
+    				delete cur;
+    				cur = nullptr;
+    			}
+    			else
+    			{
+    				prev->_next = cur->_next;
+    				delete cur;
+    				cur = nullptr;
+    			}
+    
+    			return true;
+    		}
+    
+    		void Print()
+    		{
+    			int i = 0;
+    			for (auto cur : _tab)
+    			{
+    				if (cur == nullptr)
+    				{
+    					++i;
+    					continue;
+    				}
+    
+    				while (cur)
+    				{
+    					printf("[%d : %d] ", i, cur->_kv.first);
+    					cur = cur->_next;
+    				}
+    				++i;
+    			}
+    		}
+    	private:
+    		vector<Node*> _tab;
+    		size_t _size = 0;
+    	};
+    
+    	void TestHT1()
+    	{
+    		int a[] = { 1, 11, 4, 15, 26, 7, 44,55,99,78 };
+    		HashTable<int, int> ht;
+    		for (auto e : a)
+    		{
+    			ht.insert(make_pair(e, e));
+    		}
+    
+    		ht.insert(make_pair(22, 22));
+    	}
+    	void TestHT2()
+    	{
+    		int a[] = { 1, 11, 4, 15, 26, 7, 44,55,99,78 };
+    		HashTable<int, int> ht;
+    		for (auto e : a)
+    		{
+    			ht.insert(make_pair(e, e));
+    		}
+    		ht.Print();
+    	}
+    	void TestHT3()
+    	{
+    		int a[] = { 1, 11, 4, 15, 26, 7, 44,55,99,78 };
+    		HashTable<int, int> ht;
+    		for (auto e : a)
+    		{
+    			ht.insert(make_pair(e, e));
+    		}
+    
+    		ht.erase(8);
+    		ht.erase(4);
+    		ht.Print();
+    
+    	}
+    
+    }
+    ~~~
+
+    
+
+2. 扩容问题
+
+    > 桶的个数是一定的，随着元素的不断插入，每个桶中元素的个数不断增多，极端情况下，可 能会导致一个桶中链表节点非常多，会影响的哈希表的性能，因此在一定条件下需要对哈希 表进行增容，那该条件怎么确认呢？
+    >
+    > 开散列最好的情况是：每个哈希桶中刚好挂一个节点， 再继续插入元素时，每一次都会发生哈希冲突，因此，在元素个数刚好等于桶的个数时，可 以给哈希表增容。
+
+    ~~~C++
+    void _CheckCapacity()
+    {
+        size_t bucketCount = BucketCount();
+        if(_size == bucketCount)
+       {
+            HashBucket<V, HF> newHt(bucketCount);
+            for(size_t bucketIdx = 0; bucketIdx < bucketCount; ++bucketIdx)
+           {
+                PNode pCur = _ht[bucketIdx];
+                while(pCur)
+               {
+                    // 将该节点从原哈希表中拆出来
+                    _ht[bucketIdx] = pCur->_pNext;
+                    
+                    // 将该节点插入到新哈希表中
+                    size_t bucketNo = newHt.HashFunc(pCur->_data);
+                    pCur->_pNext = newHt._ht[bucketNo];
+                    newHt._ht[bucketNo] = pCur;
+                    pCur = _ht[bucketIdx];
+               }
+           }
+            
+            newHt._size = _size;
+            this->Swap(newHt);
+       }
+    }
+    ~~~
+
+    
+
+3. 思考
+
+    > 1. 只能存储key为整形的元素，其他类型怎么解决？
+    >
+    >     ~~~C++
+    >     / 哈希函数采用处理余数法，被模的key必须要为整形才可以处理，此处提供将key转化为
+    >     整形的方法
+    >     // 整形数据不需要转化
+    >     template<class T>
+    >     class DefHashF
+    >     {
+    >     public:
+    >         size_t operator()(const T& val)
+    >        {
+    >             return val;
+    >             }
+    >     };
+    >     // key为字符串类型，需要将其转化为整形
+    >     class Str2Int
+    >     {
+    >     public:
+    >         size_t operator()(const string& s)
+    >        {
+    >             const char* str = s.c_str();
+    >             unsigned int seed = 131; // 31 131 1313 13131 131313
+    >             unsigned int hash = 0;
+    >             while (*str)
+    >            {
+    >                 hash = hash * seed + (*str++);
+    >            }
+    >             
+    >             return (hash & 0x7FFFFFFF);
+    >        }
+    >     };
+    >     // 为了实现简单，此哈希表中我们将比较直接与元素绑定在一起
+    >     template<class V, class HF>
+    >     class HashBucket
+    >     {
+    >         // ……
+    >     private:
+    >         size_t HashFunc(const V& data)
+    >        {
+    >             return HF()(data.first)%_ht.capacity();
+    >        }
+    >     };
+    >     ~~~
+    >
+    > 2.  除留余数法，最好模一个素数，如何每次快速取一个类似两倍关系的素数？
+    >
+    >     ~~~C++
+    >     //素数表，素数作为被除数， 可以有效减少模相等，减少桶过长的问题
+    >     		inline size_t __stl_next_prime(size_t n)
+    >     		{
+    >     			static const size_t __stl_num_primes = 28;
+    >     			static const size_t __stl_prime_list[__stl_num_primes] =
+    >     			{
+    >     				53, 97, 193, 389, 769,
+    >     				1543, 3079, 6151, 12289, 24593,
+    >     				49157, 98317, 196613, 393241, 786433,
+    >     				1572869, 3145739, 6291469, 12582917, 25165843,
+    >     				50331653, 100663319, 201326611, 402653189, 805306457,
+    >     				1610612741, 3221225473, 4294967291
+    >     			};
+    >     
+    >     			for (size_t i = 0; i < __stl_num_primes; ++i)
+    >     			{
+    >     				if (__stl_prime_list[i] > n)
+    >     				{
+    >     					return __stl_prime_list[i];
+    >     				}
+    >     			}
+    >     
+    >     			return -1;
+    >     		}
+    >     ~~~
+    >
+    >     
+
+4. 开散列与闭散列比较
+
+    > **应用链地址法处理溢出，需要增设链接指针，似乎增加了存储开销。**
+    >
+    > 事实上： **由于开地址法必须保持大量的空闲空间以确保搜索效率，如二次探查法要求装载因子a <=  0.7，而表项所占空间又比指针大的多，所以使用链地址法反而比开地址法节省存储空间。**
+
+
+​    
+
+#### Hash应用
+
+##### 位图
+
+1. 面试题
+
+    给40亿个不重复的无符号整数，没排过序。给一个无符号整数，如何快速判断一个数是否在 这40亿个数中。【腾讯】 
+
+    1. 遍历，时间复杂度O(N) 
+
+    2. 排序(O(NlogN))，利用二分查找: logN 
+
+    3. 位图解决 数据是否在给定的整形数据中，结果是在或者不在，刚好是两种状态，那么可以使用一 个二进制比特位来代表数据是否存在的信息，如果二进制比特位为1，代表存在，为0 代表不存在。比如：
+
+        ![image-20230305142308203](%E5%9B%BE%E7%89%87/README/image-20230305142308203.png)
+
+2. 位图概念
+
+    > 所谓位图，就是用每一位来存放某种状态，适用于海量数据，数据无重复的场景。通常是用 来判断某个数据存不存在的。
+
+3. 代码实现
+
+    ~~~C++
+    #pragma once
+    
+    #include<vector>
+    
+    using namespace std;
+    
+    class bitset
+    {
+    public:
+        bitset(size_t bitCount)
+            : _bit((bitCount >> 5) + 1), _bitCount(bitCount)
+        {}
+        // 将which比特位置1
+        void set(size_t which)
+        {
+            if (which > _bitCount)
+                return;
+            size_t index = (which >> 5);
+            size_t pos = which % 32;
+            _bit[index] |= (1 << pos);
+        }
+        // 将which比特位置0
+        void reset(size_t which)
+        {
+            if (which > _bitCount)
+                return;
+            size_t index = (which >> 5);
+            size_t pos = which % 32;
+            _bit[index] &= ~(1 << pos);
+        }
+        // 检测位图中which是否为1
+        bool test(size_t which)
+        {
+            if (which > _bitCount)
+                return false;
+            size_t index = (which >> 5);
+            size_t pos = which % 32;
+            return _bit[index] & (1 << pos);
+        }
+        // 获取位图中比特位的总个数
+        size_t size()const { return _bitCount; }
+        // 位图中比特为1的个数
+        size_t Count()const
+        {
+            int bitCntTable[256] = {
+       0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 1, 2, 2, 3, 2, 3, 3, 4, 2,
+       3, 3, 4, 3, 4, 4, 5, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 2, 3,
+       3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3,
+       4, 3, 4, 4, 5, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 2, 3, 3, 4,
+       3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5,
+       6, 6, 7, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 2, 3, 3, 4, 3, 4,
+       4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5,
+       6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 2, 3, 3, 4, 3, 4, 4, 5,
+       3, 4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 3,
+       4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 4, 5, 5, 6, 5, 6, 6, 7, 5, 6,
+       6, 7, 6, 7, 7, 8 };
+    
+            size_t size = _bit.size();
+            size_t count = 0;
+            for (size_t i = 0; i < size; ++i)
+            {
+                int value = _bit[i];
+                int j = 0;
+                while (j < sizeof(_bit[0]))
+                {
+                    unsigned char c = value;
+                    count += bitCntTable[c];
+                    ++j;
+                    value >>= 8;
+                }
+            }
+            return count;
+        }
+    private:
+        vector<int> _bit;
+        size_t _bitCount;
+    };
+    
+    ~~~
+
+    4. 应用
+        1. 快速查找某个数据是否在一个集合中 
+        2. 排序 + 去重 
+        3. 求两个集合的交集、并集等 
+        4. 操作系统中磁盘块标记
+
+##### 布隆过滤器
+
+###### 提出与概念
+
+我们在使用新闻客户端看新闻时，它会给我们不停地推荐新的内容，它每次推荐时要去重，去掉 些已经看过的内容。问题来了，新闻客户端推荐系统如何实现推送去重的？ 用服务器记录了用 户看过的所有历史记录，当推荐系统推荐新闻时会从每个用户的历史记录里进行筛选，过滤掉那 些已经存在的记录。 如何快速查找呢？ 
+
+1. 用哈希表存储用户记录，缺点：浪费空间 
+2. 用位图存储用户记录，缺点：位图一般只能处理整形，如果内容编号是字符串，就无法处理 了。 
+3.  将哈希与位图结合，即布隆过滤器
+
+> **布隆过滤器**是由布隆（Burton Howard Bloom）在1970年提出的 一种紧凑型的、比较巧妙的概 率型数据结构，特点是**高效地插入和查询**，可以用来告诉你 “**某样东西一定不存在或者可能存在**”，它是用多个哈希函数，将一个数据映射到位图结构中。此种方式**不仅可以提升查询效率，也 可以节省大量的内存空间**。
+>
+> ![image-20230305142740038](%E5%9B%BE%E7%89%87/README/image-20230305142740038.png)
+>
+> https://zhuanlan.zhihu.com/p/43263751/
+
+###### 布隆过滤器的插入
+
+![image-20230305142817886](%E5%9B%BE%E7%89%87/README/image-20230305142817886.png)
+
+向布隆过滤器中插入："baidu"
+
+![image-20230305142833491](%E5%9B%BE%E7%89%87/README/image-20230305142833491.png)
+
+###### 布隆过滤器的查找
+
+> 布隆过滤器的思想是将一个元素用多个哈希函数映射到一个位图中，因此被映射到的位置的比特 位一定为1。所以可以按照以下方式进行查找：**分别计算每个哈希值对应的比特位置存储的是否为 零，只要有一个为零，代表该元素一定不在哈希表中，否则可能在哈希表中。** 
+>
+> **注意：布隆过滤器如果说某个元素不存在时，该元素一定不存在，如果该元素存在时，该元素可 能存在，因为有些哈希函数存在一定的误判。** 
+>
+> 比如：在布隆过滤器中查找"alibaba"时，假设3个哈希函数计算的哈希值为：1、3、7，刚好和其 他元素的比特位重叠，此时布隆过滤器告诉该元素存在，但实该元素是不存在的。
+
+###### 布隆过滤器的删除
+
+> **布隆过滤器不能直接支持删除工作，因为在删除一个元素时，可能会影响其他元素。**
+>
+> 比如：删除上图中"tencent"元素，如果直接将该元素所对应的二进制比特位置0，“baidu”元素也 被删除了，因为这两个元素在多个哈希函数计算出的比特位上刚好有重叠。 
+>
+> 一种支持删除的方法：将布隆过滤器中的每个比特位扩展成一个小的计数器，插入元素时给k个计 数器(k个哈希函数计算出的哈希地址)加一，删除元素时，给k个计数器减一，通过多占用几倍存储 空间的代价来增加删除操作。
+>
+>  缺陷： 
+>
+> 1. 无法确认元素是否真正在布隆过滤器中 
+> 2. 存在计数回绕
+
+###### 布隆过滤器的优点
+
+> 1. 增加和查询元素的时间复杂度为:O(K), (K为哈希函数的个数，一般比较小)，与数据量大小无关 
+> 2. 哈希函数相互之间没有关系，方便硬件并行运算 
+> 3. 布隆过滤器不需要存储元素本身，在某些对保密要求比较严格的场合有很大优势
+> 4. 在能够承受一定的误判时，布隆过滤器比其他数据结构有这很大的空间优势 
+> 5. 数据量很大时，布隆过滤器可以表示全集，其他数据结构不能 
+> 6. 使用同一组散列函数的布隆过滤器可以进行交、并、差运算
+
+###### 布隆过滤器的缺陷
+
+> 1. 有误判率，即存在假阳性(False Position)，即不能准确判断元素是否在集合中(补救方法：再 建立一个白名单，存储可能会误判的数据) 
+> 2. 不能获取元素本身
+> 3. 一般情况下不能从布隆过滤器中删除元素 
+> 4. 如果采用计数方式删除，可能会存在计数回绕问题
+
+###### 模拟实现
+
+~~~C++
+#pragma once
+
+#include<string>
+
+using namespace std;
+
+struct BKDRHash
+{
+	size_t operator()(const string& s)
+	{
+		// BKDR
+		size_t value = 0;
+		for (auto ch : s)
+		{
+			value *= 31;
+			value += ch;
+		}
+		return value;
+	}
+};
+struct APHash
+{
+	size_t operator()(const string& s)
+	{
+		size_t hash = 0;
+		for (long i = 0; i < s.size(); i++)
+		{
+			if ((i & 1) == 0)
+			{
+				hash ^= ((hash << 7) ^ s[i] ^ (hash >> 3));
+			}
+			else
+			{
+				hash ^= (~((hash << 11) ^ s[i] ^ (hash >> 5)));
+			}
+		}
+		return hash;
+	}
+};
+struct DJBHash
+{
+	size_t operator()(const string& s)
+	{
+		size_t hash = 5381;
+		for (auto ch : s)
+		{
+			hash += (hash << 5) + ch;
+		}
+		return hash;
+	}
+};
+template<size_t N,
+	size_t X = 5,
+	class K = string,
+	class HashFunc1 = BKDRHash,
+	class HashFunc2 = APHash,
+	class HashFunc3 = DJBHash>
+	class BloomFilter
+{
+public:
+	void Set(const K& key)
+	{
+		size_t len = X * N;
+		size_t index1 = HashFunc1()(key) % len;
+		size_t index2 = HashFunc2()(key) % len;
+		size_t index3 = HashFunc3()(key) % len;
+		/* cout << index1 << endl;
+		cout << index2 << endl;
+		cout << index3 << endl<<endl;*/
+		_bs.set(index1);
+		_bs.set(index2);
+		_bs.set(index3);
+	}
+	bool Test(const K& key)
+	{
+		size_t len = X * N;
+		size_t index1 = HashFunc1()(key) % len;
+		if (_bs.test(index1) == false)
+			return false;
+		size_t index2 = HashFunc2()(key) % len;
+		if (_bs.test(index2) == false)
+			return false;
+		size_t index3 = HashFunc3()(key) % len;
+		if (_bs.test(index3) == false)
+			return false;
+		return true;  // 存在误判的
+	}
+	// 不支持删除，删除可能会影响其他值。
+	void Reset(const K& key);
+private:
+	bitset<X* N> _bs;
+};
+
+~~~
+
+#### 面试题
+
+##### 哈希切割
+
+> 给一个超过100G大小的log file, log中存着IP地址, 设计算法找到出现次数最多的IP地址？ 
+>
+> 与上题条件相同，如何找到top K的IP？如何直接用Linux系统命令实现？
+
+##### 位图应用
+
+> 1. 给定100亿个整数，设计算法找到只出现一次的整数？
+> 2. 给两个文件，分别有100亿个整数，我们只有1G内存，如何找到两个文件交集？
+> 3. 位图应用变形：1个文件有100亿个int，1G内存，设计算法找到出现次数不超过2次的所有整数
+
+##### 布隆过滤器
+
+> 1. 给两个文件，分别有100亿个query，我们只有1G内存，如何找到两个文件交集？分别给出 精确算法和近似算法 
+> 2. 如何扩展BloomFilter使得它支持删除元素的操作
+
 ### 线程库
-
-
 
 
 
@@ -9281,80 +10666,157 @@ int main()
 
 ### C++类型转换
 
-#### 隐式类型转换
+#### C语言
 
-意义相近的类型，可以隐式类型转换，如 int -》 double -》int
+- 隐式类型转换
 
-#### 显式强制类型转换
+    编译器在编译阶段自动进行，能转就转，不能转就编译失败。
 
-意义不相近，但转换后具有一定的意义
+- 显式强制类型转换
+
+    意义不相近，需要用户自己处理，有的类似隐式类型转换，有的属于截断内存
+
+~~~C
+void Test ()
+{
+     int i = 1;
+     // 隐式类型转换
+     double d = i;
+     printf("%d, %.2f\n" , i, d);
+     int* p = &i;
+     // 显示的强制类型转换
+     int address = (int) p;
+     printf("%x, %d\n" , p, address);
+}
+~~~
+
+> 转换的可视性比较差，所有的转换形式都是以一种相同形式书写，难以跟踪错误的转换。
+>
+> 有些转换是隐式呢，需要注意。
 
 #### C++的类型转换
 
-###### 1. static_cast\<type> (value)
+> 标准C++为了加强类型转换的可视性，引入了四种命名的强制类型转换操作符： 
+>
+> static_cast、reinterpret_cast、const_cast、dynamic_cast
 
-替代隐式类型转换，可转换意义相近的类型
+##### 1. static_cast\<type> (value)
 
-###### 2. reinterpret_cast\<type>(value)
+> static_cast用于非多态类型的转换（静态转换），编译器隐式执行的任何类型转换都可用 static_cast，但它不能用于两个不相关的类型进行转换
+>
+> 替代隐式类型转换，可转换意义相近的类型
 
-替代显式强制类型转换，适用于意义不相干的类型转换，但转换后仍有一定意义
+~~~C++
+int main()
+{
+  double d = 12.34;
+  int a = static_cast<int>(d);
+  cout<<a<<endl;
+  return 0;
+}
 
-###### 3. const_cast\<type>(value)
+~~~
 
-转换const属性的 value;
+##### 2. reinterpret_cast\<type>(value)
 
-拾遗
+> reinterpret_cast操作符通常为操作数的位模式提供较低层次的重新解释，用于将一种类型转换 为另一种不同的类型，需要两者内存‘匹配’
+>
+> 替代显式强制类型转换，适用于意义不相干的类型转换，但转换后仍有一定意义
+
+~~~C++
+int main()
+{
+ double d = 12.34;
+ int a = static_cast<int>(d);
+ cout << a << endl;
+ // 这里使用static_cast会报错，应该使用reinterpret_cast
+ //int *p = static_cast<int*>(a);
+ int *p = reinterpret_cast<int*>(a);
+ return 0;
+}
+
+~~~
+
+##### 3. const_cast\<type>(value)
+
+> const_cast最常用的用途就是删除变量的const属性，方便赋值
+
+~~~C++
+void Test ()
+{
+  const int a = 2;
+  int* p = const_cast< int*>(&a );
+  *p = 3;
+  cout<<a <<endl;
+}
+
+~~~
+
+##### 拾遗
 
 ![image-20221204175423406](%E5%9B%BE%E7%89%87/README/image-20221204175423406.png)
 
 ~~~
-c++中， const int a 属于常变量， 不存放在常量区，而是在栈上，因为按语法来说，a不能再改变， 所以编译器会使程序中存在a的代码，不去调用a，而是以宏的方式替代，或保存在寄存器中。所以*p的内容是真的a的地址的内容，a是之前的内容
+c++中， const int a 属于常变量， 不存放在常量区，而是在栈上，因为按语法来说，a不能再改变， 所以编译器虽然会使程序中存在a的代码，但不去调用a，而是以宏的方式替代，或保存在寄存器中。所以*p的内容是真的a的地址的内容，a是之前的内容
 使用volatile 修饰a， 可以禁止编译器优化， 两个都是3
 ~~~
 
-###### 4. dynamic_cast\<type>(value)
+##### 4. dynamic_cast\<type>(value)
 
-![image-20221204220230262](%E5%9B%BE%E7%89%87/README/image-20221204220230262.png)
+> dynamic_cast用于**将一个父类对象的指针/引用转换为子类对象的指针或引用**(动态转换) 
+>
+> 向上转型：子类对象指针/引用->父类指针/引用(不需要转换，赋值兼容规则) 
+>
+> 向下转型：父类对象指针/引用->子类指针/引用(用dynamic_cast转型是安全的)
+> 注意：
+>
+> 1. dynamic_cast只能用于父类含有虚函数的类
+> 2. dynamic_cast会先检查是否能转换成功，能成功则转换，不能则返回0
 
-适用与继承体系中的，对于子类转父类，成功转换，父类转子类，返回nullptr，不允许父类转子类。
+~~~C++
+class A
+{
+public:
+	virtual void f() {}
+};
+class B : public A
+{};
+void fun(A* pa)
+{
+	// dynamic_cast会先检查是否能转换成功，能成功则转换，不能则返回
+	B* pb1 = static_cast<B*>(pa);
+	B* pb2 = dynamic_cast<B*>(pa);
+	cout << "pb1:" << pb1 << endl;
+	cout << "pb2:" << pb2 << endl;
+}
+int main()
+{
+	A a;
+	B b;
+	fun(&a); // 地址， nullptr
+	fun(&b); // 地址， 地址
+	return 0;
+}
+~~~
 
-关于2.   …………
+**多继承**
 
-ptr转为父类指针时，偏移到了正确位置。
+> ptr转为父类指针时，偏移到了正确位置。
+>
 
 ![image-20221204222335917](%E5%9B%BE%E7%89%87/README/image-20221204222335917.png)
 
 
 
-###### RTTI
+##### RTTI
 
-![image-20221204223241926](%E5%9B%BE%E7%89%87/README/image-20221204223241926.png)
-
-
-
-
+> RTTI：Run-time Type identification的简称，即：运行时类型识别。 
+>
+> C++通过以下方式来支持RTTI： 
+>
+> 1. typeid运算符 
+> 2. dynamic_cast运算符 
+> 3. decltype
 
 ### IO流
-
-#### 格式控制
-
-C语言格式控制
-
-C++格式控制
-
-![image-20221205170833607](%E5%9B%BE%E7%89%87/README/image-20221205170833607.png)
-
-![image-20221205172401237](%E5%9B%BE%E7%89%87/README/image-20221205172401237.png)
-
-**自定义类型转内置类型**
-
-![image-20221205172921981](%E5%9B%BE%E7%89%87/README/image-20221205172921981.png)
-
-![image-20221205172858078](%E5%9B%BE%E7%89%87/README/image-20221205172858078.png)
-
-![image-20221205173622830](%E5%9B%BE%E7%89%87/README/image-20221205173622830.png)
-
-#### 文件流
-
-
 

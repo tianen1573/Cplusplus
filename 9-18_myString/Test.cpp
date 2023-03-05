@@ -38,12 +38,12 @@ void test3()
 	string s2("Mystring");
 
 	cout << s1 + '!' << endl;
-	cout << s1 + " Bit" << endl;
+	cout << s1 + " qlz" << endl;
 	cout << s1 + s2 << endl;
 
 
 	cout << (s1 += '!') <<endl;
-	cout << (s1 += " Bit") << endl;
+	cout << (s1 += " qlz") << endl;
 	cout << (s1 += s2) << endl;
 }
 void DealUrl(const string& url)
@@ -108,27 +108,27 @@ int main()
 {
 
 
-	/*Bit::test1();
+	/*qlz::test1();
 	cout << endl;
 	test1();*/
 
-	/*Bit::test2();
+	/*qlz::test2();
 	cout << endl;
 	test2();*/
 
-	/*Bit::test3();
+	/*qlz::test3();
 	cout << endl;
 	test3();*/
 
-	/*Bit::test4();
+	/*qlz::test4();
 	cout << endl;
 	test4();*/
 
-	/*Bit::test5();
+	/*qlz::test5();
 	cout << endl;
 	test5();*/
 
-	Bit::test6();
+	qlz::test6();
 	cout << endl;
 	test6();
 

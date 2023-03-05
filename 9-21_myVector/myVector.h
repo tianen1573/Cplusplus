@@ -13,7 +13,7 @@ namespace qlz
 	class vector
 	{
 	public:
-#pragma region TypedefAndIterator
+
 		//vector迭代器是原生指针, 我们声明两个迭代器, 类型为模板类型指针;
 		typedef T* iterator;
 		typedef const T* const_iterator;
@@ -37,9 +37,6 @@ namespace qlz
 			return _finish;
 		}
 
-#pragma endregion
-
-#pragma region 构造函数
 
 		//无参默认构造
 		vector()
@@ -93,8 +90,9 @@ namespace qlz
 		* 理论上将，提供了vector(size_t n, const T& value = T())之后
 		* vector(int n, const T& value = T())就不需要提供了，但是对于：
 		* vector<int> v(10, 10);
-		* 编译器在编译时，认为T已经被实例化为int，而10和5编译器会默认其为int类型
-		* 就不会走vector(size_t n, const T& value = T())这个构造方法，
+		* 编译器在编译时，认为T已经被实例化为int，而10和10编译器会默认其为int类型,这两个类型相同
+		* 本意是构造10个10，但是size_t 和 int 不是相同类型，恰好迭代器构造的两个模板参数是同一类型
+		* 所以，就不会走vector(size_t n, const T& value = T())这个构造方法，而是迭代器构造
 		* 因为 vector(InputIterator first, InputIterator last) 模板Inpu实例化为int时, 形参列表更符合
 		* 但是10 和 10根本不是一个区间，编译时就报错了
 		* 故需要该构造方法, 防止跑到迭代器构造函数
@@ -131,10 +129,6 @@ namespace qlz
 			_start = _finish = _endOfStorage = nullptr;
 		}
 
-
-#pragma endregion
-
-#pragma region 空间
 
 	private:
 		bool Full()
@@ -212,21 +206,16 @@ namespace qlz
 			}
 		}
 
-#pragma endregion
-
-#pragma region Other
 
 		//接受形参的引用, 将形参替换为空对象
 		void swap(vector<T>& vec)
 		{
-			::swap(_start, vec._start);
+			::swap(_start, vec._start);//std
 			::swap(_finish, vec._finish);
 			::swap(_endOfStorage, vec._endOfStorage);
 		}
 
-#pragma endregion
 
-#pragma region 增删改查
 
 		//传元素引用, 防止无意义的深拷贝
 		iterator insert(iterator it, const T& val)
@@ -283,11 +272,6 @@ namespace qlz
 			erase(_finish - 1);
 		}
 
-#pragma endregion
-
-
-#pragma region 操作符AND访问
-
 		vector<T>& operator= (vector<T> vec)
 		{
 			swap(vec);
@@ -326,7 +310,6 @@ namespace qlz
 			return *(_finish - 1);
 		}
 
-#pragma endregion
 
 
 	private:

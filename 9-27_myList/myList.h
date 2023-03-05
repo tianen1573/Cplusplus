@@ -9,9 +9,8 @@ using namespace std;
 
 namespace qlz
 {
-
-	template<typename T>//数据类型
 	//节点结构
+	template<typename T>//数据类型
 	struct list_node
 	{
 		T _data;//元素
@@ -27,6 +26,7 @@ namespace qlz
 	};
 
 
+	//迭代器知识点
 	/*
 	* 1. 以 函数重载的方式, 实现返回 成员变量的const引用 和 非const引用, 两种迭代器属于相同的类型
 	* 2. 通过实例化的区别, 生成const迭代器, 和非const迭代器, 两种迭代器属于不同的类型, 指定 引用返回, 指针返回的类型
@@ -40,9 +40,10 @@ namespace qlz
 	* 	 1. 指针可以解引用，迭代器的类中必须重载operator*()
 	* 	 2. 指针可以通过->访问其所指空间成员，迭代器类中必须重载oprator->()
 	* 	 3. 指针可以++向后移动，迭代器类中必须重载operator++()与operator++(int)
-	* 		至于operator--()/operator--(int)释放需要重载，根据具体的结构来抉择，双向链表可以向前             移动，所以需要重载，如果是forward_list就不需要重载--
+	* 		至于operator--()/operator--(int)释放需要重载，根据具体的结构来抉择，双向链表可以向前移动，所以需要重载，如果是forward_list就不需要重载--
 	* 	 4. 迭代器需要进行是否相等的比较，因此还需要重载operator==()与operator!=()
 	*/
+
 	//正向迭代器
 	template<typename T, typename Ref, typename Ptr>//数据类型, 数据类型的引用, 数据类型的指针
 	struct _list_iterator
@@ -338,7 +339,6 @@ namespace qlz
 
 
 
-#pragma region 构造函数
 		list()
 		{
 			_head = new Node;
@@ -355,6 +355,7 @@ namespace qlz
 			for (int i = 0; i < n; ++i)
 				push_back(value);
 		}
+
 		list(int n, const T& value = T())
 		{
 			_head = new Node;
@@ -396,9 +397,6 @@ namespace qlz
 			return *this;
 		}
 
-#pragma endregion
-
-#pragma region 空间
 
 		//内置交换
 		void swap(list<T>& l)
@@ -465,9 +463,6 @@ namespace qlz
 			_head->_next = _head->_prev = _head;
 		}
 
-#pragma endregion
-
-#pragma region 迭代器
 		const_iterator begin() const//const对象
 		{
 			return const_iterator(_head->_next);
@@ -523,9 +518,8 @@ namespace qlz
 		{
 			return reverse_iterator(begin());
 		}
-#pragma endregion
 
-#pragma region 增删
+
 		void push_back(const T& val)
 		{
 			Node* node = new Node(val);
@@ -584,9 +578,8 @@ namespace qlz
 		{
 			erase(begin());
 		}
-#pragma endregion
 
-#pragma region 访问
+
 		//不支持[]
 		T& front()
 		{
@@ -604,7 +597,6 @@ namespace qlz
 		{
 			return _head->_prev->_val;
 		}
-#pragma endregion
 
 
 	private:

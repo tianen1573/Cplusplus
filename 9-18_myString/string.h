@@ -6,9 +6,10 @@
 #include<algorithm>
 using namespace std;
 
-namespace Bit
+namespace qlz
 {
 
+	//命名空间的使用
 	/*using std::cout;
 	using std::cin;
 	using std::endl;*/
@@ -20,8 +21,7 @@ namespace Bit
 		typedef const char* const_iterator;
 	public:
 
-#pragma region 其他
-		//swap
+		//swap，string的swap
 		void swap(string& str)
 		{
 			std::swap(_str, str._str);
@@ -29,18 +29,17 @@ namespace Bit
 			std::swap(_capacity, str._capacity);
 		}
 
-		//c指针
+		//c指针，返回stringC语言下的指针
 		const char* c_str() const
 		{
 			return _str;
 		}
 		 
-#pragma endregion
 
-#pragma region 构造函数
 		//无参
-// _str(nullptr) 错误: 转换成c指针 用cout输出的结束条件为 *p = '\0', 解引用了空指针
-// _str("\0") 错误: 常量字符串默认存在'\0'
+		// _str(nullptr) 错误: 转换成c指针 用cout输出的结束条件为 *p = '\0', 解引用了空指针
+		// _str("\0") 错误: 常量字符串默认存在'\0'
+		// 无参构造是应该是空字符串,即字符串只存在一个'\0'
 		string()
 			: _str(new char[1])
 			, _size(0)
@@ -52,13 +51,14 @@ namespace Bit
 		//常量字符串
 		string(const char* str)
 		{
-			size_t len = strlen(str);
+			size_t len = strlen(str);//strlen不包含\0
 			_size = len;
 			_capacity = len;
 			_str = new char[len + 1];
 
 			strcpy(_str, str);
 		}
+
 		////常量字符串全缺省默认构造
 		//string(const char* str = "")
 		//{
@@ -67,7 +67,7 @@ namespace Bit
 		//	_capacity = len;
 		//	_str = new char[len + 1];
 		//	
-		//	strcpy(_str, str);
+		//	strcpy(_str, str);//拷贝函数，遇到str的'\0'停止
 		//}
 
 		//常量字符串前n个字符
@@ -88,7 +88,7 @@ namespace Bit
 
 		}
 
-		//n个字符 ch
+		//n个字符ch
 		string(size_t n, char ch)
 			:_str(new char[n + 1])
 			, _size(n)
@@ -109,10 +109,11 @@ namespace Bit
 		//	, _capacity(str._capacity)
 		//{
 		//	//string对象可包含'\0', 而strcpy无法copy'\0'
-		//	memcpy(_str, str._str, _capacity + 1);
+		//	memcpy(_str, str._str, _capacity + 1);//按字节拷贝
 		//}
-		//
+		
 		//现代写法
+		//调用了c指针构造对象，然后交换内容
 		string(const string& str)
 			: _str(nullptr)
 			, _size(0)
@@ -127,7 +128,7 @@ namespace Bit
 			
 		{
 			assert(pos < str._size);//合法下标
-			*this = str.substr(pos, n);
+			*this = str.substr(pos, n);//调用赋值
 
 			//*this += str.substr(pos, n);
 			
@@ -143,9 +144,7 @@ namespace Bit
 			_str = nullptr;
 			_size = _capacity = 0;
 		}
-#pragma endregion
 
-#pragma region 空间操作
 		//reserve
 		void reserve(size_t n)
 		{
@@ -160,6 +159,7 @@ namespace Bit
 			tmp = nullptr;
 			_capacity = n;
 		}
+
 		//resize
 		void resize(size_t n, char ch = '\0')
 		{
@@ -184,6 +184,7 @@ namespace Bit
 		{
 			return _size;
 		}
+
 		//capacity
 		size_t capacity() const
 		{
@@ -196,10 +197,7 @@ namespace Bit
 			_str[0] = '\0';
 			_size = 0;
 		}
-#pragma endregion
 
-#pragma region 增删改查
-		
 		//push_back
 		void push_back(char ch)
 		{
@@ -213,6 +211,7 @@ namespace Bit
 			_size++;
 			_str[_size] = '\0';
 		}
+
 		//append
 		void append(const char* str)
 		{
@@ -334,6 +333,7 @@ namespace Bit
 
 			return *this;
 		}
+
 		/*
 		* 复用
 		* 对于substring 和 buffer 可以通过 (转换成string)截断 + substr 实现
@@ -389,9 +389,6 @@ namespace Bit
 			return *this;
 		}
 
-#pragma endregion
-
-#pragma region 操作符重载
 		
 		//逻辑操作符
 		bool operator>(const string& str) const
@@ -425,7 +422,6 @@ namespace Bit
 			swap(str);
 			return *this;
 		}
-
 		string& operator+=(const char ch)
 		{
 			push_back(ch);
@@ -472,9 +468,6 @@ namespace Bit
 			return _str[pos];
 		}
 		
-#pragma endregion
-	
-#pragma region 迭代器
 		
 		iterator begin()
 		{
@@ -485,7 +478,6 @@ namespace Bit
 		{
 			return _str + _size;
 		}
-
 
 		const_iterator begin() const
 		{
@@ -498,9 +490,6 @@ namespace Bit
 		}
 
 
-#pragma endregion
-
-#pragma region 成员变量
 	private:
 		size_t _capacity;//最大有效存储长度
 		size_t _size;//实际长度
@@ -511,7 +500,6 @@ namespace Bit
 		static size_t npos;
 		//C++11特性 : 加上const可直接在类内定义静态变量
 		//const static size_t npos = -1;  
-#pragma endregion
 
 	};
 
@@ -619,12 +607,12 @@ namespace Bit
 		string s2("Mystring");
 
 		cout << s1 + '!' << endl;
-		cout << s1 + " Bit" << endl;
+		cout << s1 + " qlz" << endl;
 		cout << s1 + s2 << endl;
 
 
 		cout << (s1 += '!') << endl;
-		cout << (s1 += " Bit") << endl;
+		cout << (s1 += " qlz") << endl;
 		cout << (s1 += s2) << endl;
 	}
 	//增删改查
