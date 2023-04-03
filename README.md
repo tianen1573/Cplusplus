@@ -502,7 +502,7 @@ int main()
 }
 ~~~
 
-**迭代的对象要实现++和--的操作。**
+**迭代的对象要实现++的操作。**
 
 ------
 
@@ -639,7 +639,7 @@ void Person::PrintPersonInfo()
 
 ###### this指针的特性
 
-1. this指针的**类型**：类类型* const
+1. this指针的**类型**：const 类类型* 
 2. 只能在“成员函数”的**内部使用**
 3. this指针本质上其实是一个成员函数的形参，是对象调用成员函数时，**编译器**将对象地址作为实参传递给this形参。所以**对象中不存储this指针。**
 4. this指针是**成员函数第一个隐含的指针形参**，一般情况由编译器通过ecx寄存器自动传递，不需要用户传递
@@ -885,7 +885,7 @@ int main()
 
 ##### 匿名对象
 
-> 匿名对象生命周期只有一行, 若被const引用, 则其生命周期会延长
+> 匿名对象生命周期只有一行, 若被const引用类型引用, 则其生命周期会延长
 >
 
 形式:
@@ -1459,7 +1459,15 @@ free的实现
 一般情况下不需要对 operator new 和 operator delete进行重载，除非在申请和释放空间 时候有某些特殊的需求。比如：在使用new和delete申请和释放空间时，打印一些日志信息，可 以简单帮助用户来检测是否存在内存泄漏。 
 ```
 
+##### 定位new
 
+C++允许在已经申请到的内存上初始化对象，使用 定位new 形式
+
+![image-20230329204448831](%E5%9B%BE%E7%89%87/README/image-20230329204448831.png)
+
+由于内存是已经存在的，我们也不能使用delete析构对象，而是显示地调用对象的析构函数
+
+![image-20230329204357203](%E5%9B%BE%E7%89%87/README/image-20230329204357203.png)
 
 ##### 只允许在堆或栈上创建对象
 
@@ -6768,7 +6776,7 @@ return 0;
 >         Derive* p3 = &d;
 >         return 0;
 >     }
->                                                                                                                                                                                                                                 
+>                                                                                                                                                                                                                                                     
 >     ~~~
 >
 >     A：p1 == p2 == p3 B：p1 < p2 < p3 C：p1 == p3 != p2 D：p1 != p2 != p3
@@ -6783,13 +6791,13 @@ return 0;
 >         virtual void func(int val = 1){ std::cout<<"A->"<< val <<std::endl;}
 >         virtual void test(){ func();}
 >     };
->                                                                                                                                                                                                                                 
+>                                                                                                                                                                                                                                                     
 >     class B : public A
 >     {
 >         public:
 >         void func(int val=0){ std::cout<<"B->"<< val <<std::endl; }
 >     };
->                                                                                                                                                                                                                                 
+>                                                                                                                                                                                                                                                     
 >     int main(int argc ,char* argv[])
 >     {
 >         B*p = new B;
@@ -7956,7 +7964,7 @@ struct Functor
 };
 int main()
 {
-  // 函数名
+  // 函数名、
   cout << useF(f, 11.11) << endl;
   // 函数对象
   cout << useF(Functor(), 11.11) << endl;
@@ -8270,7 +8278,7 @@ eg：数据集合{1，7，6，4，5，9}；
     >                 if(_ht[i]._state == EXIST)
     >                     newHt.Insert(_ht[i]._val);
     >            }
-    >                 
+    >                                     
     >             Swap(newHt);
     >        }
     >     ~~~
@@ -8945,7 +8953,7 @@ eg：数据集合{1，7，6，4，5，9}；
     >     				50331653, 100663319, 201326611, 402653189, 805306457,
     >     				1610612741, 3221225473, 4294967291
     >     			};
-    >         
+    >                             
     >     			for (size_t i = 0; i < __stl_num_primes; ++i)
     >     			{
     >     				if (__stl_prime_list[i] > n)
@@ -8953,7 +8961,7 @@ eg：数据集合{1，7，6，4，5，9}；
     >     					return __stl_prime_list[i];
     >     				}
     >     			}
-    >         
+    >                             
     >     			return -1;
     >     		}
     >     ~~~
