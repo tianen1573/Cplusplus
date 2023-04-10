@@ -31,6 +31,7 @@ namespace myUnMap
 		}
 	};
 
+
 	template<class K, class V, class ToINT = HashToINT<K>>
 	class unordered_map
 	{
