@@ -76,13 +76,13 @@
 //
 //}
 
-#include<iostream>
-#include<stdlib.h>
-#include<string>
-#include<vector>
-#include<list>
-
-using namespace std;
+//#include<iostream>
+//#include<stdlib.h>
+//#include<string>
+//#include<vector>
+//#include<list>
+//
+//using namespace std;
 
 //int main()
 //{
@@ -148,7 +148,7 @@ using namespace std;
 //    return 0;
 //}
 
-#include<assert.h>
+//#include<assert.h>
 
 //class Car {
 //public:
@@ -382,59 +382,328 @@ using namespace std;
 //}
 
 
-// 懒汉
-// 优点：第一次使用实例对象时，创建对象。进程启动无负载。多个单例实例启动顺序自由控制。
-// 缺点：复杂
-#include <iostream>
-#include <mutex>
-#include <thread>
-using namespace std;
-class Singleton
+//// 懒汉
+//// 优点：第一次使用实例对象时，创建对象。进程启动无负载。多个单例实例启动顺序自由控制。
+//// 缺点：复杂
+//#include <iostream>
+//#include <mutex>
+//#include <thread>
+//using namespace std;
+//class Singleton
+//{
+//public:
+//	static Singleton* GetInstance() {
+//		// 注意这里一定要使用Double-Check的方式加锁，才能保证效率和线程安全
+//		if (nullptr == m_pInstance) {
+//			m_mtx.lock();
+//			if (nullptr == m_pInstance) {
+//				m_pInstance = new Singleton();
+//			}
+//			m_mtx.unlock();
+//		}
+//		return m_pInstance;
+//	}
+//	// 实现一个内嵌垃圾回收类    
+//	class CGarbo {
+//	public:
+//		~CGarbo() {
+//			if (Singleton::m_pInstance)
+//				delete Singleton::m_pInstance;
+//		}
+//	};
+//	// 定义一个静态成员变量，程序结束时，系统会自动调用它的析构函数从而释放单例对象
+//	static CGarbo Garbo;
+//private:
+//	// 构造函数私有
+//	Singleton() {};
+//	// 防拷贝
+//	Singleton(Singleton const&);
+//	Singleton& operator=(Singleton const&);
+//
+//	static Singleton* m_pInstance; // 单例对象指针
+//	static mutex m_mtx;   //互斥锁
+//};
+//Singleton* Singleton::m_pInstance = nullptr;
+//Singleton::CGarbo Singleton::Garbo;
+//mutex Singleton::m_mtx;
+//
+//
+//int main()
+//{
+//	thread t1([] {cout << Singleton::GetInstance() << endl; });
+//	thread t2([] {cout << Singleton::GetInstance() << endl; });
+//	t1.join();
+//	t2.join();
+//	cout << Singleton::GetInstance() << endl;
+//	cout << Singleton::GetInstance() << endl;
+//	return 0;
+//}
+
+
+//namespace n1
+//{
+//	using namespace std;
+//
+//	int a, b;
+//
+//	namespace n2
+//	{
+//		void func2()
+//		{
+//			cin >> a >> b;
+//			cout << a << ' ' << b;
+//		}
+//	}
+//}
+//
+//int _g_val = 111;
+//
+//void func2(int a = 12, int b = 11, int c = _g_val)
+//{
+//	cout << a << ' ' << b << ' ' << c << endl;
+//}
+//void func2(int a, int b)
+//{
+//	cout << a << ' ' << b << endl;
+//}
+//
+//int main()
+//{
+//	//n1::n2::func();
+//
+//	func2(1);
+//
+//	return 0;
+//}
+
+//#include <iostream>
+//
+//using std::cout;
+//using std::endl;
+//
+////void f();
+////void f(int);
+//void f(double, double = 314);
+//namespace N
+//{
+//    void f(char a, char b)
+//    {
+//
+//    }
+//}
+//class A{
+//    public: 
+//        operator double()//double() 构造函数
+//        {
+//            cout << "operator double()\n";
+//
+//            return double();
+//        }
+//};
+//int main()
+//{
+//    using namespace N; //using指示符
+//    A a;
+//    cout << a.operator double() << endl;
+//    cout << double(11);
+//    return 0;
+//}
+
+//#include <iostream>
+//
+//using namespace std;
+//
+//int main()
+//{
+//	int a;
+//	const int b = 10;
+//	
+//	const int* p1 = &a;
+//	p1 = &b;
+//
+//	cout << a;
+//
+//	return 0;
+//}
+
+#include "head.h"
+
+//void func3()
+//{
+//	cout << "main \n";
+//}
+//
+//int main()
+//{
+//	func3();
+//
+//	return 0;
+//}
+
+//void TestAuto()
+//{
+//	auto a = 1, b = 2;
+//	//auto c = 3, d = 4.0; // 该行代码会编译失败，因为c和d的初始化表达式类型不同
+//}
+
+//class A
+//{
+//public :
+//	int a, b;
+//	void func()
+//	{
+//		this->a = 10;;
+//
+//		cout << a << ' ' << b << endl;
+//	}
+//
+//	A operator=(const A& a);
+//};
+//
+//A A::operator=(const A& a) 
+//{
+//	return A();
+//}
+
+//class A
+//{
+//public:
+//	
+//	~A()
+//	{
+//		cout << "------A------\n";
+//	}
+//};
+//
+//class Date
+//{
+//public:
+//	string str;
+//
+//	Date(string s)
+//		:str(s)
+//	{}
+//	~Date()
+//	{
+//		cout << str << "匿名对象\n";
+//	}
+//
+//};
+// 赋值运算符重载成全局函数，注意重载成全局函数时没有this指针了，需要给两个参数
+//Date& operator=(Date& left, const Date& right)
+//{
+//	if (&left != &right)
+//	{
+//		left._year = right._year;
+//		left._month = right._month;
+//		left._day = right._day;
+//	}
+//	return left;
+//}
+
+//class Date
+//{
+//public:
+//	// 1. 单参构造函数，没有使用explicit修饰，具有类型转换作用
+//	// explicit修饰构造函数，禁止类型转换---explicit去掉之后，代码可以通过编译
+//	Date(int year)
+//		:_year(year)
+//	{}
+//	/*
+//   // 2. 虽然有多个参数，但是创建对象时后两个参数可以不传递，没有使用explicit修饰，具有类型转换作用
+//   // explicit修饰构造函数，禁止类型转换
+//   explicit Date(int year, int month = 1, int day = 1)
+//   : _year(year)
+//   , _month(month)
+//   , _day(day)
+//   {}
+//   */
+//	Date& operator=(const Date& d)
+//	{
+//		if (this != &d)
+//		{
+//			_year = d._year;
+//			_month = d._month;
+//			_day = d._day;
+//		}
+//		return *this;
+//	}
+//private:
+//	int _year;
+//	int _month;
+//	int _day;
+//};
+//void Test()
+//{
+//	Date d1(2022);
+//	// 用一个整形变量给日期类型对象赋值
+//	// 实际编译器背后会用2023构造一个无名对象，最后用无名对象给d1对象进行赋值
+//	d1 = 2023;
+//	// 将1屏蔽掉，2放开时则编译失败，因为explicit修饰构造函数，禁止了单参构造函数类型转换的作用
+//}
+
+//class T
+//{
+//public:
+//
+//	const static int a = 1;
+//
+//	void print()
+//	{
+//		cout << a << endl;
+//	}
+//
+//};
+
+//int T::a;
+
+//int main()
+//{
+//	//const volatile int a = 10;
+//
+//	//int* pa = (int*)&a;
+//	//*pa = 11;
+//
+//	//cout << a << ' ' << *pa;
+//
+//	/*A aa;
+//	aa.func();*/
+//
+//	/*A a;
+//
+//	Date("");
+//	const Date d = Date("const");
+//	Date("");*/
+//
+//	//Test();
+//
+//	/*T t;
+//	t.print();*/
+//
+//	return 0;
+//}
+
+class A
 {
-public:
-	static Singleton* GetInstance() {
-		// 注意这里一定要使用Double-Check的方式加锁，才能保证效率和线程安全
-		if (nullptr == m_pInstance) {
-			m_mtx.lock();
-			if (nullptr == m_pInstance) {
-				m_pInstance = new Singleton();
-			}
-			m_mtx.unlock();
-		}
-		return m_pInstance;
-	}
-	// 实现一个内嵌垃圾回收类    
-	class CGarbo {
-	public:
-		~CGarbo() {
-			if (Singleton::m_pInstance)
-				delete Singleton::m_pInstance;
-		}
-	};
-	// 定义一个静态成员变量，程序结束时，系统会自动调用它的析构函数从而释放单例对象
-	static CGarbo Garbo;
 private:
-	// 构造函数私有
-	Singleton() {};
-	// 防拷贝
-	Singleton(Singleton const&);
-	Singleton& operator=(Singleton const&);
-
-	static Singleton* m_pInstance; // 单例对象指针
-	static mutex m_mtx;   //互斥锁
+    static int k;
+    int h;
+public:
+    class B // B天生就是A的友元
+    {
+    public:
+        void foo(const A& a)
+        {
+            cout << k << endl;//OK
+            cout << a.h << endl;//OK
+        }
+    };
 };
-Singleton* Singleton::m_pInstance = nullptr;
-Singleton::CGarbo Singleton::Garbo;
-mutex Singleton::m_mtx;
-
-
+int A::k = 1;
 int main()
 {
-	thread t1([] {cout << Singleton::GetInstance() << endl; });
-	thread t2([] {cout << Singleton::GetInstance() << endl; });
-	t1.join();
-	t2.join();
-	cout << Singleton::GetInstance() << endl;
-	cout << Singleton::GetInstance() << endl;
-	return 0;
+    A::B b;
+    b.foo(A());
+
+    return 0;
 }
