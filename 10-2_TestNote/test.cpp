@@ -683,27 +683,543 @@
 //	return 0;
 //}
 
-class A
-{
-private:
-    static int k;
-    int h;
+//class A
+//{
+//private:
+//    static int k;
+//    int h;
+//public:
+//    class B // B天生就是A的友元
+//    {
+//    public:
+//        void foo(const A& a)
+//        {
+//            cout << k << endl;//OK
+//            cout << a.h << endl;//OK
+//        }
+//    };
+//};
+//int A::k = 1;
+//int main()
+//{
+//    A::B b;
+//    b.foo(A());
+//
+//    return 0;
+//}
+
+//int globalVar = 1;
+//static int staticGlobalVar = 1;
+//void Test()
+//{
+//	static int staticVar = 1;//静态存储区
+//	int localVar = 1;//栈
+//	int num1[10] = { 1, 2, 3, 4 };//栈
+//	char char2[] = "abcd";//栈 "abcd"在只读区，此时"abcd"拷贝到char2数组了
+//	const char* pChar3 = "abcd";//栈，此时pChar3指向"abcd"存储的地址，不拷贝
+//	int* ptr1 = (int*)malloc(sizeof(int) * 4);//栈 *ptr1在堆
+//	int* ptr2 = (int*)calloc(4, sizeof(int));//栈 *ptr2在堆
+//	int* ptr3 = (int*)realloc(ptr2, sizeof(int) * 4);//栈 *ptr2在堆
+//	free(ptr1);
+//	free(ptr3);
+//
+//	//栈，在高地址，向下增长
+//	//堆，在低地址，向上增长
+//}
+//
+//void Test1()
+//{
+//	int* p1 = (int*)malloc(sizeof(int));
+//	free(p1);
+//	// 1.malloc/calloc/realloc的区别是什么？
+//	int* p2 = (int*)calloc(4, sizeof(int));
+//	int* p3 = (int*)realloc(p2, sizeof(int) * 10);
+//	// 这里需要free(p2)吗？
+//	free(p3);
+//}
+//
+//int main()
+//{
+//	Test1();
+//	return 0;
+//}
+
+
+//template<class T>
+//T Add(const T& left, const T& right)
+//{
+//    auto a = right + left;
+//
+//    return left + right;
+//}
+//int main()
+//{
+//    int a1 = 10, a2 = 20;
+//    double d1 = 10.01, d2 = 20.01;
+//    cout << endl << Add(a1, a2);
+//    cout << endl << Add(d1, d2);
+//
+//    /*
+// 该语句不能通过编译，因为在编译期间，当编译器看到该实例化时，需要推演其实参类型
+// 通过实参a1将T推演为int，通过实参d1将T推演为double类型，但模板参数列表中只有一个T，
+// 编译器无法确定此处到底该将T确定为int 或者 double类型而报错
+// 注意：在模板中，编译器一般不会进行类型转换操作，因为一旦转化出问题，编译器就需要背黑锅
+// Add(a1, d1);
+// */
+// // 此时有两种处理方式：1. 用户自己来强制转化 2. 使用显式实例化
+//    cout << endl << Add(a1, (int)d1);
+//    cout << endl << Add<int>(a1, d1);
+//
+//    //Add<auto>(a1, a2);
+//    return 0;
+//}
+
+
+//class Person
+//{
+//public:
+//    void Print()
+//    {
+//        cout << "name:" << _name << endl;
+//        cout << "age:" << _age << endl;
+//    }
+//protected:
+//    string _name = "peter"; // 姓名
+//    int _age = 18;  // 年龄
+//};
+//// 继承后父类的Person的成员（成员函数+成员变量）都会变成子类的一部分。这里体现出了Student和Teacher复用了Person的成员。下面我们使用监视窗口查看Student和Teacher对象，可以看到变量的复用。调用Print可以看到成员函数的复用。
+//class Student : public Person
+//{
+//protected:
+//    int _stuid; // 学号
+//};
+//class Teacher : public Person
+//{
+//protected:
+//    int _jobid; // 工号
+//};
+
+//// 实例演示三种继承关系下基类成员的各类型成员访问关系的变化  
+//class Person
+//{
+//public:
+//        void Print()
+//    {
+//        cout << _name << endl;
+//    }
+//protected:
+//    string _name = "peter"; // 姓名
+//private:
+//    int _age; // 年龄
+//};
+////class Student : protected Person
+////class Student : private Person
+//class Student : public Person
+//{
+//protected:
+//    int _stunum; // 学号
+//};
+
+//class Person
+//{
+//protected:
+//    string _name; // 姓名
+//    string _sex;  // 性别
+//    int _age; // 年龄
+//};
+//class Student : public Person
+//{
+//public:
+//    int _No; // 学号
+//};
+//void Test()
+//{
+//    Student sobj;
+//    // 1.子类对象可以赋值给父类对象/指针/引用
+//    Person pobj = sobj;
+//    Person* pp = &sobj;
+//    Person& rp = sobj;
+//
+//    //2.基类对象不能赋值给派生类对象
+//    //sobj = pobj;
+//
+//    // 3.基类的指针可以通过强制类型转换赋值给派生类的指针
+//    pp = &sobj;
+//    Student* ps1 = (Student*)pp; // 这种情况转换时可以的。
+//    ps1->_No = 10;
+//
+//    pp = &pobj;
+//    Student* ps2 = (Student*)pp; // 这种情况转换时虽然可以，但是会存在越界访问的问题
+//    ps2->_No = 10;
+//}
+//
+//int main()
+//{
+//    //Student s;
+//    ////Teacher t;
+//    //s.Print();
+//    ////t.Print();
+//
+//    Test();
+//
+//    return 0;
+//}
+
+
+//// Student的_num和Person的_num构成隐藏关系，可以看出这样代码虽然能跑，但是非常容易混淆
+//class Person
+//{
+//protected:
+//    string _name = "小李子"; // 姓名
+//    int _num = 111;   // 身份证号
+//};
+//class Student : public Person
+//{
+//public:
+//    void Print()
+//    {
+//        cout << " 姓名:" << _name << endl;
+//        cout << " 身份证号:" << Person::_num << endl;
+//        cout << " 学号:" << _num << endl;
+//    }
+//protected:
+//    int _num = 999; // 学号
+//};
+//void Test()
+//{
+//    Student s1;
+//    s1.Print();
+//};
+
+//// B中的fun和A中的fun不是构成重载，因为不是在同一作用域
+//// B中的fun和A中的fun构成隐藏，成员函数满足函数名相同就构成隐藏。
+//class A
+//{
+//public:
+//    void fun()
+//    {
+//        cout << "func()" << endl;
+//    }
+//};
+//class B : public A
+//{
+//public:
+//    void fun(int i)
+//    {
+//        A::fun();
+//        cout << "func(int i)->" << i << endl;
+//    }
+//};
+//void Test()
+//{
+//    B b;
+//    b.fun(10);
+//    b.A::fun();
+//};
+
+//class Person
+//{
+//public:
+//    Person(const char* name = "peter")
+//        : _name(name)
+//    {
+//        cout << "Person()" << endl;
+//    }
+//
+//    Person(const Person& p)
+//        : _name(p._name)
+//    {
+//        cout << "Person(const Person& p)" << endl;
+//    }
+//
+//    Person& operator=(const Person& p)
+//    {
+//        cout << "Person operator=(const Person& p)" << endl;
+//        if (this != &p)
+//            _name = p._name;
+//
+//        return *this;
+//    }
+//
+//    ~Person()
+//    {
+//        cout << "~Person()" << endl;
+//    }
+//protected:
+//    string _name; // 姓名
+//};
+//class Student : public Person
+//{
+//public:
+//    Student(const char* name, int num)
+//        : Person(name)
+//        , _num(num)
+//    {
+//        cout << "Student()" << endl;
+//    }
+//
+//    Student(const Student& s)
+//        : Person(s)
+//        , _num(s._num)
+//    {
+//        cout << "Student(const Student& s)" << endl;
+//    }
+//
+//    Student& operator = (const Student& s)
+//    {
+//        cout << "Student& operator= (const Student& s)" << endl;
+//        if (this != &s)
+//        {
+//            Person::operator=(s);//子类对象赋值给父类对象
+//            _num = s._num;
+//        }
+//        return *this;
+//    }
+//
+//    ~Student()
+//    {
+//        cout << "~Student()" << endl;
+//    }
+//protected:
+//    int _num; //学号
+//};
+//void Test()
+//{
+//    Student s1("jack", 18);
+//    Student s2(s1);
+//    Student s3("rose", 17);
+//    s1 = s3;
+//}
+//
+//
+//int main()
+//{
+//    Test();
+//
+//    return 0;
+//}
+
+//class Student;
+//class Person
+//{
+//public:
+//	friend void Display(const Person& p, const Student& s);
+//protected:
+//	string _name; // 姓名
+//};
+//class Student : public Person
+//{
+//protected:
+//	int _stuNum; // 学号
+//};
+//void Display(const Person& p, const Student& s)
+//{
+//	cout << p._name << endl;
+//	//cout << s._stuNum << endl;
+//}
+//void main()
+//{
+//	Person p;
+//	Student s;
+//	Display(p, s);
+//}
+
+//class Person
+//{
+//public:
+//	Person() { ++_count; }
+//protected:
+//	string _name; // 姓名
+//public:
+//	static int _count; // 统计人的个数。
+//};
+//int Person::_count = 0;
+//class Student : public Person
+//{
+//protected:
+//	int _stuNum; // 学号
+//};
+//class Graduate : public Student
+//{
+//protected:
+//	string _seminarCourse; // 研究科目
+//};
+//void TestPerson()
+//{
+//	Student s1;
+//	Student s2;
+//	Student s3;
+//	Graduate s4;
+//	cout << " 人数 :" << Person::_count << endl;
+//	Student::_count = 0;
+//	cout << " 人数 :" << Person::_count << endl;
+//}
+
+//class Person
+//{
+//public:
+//	string _name; // 姓名
+//};
+//class Student : public Person
+//{
+//protected:
+//	int _num; //学号
+//};
+//class Teacher : public Person
+//{
+//protected:
+//	int _id; // 职工编号
+//};
+//class Assistant : public Student, public Teacher
+//{
+//protected:
+//	string _majorCourse; // 主修课程
+//};
+//void Test()
+//{
+//	// 这样会有二义性无法明确知道访问的是哪一个
+//	Assistant a;
+//	//a._name = "peter";
+//	// 需要显示指定访问哪个父类的成员可以解决二义性问题，但是数据冗余问题无法解决
+//	a.Student::_name = "xxx";
+//	a.Teacher::_name = "yyy";
+//
+//	1;
+//}
+
+
+//class Person
+//{
+//public:
+//	string _name; // 姓名
+//};
+//class Student : virtual public Person
+//{
+//protected:
+//	int _num; //学号
+//};
+//class Teacher : virtual public Person
+//{
+//protected:
+//	int _id; // 职工编号
+//};
+//class Assistant : public Student, public Teacher
+//{
+//protected:
+//	string _majorCourse; // 主修课程
+//};
+//void Test()
+//{
+//	Assistant a;
+//	a._name = "peter";
+//
+//}
+//
+//int main()
+//{
+//	//TestPerson();
+//	Test();
+//
+//	return 0;
+//}
+
+//class A
+//{
+//public:
+//	int _a;
+//};
+//// class B : public A
+//class B : virtual public A
+//{
+//public:
+//	int _b;
+//};
+//// class C : public A
+//class C : virtual public A
+//{
+//public:
+//	int _c;
+//};
+//class D : virtual public B, public C
+//{
+//public:
+//	int _d;
+//};
+//int main()
+//{
+//	D d;
+//	d.B::_a = 1;
+//	d.C::_a = 2;
+//	d._b = 3;
+//	d._c = 4;
+//	d._d = 5;
+//	B b;
+//	b._a = 16;
+//	b._b = 32;
+//	return 0;
+//}
+
+//class Person {
+//public:
+//	virtual void BuyTicket() { cout << "买票-全价" << endl; }
+//};
+//class Student : public Person {
+//public:
+//	virtual void BuyTicket() { cout << "买票-半价" << endl; }
+//	/*注意：在重写基类虚函数时，派生类的虚函数在不加virtual关键字时，虽然也可以构成重写(因
+//	为继承后基类的虚函数被继承下来了在派生类依旧保持虚函数属性),但是该种写法不是很规范，不建议
+//	这样使用*/
+//	/*void BuyTicket() { cout << "买票-半价" << endl; }*/
+//};
+//void Func(Person& p)
+//{
+//	p.BuyTicket();
+//}
+
+class A {};
+class B : public A {};
+class Person {
 public:
-    class B // B天生就是A的友元
-    {
-    public:
-        void foo(const A& a)
-        {
-            cout << k << endl;//OK
-            cout << a.h << endl;//OK
-        }
-    };
+	virtual A* f() { cout << "A*" << endl; return new A; }
 };
-int A::k = 1;
+class Student : public Person {
+public:
+	B* f() { cout << "B*" << endl; return new B; }
+};
+
 int main()
 {
-    A::B b;
-    b.foo(A());
+	/*Person ps;
+	Student st;
+	Func(ps);
+	Func(st);*/
 
-    return 0;
+	Person p;
+	Student s;
+
+	p.f();
+	Person* pp = &s;
+	pp->f();
+
+	return 0;
 }
+
+
+//class Person {
+//public:
+//    virtual ~Person() { cout << "~Person()" << endl; }
+//};
+//class Student : public Person {
+//public:
+//    virtual ~Student() { cout << "~Student()" << endl; }
+//};
+//// 只有派生类Student的析构函数重写了Person的析构函数，下面的delete对象调用析构函
+//// 数，才能构成多态，才能保证p1和p2指向的对象正确的调用析构函数。
+//int main()
+//{
+//    Person* p1 = new Person;
+//    Person* p2 = new Student;
+//    delete p1;
+//    delete p2;
+//    return 0;
+//}
