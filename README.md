@@ -1880,7 +1880,21 @@ Vector<double> s2;
 
 ------
 
-##### 模板的特化
+##### 模板特化
+
+###### 偏特化与全特化
+
+模板偏特化（Template Partitial Specialization）是模板特化的一种特殊情况，指显示指定部分模板参数而非全部模板参数，或者指定模板参数的部分特性分而非全部特性，也称为模板部分特化。与模板偏特化相对的是模板全特化，指对所有模板参数进行特化。模板全特化与模板偏特化共同组成模板特化。
+
+模板偏特化主要分为两种，一种是指对部分模板参数进行特化，另一种是对模板参数特性进行特化，包括将模板参数特化为指针、引用或是另外一个模板类。
+
+###### 函数模板特化
+
+[函数模板特化](https://blog.csdn.net/ljq32/article/details/7916723)
+
+[C++ 模板 11：不要对函数模板进行专业化处理，而要使用非泛型函数](https://zhuanlan.zhihu.com/p/509671916)
+
+###### 类模板的特化
 
 > 指定模板参数的类型，解决模糊匹配问题
 
@@ -6669,9 +6683,9 @@ int main()
 
 3. 这样就实现出了不同对象去完成同一行为时，展现出不同的形态。
 
-4. 反过来思考我们要达到多态，有**两个条件**，一个是虚函数覆盖，一个是对象的指针或引用调用虚函数。反思一下为什么？ 
+4. 反过来思考我们要**达到多态，有两个条件**，一个是虚函数覆盖，一个是对象的指针或引用调用虚函数。反思一下为什么？ 
 
-    > 语法特性：对象调用成员函数，在编译阶段就会转换成地址，运行时，就是call地址，而指针是
+    > 语法特性：对象调用成员函数，在编译阶段就会转换成地址，运行时，就是call地址。不同的指针指向不同的函数。
     >
     > 必须要求父类的指针或引用调用，因为子类可以通过切片传给父类，那么父类指向的内容就是多样的，子类不能使用父类对象，无法实现多样性。父类指向的对象类别不同，虚表指针就不同，找到的函数就不同，就能实现多态
 
@@ -6692,7 +6706,7 @@ int main()
     
         return 0;
     }
-    // 以下汇编代码中跟你这个问题不相关的都被去掉了
+    // 以下汇编代码中跟这个问题不相关的都被去掉了
     void Func(Person* p)
     {
         //...
@@ -6725,7 +6739,7 @@ int main()
 
 > 1. 静态绑定又称为前期绑定(早绑定)，在程序编译期间确定了程序的行为，也称为静态多态， 比如：函数重载，模板编程。
 > 2. 动态绑定又称后期绑定(晚绑定)，是在程序运行期间，根据具体拿到的类型确定程序的具体行为，调用具体的函数，也称为动态多态。 
-> 3. 本小节之前(5.2小节)买票的汇编代码很好的解释了什么是静态(编译器)绑定和动态(运行时)绑 定。
+> 3. 本小节之前买票的汇编代码很好的解释了什么是静态(编译器)绑定和动态(运行时)绑 定。
 
 ------
 
@@ -6842,7 +6856,7 @@ return 0;
 }
 ~~~
 
-观察下图可以看出：多继承派生类的未重写的/新增的虚函数放在**第一个继承基类部分的虚函数表**中
+观察下图可以看出：**多继承派生类的未重写的/新增的虚函数放在第一个继承基类部分的虚函数表中**。
 
 ![image-20221020172015696](%E5%9B%BE%E7%89%87/README/image-20221020172015696.png)
 
@@ -6932,7 +6946,7 @@ return 0;
 >         Derive* p3 = &d;
 >         return 0;
 >     }
->                                                                                                                                                                                                                                                                                             
+>                                                                                                                                                                                                                                                                                                 
 >     ~~~
 >
 >     A：p1 == p2 == p3 B：p1 < p2 < p3 C：p1 == p3 != p2 D：p1 != p2 != p3
@@ -6947,13 +6961,13 @@ return 0;
 >         virtual void func(int val = 1){ std::cout<<"A->"<< val <<std::endl;}
 >         virtual void test(){ func();}
 >     };
->                                                                                                                                                                                                                                                                                             
+>                                                                                                                                                                                                                                                                                                 
 >     class B : public A
 >     {
 >         public:
 >         void func(int val=0){ std::cout<<"B->"<< val <<std::endl; }
 >     };
->                                                                                                                                                                                                                                                                                             
+>                                                                                                                                                                                                                                                                                                 
 >     int main(int argc ,char* argv[])
 >     {
 >         B*p = new B;
@@ -6981,11 +6995,11 @@ return 0;
 >
 > 2. 什么是重载、重写(覆盖)、重定义(隐藏)？
 >
->     > 重载是对相同作用域：函数名相同，形参列表不同，就构成重载
+>     > 重载是对相同作用域：函数名相同，形参列表不同，就构成重载。
 >     >
->     > 重定义是对继承体系：子类的函数和父类的函数同名，就是重定义，子类对象调用，就是重定义
+>     > 重定义是对继承体系：子类的函数和父类的函数同名，就是重定义。
 >     >
->     > 重写是对继承体系+虚函数+父类指针/引用：子类的虚函数和父类完全相同（两个特例），且由父类指针调用，此时重写才起作用
+>     > 重写是对继承体系+虚函数+父类指针/引用：子类的虚函数和父类完全相同（两个特例），且由父类指针调用，此时重写才起作用。
 >
 > 3. 多态的实现原理？答：参考本节课件内容 
 >
@@ -6995,47 +7009,44 @@ return 0;
 >     >
 >     > 父类调用：拥有了选择权力
 >
-> 4. inline函数可以是虚函数吗？
+> 4. **inline函数可以是虚函数吗**？
 >
 >     > 答：可以，不过编译器就忽略inline属性，这个函数就不再是 inline，因为虚函数要放到虚表中去。
 >
-> 5. 静态成员可以是虚函数吗？
+> 5. **静态成员可以是虚函数吗**？
 >
->     > 不能，因为静态成员函数没有this指针，
+>     > **不能，因为静态成员函数没有this指针**，
 >     >
->     > 使用类型::成员函数()的调用方式无法访问对象，无法访问虚函数表，无法访问对象成员
+>     > 使用类型::成员函数()的调用方式无法访问对象，无法获取虚表指针，无法访问虚函数表，无法访问对象成员，所以静态成员函数无法放进虚函数表。 
 >     >
->     > 所以静态成员函数无法放进虚函数表。 
+>     > 就算把他放进了虚函数表，不能访问任何类非静态成员，无意义。
+>     
+> 6. **构造函数可以是虚函数吗**？
+>
+>     > 答：不能，因为**对象中的虚函数表指针是在构造函数初始化列表阶段才初始化的**。 
+>    >
+>     
+> 7. **析构函数可以是虚函数吗？什么场景下析构函数是虚函数？**
+> 
+>    > 答：可以，并且最好把基类的析 构函数定义成虚函数。参考本节课件内容 
 >     >
->     > 就算把他放进了虚函数表，不能访问任何类非静态成员，无意义
->
-> 6. 构造函数可以是虚函数吗？
->
->     > 答：不能，因为对象中的虚函数表指针是在构造函数初始化列表阶段才初始化的。 
->     >
->     > 
->
-> 7. 析构函数可以是虚函数吗？什么场景下析构函数是虚函数？
->
->     > 答：可以，并且最好把基类的析 构函数定义成虚函数。参考本节课件内容 
->     >
->     > 可以安全的释放资源，当然编译器会帮我们隐式地定义为虚函数
->
+>    > 可以安全的释放资源，当然编译器会帮我们隐式地定义为虚函数
+> 
 > 8. 对象访问普通函数快还是虚函数更快？
->
->     > 答：首先如果是普通对象，是一样快的。如果是指针对象或者是引用对象，则调用的普通函数快，因为构成多态，运行时调用虚函数需要到虚函 数表中去查找。 
->
-> 9. 虚函数表是在什么阶段生成的，存在哪的？
->
->     > 答：虚函数表是在编译阶段就生成的，一般情况 下存在代码段(常量区)的。 
->
-> 10. C++菱形继承的问题？虚继承的原理？
->
->     > 答：参考继承课件。注意这里不要把虚函数表和虚基 表搞混了。 
->
-> 11. 什么是抽象类？抽象类的作用？
->
->     > 答：参考（3.抽象类）。抽象类强制重写了虚函数，另外抽 象类体现出了接口继承关系。
+> 
+>    > 答：首先如果是普通对象，是一样快的。如果是指针对象或者是引用对象，则调用的普通函数快，因为构成多态，运行时调用虚函数需要到虚函 数表中去查找。 
+> 
+>9. 虚函数表是在什么阶段生成的，存在哪的？
+> 
+>    > 答：**虚函数表是在编译阶段就生成的，一般情况下存在代码段(常量区)的**。 
+> 
+>10. C++菱形继承的问题？虚继承的原理？
+> 
+>    > 答：参考继承课件。注意这里不要把虚函数表和虚基 表搞混了。 
+> 
+>11. 什么是抽象类？抽象类的作用？
+> 
+>    > 答：参考（3.抽象类）。抽象类强制重写了虚函数，另外抽 象类体现出了接口继承关系。
 
 ### C++11
 
@@ -7247,114 +7258,114 @@ int main()
 前面我们可以看到左值引用既可以引用左值和又可以引用右值，那为什么C++11还要提出右值引用呢？是不是化蛇添足呢？下面我们来看看左值引用的短板，右值引用是如何补齐这个短板的！
 
 ~~~C++
-namespace bit
+namespace qlz
 {
-  class string
-  {
-  public:
-      typedef char* iterator;
-      iterator begin() 
-      {
-      	return _str;
-      }
-      iterator end()
-      {
-      	return _str + _size;
-      }
-      string(const char* str = "")
-      :_size(strlen(str))
-      , _capacity(_size)
-      {
-          //cout << "string(char* str)" << endl;
-          _str = new char[_capacity + 1];
-          strcpy(_str, str);
-      }
-      // s1.swap(s2)
-      void swap(string& s)
-      {
-          ::swap(_str, s._str);
-          ::swap(_size, s._size);
-          ::swap(_capacity, s._capacity);
-      }
-      // 拷贝构造
-      string(const string& s)
-      :_str(nullptr)
-      {
-          cout << "string(const string& s) -- 深拷贝" << endl;
-          string tmp(s._str);
-          swap(tmp);
-      }
-      // 赋值重载
-      string& operator=(const string& s)
-      {
-          cout << "string& operator=(string s) -- 深拷贝" << endl;
-          string tmp(s);
-          swap(tmp);
-          return *this;
-      }
-      // 移动构造
-      string(string&& s)
-      :_str(nullptr)
-      ,_size(0)
-      ,_capacity(0)
-      {
-          cout << "string(string&& s) -- 移动语义" << endl;
-          swap(s);
-      }
-      // 移动赋值
-      string& operator=(string&& s)
-      {
-          cout << "string& operator=(string&& s) -- 移动语义" << endl;
-          swap(s);
-          return *this;
-      }
-      ~string()
-      {
-          delete[] _str;
-          _str = nullptr;
-      }
-      char& operator[](size_t pos)
-      {
-          assert(pos < _size);
-          return _str[pos];
-      }
-      void reserve(size_t n)
-      {
-          if (n > _capacity)
-          {
-              char* tmp = new char[n + 1];
-              strcpy(tmp, _str);
-              delete[] _str;
-              _str = tmp;
-              _capacity = n;
-          }
-      }
-      void push_back(char ch)
-      {
-          if (_size >= _capacity)
-          {
-          	size_t newcapacity = _capacity == 0 ? 4 : _capacity * 2;
-          	reserve(newcapacity);
-          }
-          _str[_size] = ch;
-          ++_size;
-          _str[_size] = '\0';
-      }
-          //string operator+=(char ch)
-      string& operator+=(char ch)
-      {
-          push_back(ch);
-          return *this;
-      }
-      const char* c_str() const
-      {
-      	return _str;
-      }
-  private:
-      char* _str;
-      size_t _size;
-      size_t _capacity; // 不包含最后做标识的\0
-  };
+    class string
+    {
+    public:
+        typedef char* iterator;
+        iterator begin()
+        {
+            return _str;
+        }
+        iterator end()
+        {
+            return _str + _size;
+        }
+        string(const char* str = "")
+            :_size(strlen(str))
+            , _capacity(_size)
+        {
+            //cout << "string(char* str)" << endl;
+            _str = new char[_capacity + 1];
+            strcpy(_str, str);
+        }
+        // s1.swap(s2)
+        void swap(string& s)
+        {
+            ::swap(_str, s._str);
+            ::swap(_size, s._size);
+            ::swap(_capacity, s._capacity);
+        }
+        // 拷贝构造
+        string(const string& s)
+            :_str(nullptr)
+        {
+            cout << "string(const string& s) -- 深拷贝" << endl;
+            string tmp(s._str);
+            swap(tmp);
+        }
+        // 赋值重载
+        string& operator=(const string& s)
+        {
+            cout << "string& operator=(string s) -- 深拷贝" << endl;
+            string tmp(s);
+            swap(tmp);
+            return *this;
+        }
+        // 移动构造
+        string(string&& s)
+            :_str(nullptr)
+            , _size(0)
+            , _capacity(0)
+        {
+            cout << "string(string&& s) -- 移动语义" << endl;
+            swap(s);
+        }
+        // 移动赋值
+        string& operator=(string&& s)
+        {
+            cout << "string& operator=(string&& s) -- 移动语义" << endl;
+            swap(s);
+            return *this;
+        }
+        ~string()
+        {
+            delete[] _str;
+            _str = nullptr;
+        }
+        char& operator[](size_t pos)
+        {
+            assert(pos < _size);
+            return _str[pos];
+        }
+        void reserve(size_t n)
+        {
+            if (n > _capacity)
+            {
+                char* tmp = new char[n + 1];
+                strcpy(tmp, _str);
+                delete[] _str;
+                _str = tmp;
+                _capacity = n;
+            }
+        }
+        void push_back(char ch)
+        {
+            if (_size >= _capacity)
+            {
+                size_t newcapacity = _capacity == 0 ? 4 : _capacity * 2;
+                reserve(newcapacity);
+            }
+            _str[_size] = ch;
+            ++_size;
+            _str[_size] = '\0';
+        }
+        //string operator+=(char ch)
+        string& operator+=(char ch)
+        {
+            push_back(ch);
+            return *this;
+        }
+        const char* c_str() const
+        {
+            return _str;
+        }
+    private:
+        char* _str;
+        size_t _size;
+        size_t _capacity; // 不包含最后做标识的\0
+    };
 }
 
 ~~~
@@ -7365,62 +7376,62 @@ namespace bit
 >
 
 ~~~C++
-void func1(bit::string& s)
+void func1(qlz::string& s)
 {}
-void func2(const bit::string& s)
+void func2(const qlz::string& s)
 {}
 int main()
 {
-  bit::string s1("hello world");
-  // func1和func2的调用我们可以看到左值引用做参数减少了拷贝，提高效率的使用场景和价值
-  func1(s1);
-  func2(s1);
-  // string operator+=(char ch) 传值返回存在深拷贝
-  // string& operator+=(char ch) 传左值引用没有拷贝提高了效率
-  s1 += '!';
-  return 0;
+    qlz::string s1("hello world");
+    // func1和func2的调用我们可以看到左值引用做参数减少了拷贝，提高效率的使用场景和价值
+    func1(s1);
+    func2(s1);
+    // string operator+=(char ch) 传值返回存在深拷贝
+    // string& operator+=(char ch) 传左值引用没有拷贝提高了效率
+    s1 += '!';
+    return 0;
 }
 ~~~
 
 **左值引用的短板**： 
 
-但是当函数返回对象是一个局部变量，出了函数作用域就不存在了，就不能使用左值引用返回， 只能传值返回。例如：bit::string to_string(int value)函数中可以看到，这里只能使用传值返回， 传值返回会导致至少1次拷贝构造(如果是一些旧一点的编译器可能是两次拷贝构造)。
+但是当函数返回对象是一个局部变量，出了函数作用域就不存在了，就不能使用左值引用返回， 只能传值返回。例如：qlz::string to_string(int value)函数中可以看到，这里只能使用传值返回， 传值返回会导致至少1次拷贝构造(如果是一些旧一点的编译器可能是两次拷贝构造)。
 
 ![image-20221120220304508](%E5%9B%BE%E7%89%87/README/image-20221120220304508.png)
 
 ~~~C++
-namespace bit
+namespace qlz
 {
-  bit::string to_string(int value)
-  {
-      bool flag = true;
-      if (value < 0)
-      {
-          flag = false;
-          value = 0 - value;
-      }
-      bit::string str;
-      while (value > 0)
-      {
-          int x = value % 10;
-          value /= 10;
-          str += ('0' + x);
-      }
-      if (flag == false)
-      {
-      	str += '-';
-      }
-      std::reverse(str.begin(), str.end());
-      return str;
-  }
+  string to_string(int value)
+    {
+        bool flag = true;
+        if (value < 0)
+        {
+            flag = false;
+            value = 0 - value;
+        }
+        string str;
+        while (value > 0)
+        {
+            int x = value % 10;
+            value /= 10;
+            str += ('0' + x);
+        }
+        if (flag == false)
+        {
+            str += '-';
+        }
+        std::reverse(str.begin(), str.end());
+        return str;
+    }
 }
 int main()
 {
- // 在bit::string to_string(int value)函数中可以看到，这里
- // 只能使用传值返回，传值返回会导致至少1次拷贝构造(如果是一些旧一点的编译器可能是两次拷贝构造)。
-  bit::string ret1 = bit::to_string(1234);
-  bit::string ret2 = bit::to_string(-1234);
-  return 0;
+    // 在qlz::string to_string(int value)函数中可以看到，这里
+    // 只能使用传值返回，传值返回会导致至少1次拷贝构造(如果是一些旧一点的编译器可能是两次拷贝构造)。
+    qlz::string ret1 = qlz::to_string(1234);
+    qlz::string ret2 = qlz::to_string(-1234);
+    return 0;
 }
 ~~~
 
@@ -7428,7 +7439,7 @@ int main()
 
 **右值引用和移动语义解决上述问题：** 
 
-在bit::string中增加移动构造，**移动构造本质是将参数右值的资源窃取过来，占位已有，那么就不用做深拷贝了，所以它叫做移动构造，就是窃取别人的资源来构造自己。**
+在qlz::string中增加移动构造，**移动构造本质是将参数右值的资源窃取过来，占位已有，那么就不用做深拷贝了，所以它叫做移动构造，就是窃取别人的资源来构造自己。**
 
 ~~~C++
 // 移动构造
@@ -7442,7 +7453,7 @@ string(string&& s)
 }
 int main()
 {
-  bit::string ret2 = bit::to_string(-1234);
+  qlz::string ret2 = qlz::to_string(-1234);
   return 0;
 }
 ~~~
@@ -7453,7 +7464,7 @@ int main()
 
 **不仅仅有移动构造，还有移动赋值：**
 
-在bit::string类中增加移动赋值函数，再去调用bit::to_string(1234)，不过这次是将 bit::to_string(1234)返回的右值对象赋值给ret1对象，这时调用的是移动构造。
+在qlz::string类中增加移动赋值函数，再去调用qlz::to_string(1234)，不过这次是将 qlz::to_string(1234)返回的右值对象赋值给ret1对象，这时调用的是移动构造。
 
 ~~~C++
 // 移动赋值
@@ -7465,8 +7476,8 @@ string& operator=(string&& s)
 }
 int main()
 {
-  bit::string ret1;
-  ret1 = bit::to_string(1234);
+  qlz::string ret1;
+  ret1 = qlz::to_string(1234);
   return 0;
 }
 // 运行结果：
@@ -7474,7 +7485,7 @@ int main()
 // string& operator=(string&& s) -- 移动语义
 ~~~
 
-**这里运行后，我们看到调用了一次移动构造和一次移动赋值**。因为如果是用一个已经存在的对象 接收，编译器就没办法优化了。bit::to_string函数中会先用str生成构造生成一个临时对象，但是 我们可以看到，编译器很聪明的在这里把str识别成了右值，调用了移动构造。然后在把这个临时 对象做为bit::to_string函数调用的返回值赋值给ret1，这里调用的移动赋值。
+**这里运行后，我们看到调用了一次移动构造和一次移动赋值**。因为如果是用一个已经存在的对象接收，编译器就没办法优化了。qlz::to_string函数中会先用str生成构造生成一个临时对象，但是 我们可以看到，编译器很聪明的在这里把str识别成了右值，调用了移动构造。然后在把这个临时 对象做为qlz::to_string函数调用的返回值赋值给ret1，这里调用的移动赋值。
 
 **STL中的容器都是增加了移动构造和移动赋值：** 
 
@@ -7497,13 +7508,13 @@ inline typename remove_reference<_Ty>::type&& move(_Ty&& _Arg) _NOEXCEPT
 }
 int main()
 {
-  bit::string s1("hello world");
+  qlz::string s1("hello world");
   // 这里s1是左值，调用的是拷贝构造
-  bit::string s2(s1);
+  qlz::string s2(s1);
   // 这里我们把s1 move处理以后, 会被当成右值，调用移动构造
   // 但是这里要注意，一般是不要这样用的，因为我们会发现s1的
   // 资源被转移给了s3，s1被置空了。
-  bit::string s3(std::move(s1));
+  qlz::string s3(std::move(s1));
   return 0;
 }
 ~~~
@@ -7518,8 +7529,8 @@ http://www.cplusplus.com/reference/vector/vector/push_back/
 void push_back (value_type&& val);
 int main()
 {
-  list<bit::string> lt;
-  bit::string s1("1111");
+  list<qlz::string> lt;
+  qlz::string s1("1111");
  // 这里调用的是拷贝构造
   lt.push_back(s1);
  // 下面调用都是移动构造
@@ -7604,62 +7615,77 @@ int main()
 template<class T>
 struct ListNode
 {
-  ListNode* _next = nullptr;
-  ListNode* _prev = nullptr;
-  T _data;
+    ListNode* _next = nullptr;
+    ListNode* _prev = nullptr;
+    T _data;
 };
 template<class T>
 class List
 {
-	typedef ListNode<T> Node;
+    typedef ListNode<T> Node;
 public:
-  List()
-  {
-      _head = new Node;
-      _head->_next = _head;
-      _head->_prev = _head;
-  }
-  void PushBack(T&& x)
-  {
-      //Insert(_head, x);
-      Insert(_head, std::forward<T>(x));
-  }
-  void PushFront(T&& x)
-  {
-      //Insert(_head->_next, x);
-      Insert(_head->_next, std::forward<T>(x));
-  }
-  void Insert(Node* pos, T&& x)
-  {
-      Node* prev = pos->_prev;
-      Node* newnode = new Node;
-      newnode->_data = std::forward<T>(x); // 关键位置
-      // prev newnode pos
-      prev->_next = newnode;
-      newnode->_prev = prev;
-      newnode->_next = pos;
-      pos->_prev = newnode;
-  }
-  void Insert(Node* pos, const T& x)
-  {
-      Node* prev = pos->_prev;
-      Node* newnode = new Node;
-      newnode->_data = x; // 关键位置
-      // prev newnode pos
-      prev->_next = newnode;
-     newnode->_prev = prev;
-      newnode->_next = pos;
-      pos->_prev = newnode;
-  }
+    List()
+    {
+        _head = new Node;
+        _head->_next = _head;
+        _head->_prev = _head;
+    }
+    void PushBack(T&& x)
+    {
+        Insert(_head, x);
+        //Insert(_head, std::forward<T>(x));
+    }
+    void PushFront(T&& x)
+    {
+        //Insert(_head->_next, x);
+        Insert(_head->_next, std::forward<T>(x));
+    }
+    void Insert(Node* pos, T&& x)
+    {
+        cout << "Insert(Node* pos, T&& x)" << endl;
+
+        Node* prev = pos->_prev;
+        Node* newnode = new Node;
+        //多次转发调用，仍保留对象原生类型属性
+        newnode->_data = std::forward<T>(x); // 关键位置
+        // prev newnode pos
+
+        prev->_next = newnode;
+        newnode->_prev = prev;
+        newnode->_next = pos;
+        pos->_prev = newnode;
+
+
+        cout << "Insert(Node* pos, T&& x) ---- end" << endl;
+
+    }
+    void Insert(Node* pos, const T& x)
+    {
+        cout << "Insert(Node* pos, const T& x)" << endl;
+
+        Node* prev = pos->_prev;
+        Node* newnode = new Node;
+
+        newnode->_data = x; // 关键位置
+        // prev newnode pos
+
+        prev->_next = newnode;
+        newnode->_prev = prev;
+        newnode->_next = pos;
+        pos->_prev = newnode;
+
+        cout << "Insert(Node* pos, const T& x) ---- end" << endl;
+
+    }
 private:
-	Node* _head;
+    Node* _head;
 };
 int main()
 {
-  List<bit::string> lt;
-  lt.PushBack("1111");//先构造一次，再完美push，再移动赋值
-  lt.PushFront("2222");
-  return 0;
+    List<qlz::string> lt;
+    lt.PushBack("1111");//先构造一次，再push，再普通赋值
+    lt.PushFront("2222");//先构造一次，再完美push，再移动赋值
+    return 0;
 }
 ~~~
 
@@ -7680,7 +7706,7 @@ int main()
 
 最后重要的是前4个，后两个用处不大。默认成员函数就是我们不写编译器会生成一个默认的。 
 
-C++11 新增了两个：移动构造函数和移动赋值运算符重载。 
+**C++11 新增了两个：移动构造函数和移动赋值运算符重载**。 
 
 针对移动构造函数和移动赋值运算符重载有一些需要注意的点如下： 
 
@@ -7717,7 +7743,7 @@ public:
      /*~Person()
      {}*/
 private:
-     bit::string _name;
+     qlz::string _name;
      int _age;
 };
 int main()
@@ -7734,10 +7760,8 @@ int main()
 
 ###### 类成员变量初始化 
 
-> C++11允许在类声明时给成员变量初始缺省值，默认生成构造函数会使用这些缺省值初始化，这 个我们在类和对象默认就讲了，这里就不再细讲了。 
+> C++11允许在类声明时给成员变量初始缺省值，默认生成构造函数会使用这些缺省值初始化，
 >
-
-
 
 ###### 强制生成默认函数的关键字default
 
@@ -7758,7 +7782,7 @@ public:
   {}
  Person(Person&& p) = default;
 private:
-  bit::string _name;
+  qlz::string _name;
   int _age;
 };
 int main()
@@ -7776,7 +7800,7 @@ int main()
 
 > 如果能想要限制某些默认函数的生成，在C++98中，将该函数设置成private，并且只声明补丁，这样只要其他人想要调用就会报错（私有函数只能友元/类成员函数调用）。
 >
-> 在C++11中更简单，只需在该函数声明加上=delete即 可，该语法指示编译器不生成对应函数的默认版本，称=delete修饰的函数为**删除函数**。
+> 在C++11中更简单，只需在该函数声明加上=delete即可，该语法指示编译器不生成对应函数的默认版本，称=delete修饰的函数为**删除函数**。
 
 ~~~C++
 class Person
@@ -7788,7 +7812,7 @@ public:
   {}
   Person(const Person& p) = delete;
 private:
-  bit::string _name;
+  qlz::string _name;
   int _age;
 };
 int main()
@@ -7808,7 +7832,7 @@ int main()
 
 ##### 可变参数模板
 
-> C++11的新特性可变参数模板能够让您创建可以接受可变参数的函数模板和类模板，相比 C++98/03，类模版和函数模版中只能含固定数量的模版参数，可变模版参数无疑是一个巨大的改 。然而由于可变模版参数比较抽象，使用起来需要一定的技巧，所以这块还是比较晦涩的。现阶段呢，我们掌握一些基础的可变参数模板特性就够我们用了，所以这里我们点到为止，以后大 家如果有需要，再可以深入学习。 
+> C++11的新特性可变参数模板能够让您创建可以接受可变参数的函数模板和类模板，相比 C++98/03，类模版和函数模版中只能含固定数量的模版参数，可变模版参数无疑是一个巨大的改变 。然而由于可变模版参数比较抽象，使用起来需要一定的技巧，所以这块还是比较晦涩的。现阶段呢，我们掌握一些基础的可变参数模板特性就够我们用了，所以这里我们点到为止，以后大家如果有需要，再可以深入学习。 
 >
 
 下面就是一个基本可变参数的函数模板
@@ -7821,7 +7845,7 @@ void ShowList(Args... args)
 {}
 ~~~
 
-上面的参数args前面有省略号，所以它就是一个可变模版参数，我们把带省略号的参数称为“参数包”，它里面包含了0到N（N>=0）个模版参数。我们无法直接获取参数包args中的每个参数的， 只能通过展开参数包的方式来获取参数包中的每个参数，这是使用可变模版参数的一个主要特 点，也是最大的难点，即如何展开可变模版参数。由于语法不支持使用args[i]这样方式获取可变 参数，所以我们的用一些奇招来一一获取参数包的值。 
+上面的参数args前面有省略号，所以它就是一个可变模版参数，我们把带省略号的参数称为“参数包”，它里面包含了0到N（N>=0）个模版参数。我们无法直接获取参数包args中的每个参数的， 只能通过展开参数包的方式来获取参数包中的每个参数，这是使用可变模版参数的一个主要特点，也是最大的难点，即如何展开可变模版参数。由于语法不支持使用args[i]这样方式获取可变 参数，所以我们的用一些奇招来一一获取参数包的值。 
 
 **1. 递归函数方式展开参数包**
 
@@ -7850,15 +7874,25 @@ int main()
 
 **2. 逗号表达式展开参数包**
 
-这种展开参数包的方式，不需要通过递归终止函数，是直接在expand函数体中展开的, printarg 不是一个递归终止函数，只是一个处理参数包中每一个参数的函数。这种就地展开参数包的方式 实现的关键是逗号表达式。我们知道逗号表达式会按顺序执行逗号前面的表达式。 
+这种展开参数包的方式，不需要通过递归终止函数，是**直接在expand函数体中展开**的, printarg 不是一个递归终止函数，只是一个处理参数包中每一个参数的函数。这种就地展开参数包的方式 实现的关键是逗号表达式。我们知道逗号表达式会按顺序执行逗号前面的表达式。 
 
-expand函数中的逗号表达式：(printarg(args), 0)，也是按照这个执行顺序，先执行 printarg(args)，再得到逗号表达式的结果0。同时还用到了C++11的另外一个特性——初始化列 表，通过初始化列表来初始化一个变长数组, {(printarg(args), 0)...}将会展开成((printarg(arg1),0),  (printarg(arg2),0), (printarg(arg3),0), etc... )，最终会创建一个元素值都为0的数组int arr[sizeof...(Args)]。由于是逗号表达式，在创建数组的过程中会先执行逗号表达式前面的部分printarg(args) 打印出参数，也就是说在构造int数组的过程中就将参数包展开了，这个数组的目的纯粹是为了在 数组构造的过程展开参数包
+expand函数中的逗号表达式：(printarg(args), 0)，也是按照这个执行顺序，先执行 printarg(args)，再得到逗号表达式的结果0。同时还用到了C++11的另外一个特性——初始化列表，通过初始化列表来初始化一个变长数组, {(printarg(args), 0)...}将会展开成((printarg(arg1),0),  (printarg(arg2),0), (printarg(arg3),0), etc... )，最终会创建一个元素值都为0的数组int arr[sizeof...(Args)]。由于是逗号表达式，在创建数组的过程中会先执行逗号表达式前面的部分printarg(args) 打印出参数，也就是说在构造int数组的过程中就将参数包展开了，这个数组的目的纯粹是为了在 数组构造的过程展开参数包
 
 ~~~C++
-template <class T>
+#include <stdio.h>
+#include <string.h>
+#include <iostream>
+
+
+void PrintArg(int t)//重载
+{
+	cout << t + 111 << ' ';
+}
+
+template<class T>
 void PrintArg(T t)
 {
-	cout << t << " ";
+	cout << t << ' ';
 }
 //展开函数
 template <class ...Args>
@@ -7866,13 +7900,14 @@ void ShowList(Args... args)
 {
 	int arr[] = { (PrintArg(args), 0)... };
 	cout << endl;
+	//cout << endl << sizeof arr / 4 << endl;
 }
 int main()
 {
-  ShowList(1);
-  ShowList(1, 'A');
-  ShowList(1, 'A', std::string("sort"));
-  return 0;
+	ShowList(1);
+	ShowList(1, 'A');
+	ShowList(1, 'A', std::string("sort"));
+	return 0;
 }
 ~~~
 
@@ -7907,10 +7942,10 @@ int main()
 
 int main()
 {
- // 下面我们试一下带有拷贝构造和移动构造的bit::string，再试试呢
+ // 下面我们试一下带有拷贝构造和移动构造的qlz::string，再试试呢
  // 我们会发现其实差别也不到，emplace_back是直接构造了，push_back
  // 是先构造，再移动构造，其实也还好。
-  std::list< std::pair<int, bit::string> > mylist;
+  std::list< std::pair<int, qlz::string> > mylist;
   mylist.emplace_back(10, "sort");
   mylist.emplace_back(make_pair(20, "sort"));
   mylist.push_back(make_pair(30, "sort"));
@@ -7999,19 +8034,17 @@ int main()
 }
 ~~~
 
-
-
-上述代码就是使用C++11中的lambda表达式来解决，可以看出lambda表达式实际是一个匿名函数。
+上述代码就是使用C++11中的lambda表达式来解决，可以看出**lambda表达式实际是一个匿名函数**。
 
 lambda表达式书写格式：**[capture-list] (parameters) mutable -> return-type { statement  }** 
 
 ###### **1. lambda表达式各部分说明**
 
-- [capture-list] : 捕捉列表，该列表总是出现在lambda函数的开始位置，编译器根据[]来 判断接下来的代码是否为lambda函数，捕捉列表能够捕捉上下文中的变量供lambda 函数使用。 
-- (parameters)：参数列表。与普通函数的参数列表一致，如果不需要参数传递，则可以 连同()一起省略 
-- mutable：默认情况下，lambda函数总是一个const函数，mutable可以取消其常量性。使用该修饰符时，参数列表不可省略(即使参数为空)。
-- ->returntype：返回值类型。用追踪返回类型形式声明函数的返回值类型，没有返回值时此部分可省略。返回值类型明确情况下，也可省略，由编译器对返回类型进行推导。 
-- {statement}：函数体。在该函数体内，除了可以使用其参数外，还可以使用所有捕获到的变量。
+- **[capture-list] : 捕捉列表**，该列表总是出现在lambda函数的开始位置，编译器根据[]来 判断接下来的代码是否为lambda函数，捕捉列表能够捕捉上下文中的变量供lambda 函数使用。 
+- **(parameters)：参数列表**，与普通函数的参数列表一致，如果不需要参数传递，则可以 连同()一起省略 
+- **mutable：默认情况下，lambda函数总是一个const函数，mutable可以取消其常量性。使用该修饰符时，参数列表不可省略(即使参数为空)。**
+- **->returntype：返回值类型**，用追踪返回类型形式声明函数的返回值类型，没有返回值时此部分可省略。返回值类型明确情况下，也**可省略，由编译器对返回类型进行推导**。 
+- **{statement}：函数体**，在该函数体内，除了可以使用其参数外，还可以使用所有捕获到的变量。
 
 **注意：** 
 
@@ -8022,25 +8055,25 @@ lambda表达式书写格式：**[capture-list] (parameters) mutable -> return-ty
 int main()
 {
     // 最简单的lambda表达式, 该lambda表达式没有任何意义
-   []{}; 
+    [] {};
 
     // 省略参数列表和返回值类型，返回值类型由编译器推导为int
     int a = 3, b = 4;
-   [=]{return a + 3; }; 
+    [=] {return a + 3; };
 
     // 省略了返回值类型，无返回值类型
-    auto fun1 = [&](int c){b = a + c; }; 
-    fun1(10)
-    cout<<a<<" "<<b<<endl;
+    auto fun1 = [&](int c) {b = a + c; };
+    fun1(10);
+        cout << a << " " << b << endl;
 
     // 各部分都很完善的lambda函数
-    auto fun2 = [=, &b](int c)->int{return b += a + c; }; 
-    cout<<fun2(10)<<endl;
+    auto fun2 = [=, &b](int c)->int {return b += a + c; };
+    cout << fun2(10) << endl;
 
     // 复制捕捉x
     int x = 10;
-    auto add_x = [x](int a) mutable { x *= 2; return a + x; }; 
-    cout << add_x(10) << endl; 
+    auto add_x = [x](int a) mutable { x *= 2; return a + x; };
+    cout << add_x(10) << endl;
     return 0;
 }
 ~~~
@@ -8051,7 +8084,7 @@ int main()
 
 捕捉列表描述了上下文中那些数据可以被lambda使用，以及使用的方式传值还是传引用。 
 
-- [var]：表示值传递方式捕捉变量
+- [var]：表示值传递方式捕捉变量var
 - [&var]：表示引用传递捕捉变量var 
 - [=]：表示值传递方式捕获所有父作用域中的变量(包括this) 
 - [&]：表示引用传递捕捉所有父作用域中的变量(包括this) 
@@ -8060,7 +8093,7 @@ int main()
 注意：
 
 - **父作用域指包含lambda函数的语句块**
-- 语法上捕捉列表可由多个捕捉项组成，并以逗号分割。 比如：[=, &a, &b]：以引用传递的方式捕捉变量a和b，值传递方式捕捉其他所有变量。 [&，a, this]：值传递方式捕捉变量a和this，引用方式捕捉其他变量 
+- **语法上捕捉列表可由多个捕捉项组成，并以逗号分割**。 比如：[=, &a, &b]：以引用传递的方式捕捉变量a和b，值传递方式捕捉其他所有变量。 [&，a, this]：值传递方式捕捉变量a和this，引用方式捕捉其他变量 
 - **捕捉列表不允许变量重复传递**，否则就会导致编译错误。 比如：[=, a]：=已经以值传递方式捕捉了所有变量，捕捉a重复
 - **在块作用域以外的lambda函数捕捉列表必须为空**。因为没有可捕捉的变量。 
 - 在块作用域中的lambda函数仅能捕捉父作用域中局部变量，捕捉任何非此作用域或者非局部变量都会导致编译报错。 
@@ -8082,10 +8115,9 @@ int main()
      PF();
      return 0;
 }
-
 ~~~
 
-#### 函数对象与lanbda表达式
+##### 函数对象与lanbda表达式
 
 函数对象，又称为仿函数，即可以像函数一样使用的对象，就是在类中重载了operator()运算符的类对象。
 
@@ -8116,7 +8148,7 @@ int main()
 
 从使用方式上来看，函数对象与lambda表达式完全一样。 
 
-函数对象将rate作为其成员变量，在定义对象时给出初始值即可，lambda表达式通过捕获列表可 以直接将该变量捕获到。
+函数对象将rate作为其成员变量，在定义对象时给出初始值即可，lambda表达式通过捕获列表可以直接将该变量捕获到。
 
 ![image-20221121162001217](%E5%9B%BE%E7%89%87/README/image-20221121162001217.png)
 
@@ -8309,7 +8341,9 @@ bind (Fn&& fn, Args&&... args);
 
 其中，newCallable本身是一个可调用对象，arg_list是一个逗号分隔的参数列表，对应给定的 callable的参数。**当我们调用newCallable时，newCallable会调用callable,并传给它arg_list中 的参数。** 
 
-arg_list中的参数可能包含形如n的名字，其中n是一个整数，这些参数是“占位符”，表示 newCallable的参数，它们占据了传递给newCallable的参数的“位置”。数值n表示生成的可调用对 象中参数的位置：\_1为newCallable的第一个参数，_2为第二个参数，以此类推。
+arg_list中的参数可能包含形如n的名字，其中n是一个整数，这些参数是“占位符”，表示 newCallable的参数，它们占据了传递给newCallable的参数的“位置”。数值n表示生成的可调用对象中参数的位置：**\_1为newCallable的第一个参数，_2为第二个参数，以此类推**。
+
+**特别的，绑定成员函数时，需要额外传入对象/对象指针**
 
 ~~~C++
 // 使用举例
@@ -8476,7 +8510,7 @@ eg：数据集合{1，7，6，4，5，9}；
     >                 if(_ht[i]._state == EXIST)
     >                     newHt.Insert(_ht[i]._val);
     >            }
-    >                                                                             
+    >                                                                                 
     >             Swap(newHt);
     >        }
     >     ~~~
@@ -9151,7 +9185,7 @@ eg：数据集合{1，7，6，4，5，9}；
     >     				50331653, 100663319, 201326611, 402653189, 805306457,
     >     				1610612741, 3221225473, 4294967291
     >     			};
-    >                                                                     
+    >                                                                         
     >     			for (size_t i = 0; i < __stl_num_primes; ++i)
     >     			{
     >     				if (__stl_prime_list[i] > n)
@@ -9159,7 +9193,7 @@ eg：数据集合{1，7，6，4，5，9}；
     >     					return __stl_prime_list[i];
     >     				}
     >     			}
-    >                                                                     
+    >                                                                         
     >     			return -1;
     >     		}
     >     ~~~
