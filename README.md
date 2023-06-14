@@ -862,6 +862,7 @@ void Person::PrintPersonInfo()
     - 返回*this: 要复合连续赋值的含义
 
 2. **赋值运算符只能重载成类的成员函数不能重载成全局友元函数**
+    [为什么](https://blog.csdn.net/qq_29344757/article/details/78820189)
 
     ```c++
     class Date
@@ -942,6 +943,48 @@ int main()
  return 0;
 }
 ~~~
+
+**自定义类型转换成内置类型**
+
+自定义类型转换成内置类型，也需要重载一些运算符，只是格式不同。
+
+~~~C++
+class A
+{
+private:
+    int _a;
+    double _b;
+    char _c;
+    
+public:
+    //分别重载了三种内置类型转换
+    operator int()
+    {
+        return _a;
+	}
+    operator double()
+    {
+        return _b;
+	}
+    operator char()
+    {
+        return _c;
+	}
+}
+
+int main()
+{
+    A var;
+    
+    int a = var;
+    double b = var;
+    char c = var;
+    
+    return 0;
+}
+~~~
+
+
 
 ######  取地址及const取地址操作符重载
 
@@ -6946,7 +6989,7 @@ return 0;
 >         Derive* p3 = &d;
 >         return 0;
 >     }
->                                                                                                                                                                                                                                                                                                 
+>                                                                                                                                                                                                                                                                                                             
 >     ~~~
 >
 >     A：p1 == p2 == p3 B：p1 < p2 < p3 C：p1 == p3 != p2 D：p1 != p2 != p3
@@ -6961,13 +7004,13 @@ return 0;
 >         virtual void func(int val = 1){ std::cout<<"A->"<< val <<std::endl;}
 >         virtual void test(){ func();}
 >     };
->                                                                                                                                                                                                                                                                                                 
+>                                                                                                                                                                                                                                                                                                             
 >     class B : public A
 >     {
 >         public:
 >         void func(int val=0){ std::cout<<"B->"<< val <<std::endl; }
 >     };
->                                                                                                                                                                                                                                                                                                 
+>                                                                                                                                                                                                                                                                                                             
 >     int main(int argc ,char* argv[])
 >     {
 >         B*p = new B;
@@ -8510,7 +8553,7 @@ eg：数据集合{1，7，6，4，5，9}；
     >                 if(_ht[i]._state == EXIST)
     >                     newHt.Insert(_ht[i]._val);
     >            }
-    >                                                                                 
+    >                                                                                             
     >             Swap(newHt);
     >        }
     >     ~~~
@@ -9185,7 +9228,7 @@ eg：数据集合{1，7，6，4，5，9}；
     >     				50331653, 100663319, 201326611, 402653189, 805306457,
     >     				1610612741, 3221225473, 4294967291
     >     			};
-    >                                                                         
+    >                                                                                     
     >     			for (size_t i = 0; i < __stl_num_primes; ++i)
     >     			{
     >     				if (__stl_prime_list[i] > n)
@@ -9193,7 +9236,7 @@ eg：数据集合{1，7，6，4，5，9}；
     >     					return __stl_prime_list[i];
     >     				}
     >     			}
-    >                                                                         
+    >                                                                                     
     >     			return -1;
     >     		}
     >     ~~~
@@ -9509,18 +9552,18 @@ private:
 > 1. 终止程序，如assert，缺陷：用户难以接受。如发生内存错误，除0错误时就会终止程序。
 > 2.  返回错误码，缺陷：需要程序员自己去查找对应的错误。如系统的很多库的接口函数都是通过把错误码放到errno中，表示错误 
 >
-> 实际中C语言基本都是使用返回错误码的方式处理错误，部分情况下使用终止程序处理非常严重的 错误。
+> 实际中C语言基本都是使用返回错误码的方式处理错误，部分情况下使用终止程序处理非常严重的错误。
 
 #### C++异常概念
 
 > 异常是一种处理错误的方式，**当一个函数发现自己无法处理的错误时就可以抛出异常，让函数的直接或间接的调用者处理这个错误。** 
 >
 
-- throw: 当问题出现时，程序会抛出一个异常。这是通过使用 throw 关键字来完成的。 
-- catch: 在您想要处理问题的地方，通过异常处理程序捕获异常`.catch `关键字用于捕获异 常，可以有多个catch进行捕获。 
-- try: try 块中的代码标识将被激活的特定异常,它后面通常跟着一个或多个 catch 块。
+- **throw**: 当问题出现时，程序会抛出一个异常。这是通过使用 throw 关键字来完成的。 
+- **catch**: 在您想要处理问题的地方，通过异常处理程序捕获异常`.catch `关键字用于捕获异 常，可以有多个catch进行捕获。 
+- **try**: try 块中的代码标识将被激活的特定异常,它后面通常跟着一个或多个 catch 块。
 
-如果有一个块抛出一个异常，捕获异常的方法会使用 try 和 catch 关键字。try 块中放置可能抛 出异常的代码，try 块中的代码被称为保护代码。使用 try/catch 语句的语法如下所示：
+如果有一个块抛出一个异常，捕获异常的方法会使用 try 和 catch 关键字。try 块中放置可能抛出异常的代码，try 块中的代码被称为保护代码。使用 try/catch 语句的语法如下所示：
 
 ~~~C++
 try
@@ -9538,8 +9581,6 @@ try
 }
 ~~~
 
-
-
 ####  异常的使用
 
 ##### 异常的抛出和捕获
@@ -9548,7 +9589,7 @@ try
 
 1. 异常是通过抛出对象而引发的，该**对象的类型决定了**应该激活哪个catch的处理代码。
 2. 被**选中的处理代码**是调用链中**与该对象类型匹配且离抛出异常位置最近**的那一个。 
-3. 抛出异常对象后，会生成一个**异常对象的拷贝**，因为抛出的异常对象可能是一个临时对象， 所以会生成一个拷贝对象，这个拷贝的临时对象会在被catch以后销毁。（这里的处理类似 于函数的传值返回） 
+3. 抛出异常对象后，会生成一个**异常对象的拷贝**，因为抛出的异常对象可能是一个临时对象， 所以会生成一个拷贝对象，这个拷贝的临时对象会在被catch以后销毁。（这里的处理类似于函数的传值返回） 
 4. catch(...)可以捕获**任意类型的异常**，问题是不知道异常错误是什么。 
 5. 实际中抛出和捕获的匹配原则有个**例外**，并不都是类型完全匹配，可以**抛出的派生类对象， 使用基类捕获**，这个在实际中非常实用，我们后面会详细讲解这个（继承+多态）。
 
@@ -9565,31 +9606,34 @@ try
 double Division(int a, int b)
 {
     // 当b == 0时抛出异常
- if (b == 0)
-   throw "Division by zero condition!";
+    if (b == 0)
+        throw "Division by zero condition!";
     else
         return ((double)a / (double)b);
 }
 void Func()
 {
-     int len, time;
-     cin >> len >> time;
-     cout << Division(len, time) << endl;
+    int len, time;
+    cin >> len >> time;
+    cout << Division(len, time) << endl;
 }
 int main()
 {
-     try 
-     {
-     	Func();
-     }
-     catch (const char* errmsg） 
-     {
-     	cout << errmsg << endl;
-     }
-     catch(...){
-        cout<<"unkown exception"<<endl;           
-     }
-     return 0;
+    try
+    {
+        Func();
+    }
+    catch (const char* errmsg)
+    {
+        cout << errmsg << endl;   
+    }
+    catch (...) 
+    {
+        cout << "unkown exception" << endl;
+    }
+        
+        
+    return 0;
 }
 ~~~
 
@@ -9649,15 +9693,15 @@ int main()
 
 #### 异常安全
 
-- **构造函数完成对象的构造和初始化**，**最好不要**在构造函数中抛出异常，否则**可能导致对象不完整或没有完全初始化** 
-- **析构函数主要完成资源的清理，最好不要**在析构函数内抛出异常，否则可能导致资源泄漏(内存泄漏、句柄未关闭等) 
-- **C++中异常经常会导致资源泄漏**的问题，比如在new和delete中抛出了异常，导致内存泄 漏，在lock和unlock之间抛出了异常导致死锁，C++经常使用RAII来解决以上问题，关于RAII 我们智能指针这节进行讲解。
+- **构造函数完成对象的构造和初始化**，**最好不要**在构造函数中抛出异常，否则**可能导致对象不完整或没有完全初始化** 。
+- **析构函数主要完成资源的清理，最好不要**在析构函数内抛出异常，否则**可能导致资源泄漏(内存泄漏、句柄未关闭等)** 。
+- **C++中异常经常会导致资源泄漏**的问题，比如在new和delete中抛出了异常，导致内存泄 漏，在lock和unlock之间抛出了异常导致死锁，**C++经常使用RAII来解决以上问题**，关于RAII 我们智能指针这节进行讲解。
 
 #### 异常规范
 
-1. 异常规格说明的目的是为了让函数使用者知道该函数可能抛出的异常有哪些。 可以在函数的后面接throw(类型)，列出这个函数可能抛掷的所有异常类型。 
-2. 函数的后面接throw()，表示函数不抛异常。 
-3. 若无异常接口声明，则此函数可以抛掷任何类型的异常。
+1. 异常规格说明的目的是为了让函数使用者知道该函数可能抛出的异常有哪些。 可以**在函数的后面接throw(类型)，列出这个函数可能抛掷的所有异常类型**。 
+2. **函数的后面接throw()，表示函数不抛异常**。 
+3. **若无异常接口声明，则此函数可以抛掷任何类型的异常**。
 
 ~~~C++
 // 这里表示这个函数会抛出A/B/C/D中的某种类型的异常
@@ -9675,7 +9719,7 @@ thread (thread&& x) noexcept;
 
 #### 自定义异常体系
 
-> 实际使用中很多公司都会自定义自己的异常体系进行规范的异常管理，因为一个项目中如果大家 随意抛异常，那么外层的调用者基本就没办法玩了，所以实际中都会定义一套继承的规范体系。 这样大家抛出的都是继承的派生类对象，捕获一个基类就可以了
+> 实际使用中很多公司都会自定义自己的异常体系进行规范的异常管理，因为一个项目中如果大家随意抛异常，那么外层的调用者基本就没办法玩了，所以实际中都会定义一套继承的规范体系。 这样大家抛出的都是继承的派生类对象，捕获一个基类就可以了
 >
 
 ![image-20221121203926757](%E5%9B%BE%E7%89%87/README/image-20221121203926757.png)
@@ -9685,123 +9729,124 @@ thread (thread&& x) noexcept;
 class Exception
 {
 public:
-  Exception(const string& errmsg, int id)
-  :_errmsg(errmsg)
-  ,_id(id)
-  {}
-  virtual string what() const
-  {
-      return _errmsg;
-  }
+    Exception(const string& errmsg, int id)
+        :_errmsg(errmsg)
+        , _id(id)
+    {}
+    virtual string what() const
+    {
+        return _errmsg;
+    }
 protected:
-  string _errmsg;
-  int _id;
+    string _errmsg;
+    int _id;
 };
 class SqlException : public Exception
 {
 public:
-  SqlException(const string& errmsg, int id, const string& sql)
-  :Exception(errmsg, id)
-  , _sql(sql)
-  {}
-  virtual string what() const
-  {
-      string str = "SqlException:";
-      str += _errmsg;
-      str += "->";
-      str += _sql;
-      return str;
-  }
+    SqlException(const string& errmsg, int id, const string& sql)
+        :Exception(errmsg, id)
+        , _sql(sql)
+    {}
+    virtual string what() const
+    {
+        string str = "SqlException:";
+        str += _errmsg;
+        str += "->";
+        str += _sql;
+        return str;
+    }
 private:
-	const string _sql;
+    const string _sql;
 };
 class CacheException : public Exception
 {
 public:
-  CacheException(const string& errmsg, int id)
-  :Exception(errmsg, id)
-  {}
-  virtual string what() const
-  {
-      string str = "CacheException:";
-      str += _errmsg;
-      return str;
-  }
+    CacheException(const string& errmsg, int id)
+        :Exception(errmsg, id)
+    {}
+    virtual string what() const
+    {
+        string str = "CacheException:";
+        str += _errmsg;
+        return str;
+    }
 };
 class HttpServerException : public Exception
 {
 public:
-  HttpServerException(const string& errmsg, int id, const string& type)
-  :Exception(errmsg, id)
-  , _type(type)
-  {}
-  virtual string what() const
-  {
-      string str = "HttpServerException:";
-      str += _type;
-      str += ":";
-      str += _errmsg;
-      return str;
-  }
+    HttpServerException(const string& errmsg, int id, const string& type)
+        :Exception(errmsg, id)
+        , _type(type)
+    {}
+    virtual string what() const
+    {
+        string str = "HttpServerException:";
+        str += _type;
+        str += ":";
+        str += _errmsg;
+        return str;
+    }
 private:
-	const string _type;
+    const string _type;
 };
 void SQLMgr()
 {
-srand(time(0));
-if (rand() % 7 == 0)
-{
-	throw SqlException("权限不足", 100, "select * from name = '张三'");
-}
-//throw "xxxxxx";
+    srand(time(0));
+    if (rand() % 7 == 0)
+    {
+        throw SqlException("权限不足", 100, "select * from name = '张三'");
+    }
+    //throw "xxxxxx";
 }
 void CacheMgr()
 {
-  srand(time(0));
-  if (rand() % 5 == 0)
-  {
-  	throw CacheException("权限不足", 100);
-  }
-  else if (rand() % 6 == 0)
-  {
-  	throw CacheException("数据不存在", 101);
-  }
-  SQLMgr();
+    srand(time(0));
+    if (rand() % 5 == 0)
+    {
+        throw CacheException("权限不足", 100);
+    }
+    else if (rand() % 6 == 0)
+    {
+        throw CacheException("数据不存在", 101);
+    }
+    SQLMgr();
 }
 void HttpServer()
 {
-  // ...
-  srand(time(0));
-  if (rand() % 3 == 0)
-  {
-  	throw HttpServerException("请求资源不存在", 100, "get");
-  }
-  else if (rand() % 4 == 0)
-  {
-  	throw HttpServerException("权限不足", 101, "post");
-  }
-  CacheMgr();
+    // ...
+    srand(time(0));
+    if (rand() % 3 == 0)
+    {
+        throw HttpServerException("请求资源不存在", 100, "get");
+    }
+    else if (rand() % 4 == 0)
+    {
+        throw HttpServerException("权限不足", 101, "post");
+    }
+    CacheMgr();
 }
 int main()
 {
-  while (1)
-  {
-      this_thread::sleep_for(chrono::seconds(1));
-      try
-      {
-          HttpServer();
-      }
-      catch (const Exception& e) // 这里捕获父类对象就可以
-      {
-          // 多态
-          cout << e.what() << endl;
-      }
-      catch (...)
-      {
-          cout << "Unkown Exception" << endl;
-      }
-  }
-  return 0;
+    while (1)
+    {
+        //this_thread::sleep_for(chrono::seconds(1));
+        Sleep(1000);
+        try
+        {
+            HttpServer();
+        }
+        catch (const Exception& e) // 这里捕获父类对象就可以
+        {
+            // 多态
+            cout << e.what() << endl;
+        }
+        catch (...)
+        {
+            cout << "Unkown Exception" << endl;
+        }
+    }
+    return 0;
 }
 ~~~
 
@@ -9809,7 +9854,7 @@ int main()
 
 #### C++标准库的异常体系
 
-> C++ 提供了一系列标准的异常，定义在std中，我们可以在程序中使用这些标准的异常。它们是以父 子类层次结构组织起来的，如下所示：
+> C++ 提供了一系列标准的异常，定义在std中，我们可以在程序中使用这些标准的异常。它们是以父子类层次结构组织起来的，如下所示：
 >
 
 ![image-20221121204319127](%E5%9B%BE%E7%89%87/README/image-20221121204319127.png)
@@ -9847,7 +9892,7 @@ int main()
 
 ##### C++异常的优点：
 
-1. 异常对象定义好了，相比错误码的方式可以清晰准确的展示出错误的各种信息，甚至可以包 含堆栈调用的信息，这样可以帮助更好的定位程序的bug。
+1. 异常对象定义好了，相比错误码的方式**可以清晰准确的展示出错误的各种信息**，甚至可以包含堆栈调用的信息，这样可以帮助更好的定位程序的bug。
 
 2. 返回错误码的传统方式有个很大的问题就是，在函数调用链中，深层的函数返回了错误，那 么我们得层层返回错误，最外层才能拿到错误，具体看下面的详细解释。
 
@@ -9894,12 +9939,12 @@ int main()
 1. 异常会导致程序的**执行流乱跳**，并且非常的混乱，并且是运行时出错抛异常就会乱跳。这会 导致我们跟踪调试时以及分析程序时，比较困难。
 2. 异常会有一些**性能的开销**。当然在现代硬件速度很快的情况下，这个影响基本忽略不计。
 3.  C++没有垃圾回收机制，资源需要自己管理。有了异常**非常容易导致内存泄漏、死锁等异常安全问题**。这个需要使用RAII来处理资源的管理问题。学习成本较高。
-4.  C++标准库的异常体系定义得不好，导致大家各自定义各自的异常体系，非常的混乱。 
-5. 异常尽量规范使用，否则后果不堪设想，随意抛异常，外层捕获的用户苦不堪言。所以异常 规范有两点 
-    - 抛出异常类型都继承自一个基类。
-    - 函数是否抛异常、抛什么异常，都 使用 func()，throw();的方式规范化。
+4.  C++标准库的异常体系定义得不好，导致大家各自定义各自的异常体系，**非常的混乱**。 
+5. 异常尽量规范使用，否则后果不堪设想，随意抛异常，外层捕获的用户苦不堪言。所以异常规范有两点 
+    - **抛出异常类型都继承自一个基类。**
+    - **函数是否抛异常、抛什么异常，都使用void func() throw() 的方式规范化。**
 
-> **总结：**异常总体而言，利大于弊，所以工程中我们还是鼓励使用异常的。另外OO的语言基本都是 用异常处理错误，这也可以看出这是大势所趋。
+> **总结：**异常总体而言，利大于弊，所以工程中我们还是鼓励使用异常的。另外高级语言基本都是用异常处理错误，这也可以看出这是大势所趋。
 
 ------
 
@@ -9957,7 +10002,7 @@ p1，p2申请的资源未能正常释放
 
 ##### RAII思想
 
-> RAII（Resource Acquisition Is Initialization）是一种利用对象生命周期来控制程序资源（如内存、文件句柄、网络连接、互斥量等等）的简单技术。
+> **RAII（Resource Acquisition Is Initialization）是一种利用对象生命周期来控制程序资源（如内存、文件句柄、网络连接、互斥量等等）的简单技术。**
 > 在对象构造时获取资源，接着控制对资源的访问使之在对象的生命周期内始终保持有效，**最后在对象析构的时候释放资源**。借此，我们实际上把管理一份资源的责任托管给了一个对象。这种做法有两大好处：
 >
 > - **不需要显式地释放资源。**
@@ -9970,41 +10015,41 @@ template<class T>
 class SmartPtr {
 public:
     SmartPtr(T* ptr = nullptr)
-       : _ptr(ptr)
-   {}
+        : _ptr(ptr)
+    {}
     ~SmartPtr()
-   {
-        if(_ptr)
+    {
+        if (_ptr)
             delete _ptr;
-   }
+    }
 
 private:
     T* _ptr;
 };
 int div()
 {
- int a, b;
- cin >> a >> b;
- if (b == 0)
- 	throw invalid_argument("除0错误");
- return a / b;
+    int a, b;
+    cin >> a >> b;
+    if (b == 0)
+        throw invalid_argument("除0错误");
+    return a / b;
 }
 void Func()
 {
- 	SmartPtr<int> sp1(new int);
+    SmartPtr<int> sp1(new int);
     SmartPtr<int> sp2(new int);
- 	cout << div() << endl;
+    cout << div() << endl;
 }
 int main()
 {
     try {
- Func();
-   }
-    catch(const exception& e)
-   {
-        cout<<e.what()<<endl;
-   }
- return 0;
+        Func();
+    }
+    catch (const exception& e)
+    {
+        cout << e.what() << endl;
+    }
+    return 0;
 }
 ~~~
 
@@ -10019,36 +10064,36 @@ int main()
 template<class T>
 class SmartPtr {
 public:
-SmartPtr(T* ptr = nullptr)
-  : _ptr(ptr)
-{}
-~SmartPtr()
-{
-  if(_ptr)
-      delete _ptr;
-}
-T& operator*() {return *_ptr;}
-T* operator->() {return _ptr;}
+    SmartPtr(T* ptr = nullptr)
+        : _ptr(ptr)
+    {}
+    ~SmartPtr()
+    {
+        if (_ptr)
+            delete _ptr;
+    }
+    T& operator*() { return *_ptr; }
+    T* operator->() { return _ptr; }
 private:
-T* _ptr;
+    T* _ptr;
 };
 struct Date
 {
- int _year;
-int _month;
-int _day;
+    int _year;
+    int _month;
+    int _day;
 };
 int main()
 {
-SmartPtr<int> sp1(new int);
-*sp1 = 10
-cout<<*sp1<<endl;
-SmartPtr<int> sparray(new Date);
-// 需要注意的是这里应该是sparray.operator->()->_year = 2018;
-// 本来应该是sparray->->_year这里语法（编译器）上为了可读性，省略了一个->
-sparray->_year = 2018;
-sparray->_month = 1;
-sparray->_day = 1;
+    SmartPtr<int> sp1(new int);
+    *sp1 = 10;
+    cout << *sp1 << endl;
+    SmartPtr<Date> sparray(new Date);
+    // 需要注意的是这里应该是sparray.operator->()->_year = 2018;
+    // 本来应该是sparray->->_year这里语法（编译器）上为了可读性，省略了一个->
+    sparray->_year = 2018;
+    sparray->_month = 1;
+    sparray->_day = 1;
 }
 ~~~
 
@@ -10137,8 +10182,15 @@ namespace autoPtr
 		// sp1悬空
 		*sp2 = 10;
 		cout << *sp2 << endl;
-		//cout << *sp1 << endl; *sp1 == *nullptr
+		//cout << *sp1 << endl; //*sp1 == *nullptr
 	}
+}
+
+int main()
+{
+	autoPtr::func1();
+
+	return 0;
 }
 ~~~
 
@@ -10220,22 +10272,24 @@ void func1()
 4. 如果**不是0**，就说明除了自己还有其他对象在使用该份资源，不能释放该资源，否则其他对象就成野指针了。
 5. 为什么不能使用静态变量计数?
 
-    > 静态成员属于类，不同实例化对象共用一个静态成员
+    > **静态成员属于类的，不同实例化对象共用一个静态成员**。
     >
-    > 但计数是相对于对象被使用次数来说的，代表这个对象被引用了多少次
+    > 但计数是相对于对象被使用次数来说的，代表这个对象被引用了多少次。
     >
-    > 静态变量会统计所有对象的引用次数，不合适
+    > 静态变量会统计所有对象的引用次数，不合适。
     >
     > 为每个对象第一次被引用时，创建一个计数变量。
 
-> weak_ptr的原理：向shared_ptr借使用权，不参与资源的管理，不会增加引用计数
+> weak_ptr的原理：**向shared_ptr借使用权，不参与资源的管理，不会增加引用计数**。
 
-1. 只使用，不负责
-2. 解决shared_ptr的循环引用问题
-3. weak_ptr和shared_ptr可以互相引用，weak_ptr作为辅助型指针使用，没有使用RAII思想
+1. 只使用，不负责。
+2. 解决shared_ptr的循环引用问题。
+3. weak_ptr和shared_ptr可以互相引用，**weak_ptr作为辅助型指针使用，没有使用RAII思想**。
 
 ~~~C++
 // 引用计数支持多个拷贝管理同一个资源，最后一个析构对象释放资源
+//auto和unique，资源的使用权是唯一的，不存在线程安全问题；
+//而shared的使用权是共享的，存在线程安全，在申请和释放的过程中，需要加锁，保证 资源分配过程 的完整性
 namespace sharedPtr
 {
     template<class T>
@@ -10244,7 +10298,7 @@ namespace sharedPtr
     public:
         my_shared_ptr(T* ptr = nullptr)
             :_ptr(ptr)
-            , _pRefCount(new int(1))
+            , _pRefCount(new int(1))//只有在构造智能指针时，才会创建引用计数变量
             , _pmtx(new mutex)
         {}
         my_shared_ptr(const my_shared_ptr<T>& sp)
@@ -10258,10 +10312,18 @@ namespace sharedPtr
         {
             _pmtx->lock();
             bool flag = false;
-            if (--(*_pRefCount) == 0 && _ptr)
+            if (--(*_pRefCount) == 0)
             {
-                cout << "delete:" << _ptr << endl;
-                delete _ptr;
+                if (_ptr == nullptr)
+                {
+                    cout << "_ptr is nullptr" << endl;
+                }
+                else
+                {
+                    cout << "delete:" << _ptr << endl;
+                    delete _ptr;
+                    
+                }
                 delete _pRefCount;
                 flag = true;
             }
@@ -10375,8 +10437,19 @@ namespace sharedPtr
         *sp1 = 2;
         *sp2 = 3;
 
+        my_shared_ptr<int> ss1(new int(1));
+        my_shared_ptr<int> ss2(nullptr);
+        cout << "----\n";
+
         // 函数结束时，智能指针全部析构了， 释放 语句2 生成的资源
     }
+}
+
+int main()
+{
+    sharedPtr::func1();
+
+    return 0;
 }
 ~~~
 
@@ -10385,7 +10458,7 @@ namespace sharedPtr
 通过下面的程序我们来测试shared_ptr的线程安全问题。需要注意的是shared_ptr的线程安全分为两方面： 
 
 1. 智能指针对象中引用计数是多个智能指针对象共享的，两个线程中智能指针的引用计数同时 ++或--，这个操作**不是原子的**，引用计数原来是1，++了两次，可能还是2。这样引用计数就错乱了。会导致资源未释放或者程序崩溃的问题。**所以智能指针中引用计数++、--是需要加锁的，也就是说引用计数的操作是线程安全的（加了锁）。** 
-2. 智能指针管理的对象存放在堆上，两个线程中同时去访问，会**导致线程安全问题（没加锁）**。
+2. 智能指针管理的对象存放在堆上，两个线程中同时去访问，会**导致资源的线程安全问题（没加锁）**。
 
 ~~~C++
 // 1.演示引用计数线程安全问题，就把AddRefCount和SubRefCount中的锁去掉
@@ -10397,16 +10470,16 @@ struct Date
     int _month = 0;
     int _day = 0;
 };
-void SharePtrFunc(bit::shared_ptr<Date>& sp, size_t n, mutex& mtx)
+void SharePtrFunc(sharedPtr::my_shared_ptr<Date>& sp, size_t n, mutex& mtx)
 {
     cout << sp.get() << endl;
     for (size_t i = 0; i < n; ++i)
     {
         // 这里智能指针拷贝会++计数，智能指针析构会--计数，这里是线程安全的。
-        bit::shared_ptr<Date> copy(sp);
+        sharedPtr::my_shared_ptr<Date> copy(sp);
         // 这里智能指针访问管理的资源，不是线程安全的。所以我们看看这些值两个线程++了2n次，但是最终看到的结果，并不一定是加了2n
         {
-            unique_lock<mutex> lk(mtx);
+            unique_lock<mutex> lk(mtx);//{} + mtx锁，保证了访问资源是线程安全的
             copy->_year++;
             copy->_month++;
             copy->_day++;
@@ -10415,7 +10488,7 @@ void SharePtrFunc(bit::shared_ptr<Date>& sp, size_t n, mutex& mtx)
 }
 int main()
 {
-    bit::shared_ptr<Date> p(new Date);
+    sharedPtr::my_shared_ptr<Date> p(new Date);
     cout << p.get() << endl;
     const size_t n = 100000;
     mutex mtx;
@@ -10567,7 +10640,7 @@ int main()
 
 ####  什么是内存泄漏，内存泄漏的危害
 
-> 什么是内存泄漏：内存泄漏指因为疏忽或错误造成程序未能释放已经不再使用的内存的情况。内 存泄漏并不是指内存在物理上的消失，而是应用程序分配某段内存后，因为设计错误，失去了对 该段内存的控制，因而造成了内存的浪费。 
+> 什么是内存泄漏：内存泄漏指因为疏忽或错误造成程序未能释放已经不再使用的内存的情况。内 存泄漏并不是指内存在物理上的消失，而是应用程序分配某段内存后，因为设计错误，失去了对该段内存的控制，因而造成了内存的浪费。 
 >
 > 内存泄漏的危害：长期运行的程序出现内存泄漏，影响很大，如操作系统、后台服务等等，出现 内存泄漏会导致响应越来越慢，最终卡死。
 >
@@ -10581,7 +10654,6 @@ int* p2 = new int;
 
 // 2.异常安全问题
 int* p3 = new int[10];
-
 Func(); // 这里Func函数抛异常导致 delete[] p3未执行，p3没被释放.
 
 delete[] p3;
@@ -10601,7 +10673,7 @@ C/C++程序中一般我们关心两种方面的内存泄漏：
 - **系统资源泄漏** 
 
 ~~~C++
-指程序使用系统分配的资源，比如套接字、文件描述符、管道等没有使用对应的函数释放 掉，导致系统资源的浪费，严重可导致系统效能减少，系统执行不稳定。
+指程序使用系统分配的资源，比如套接字、文件描述符、管道等没有使用对应的函数释放掉，导致系统资源的浪费，严重可导致系统效能减少，系统执行不稳定。
 ~~~
 
 #### 如何检测内存泄漏（了解）
@@ -10707,7 +10779,7 @@ class CopyBan
 
     
 
-2. 将构造函数私有化
+2. 将构造函数私有化--不推荐
 
     > 则创建栈上对象和new创建堆上对象都无法创建，因为他们都需要调用构造函数。则需要创建一个静态的公有的Create函数，Create函数里去new对象，此时这个new可以调用构造函数，返回这个对象的指针。
 
@@ -10755,7 +10827,7 @@ class CopyBan
     }
     ~~~
 
-    > 将构造函数私有化并不能完全禁止在栈上创建对象，还**需要私有化拷贝构造函数和赋值运算符重载**
+    > **将构造函数私有化并不能完全禁止在栈上创建对象，还需要私有化拷贝构造函数和赋值运算符重载**
     >
     > ps：初始化赋值会优化为拷贝构造
 
@@ -10765,7 +10837,7 @@ class CopyBan
 
     > 则函数里创建栈上对象和new创建堆上对象都无法创建，因为他们都需要调用构造函数。 创建一个静态的公有的Create函数，Create函数里去创建对象，此时这个静态函数可以调用构造函数，传值返回。
     >
-    > 用这个静态类成员函数去创建栈上对象，**需要把禁止op new 和 op delete**，即把它俩私有化，是new和delete调不到底层的op，申请不到空间。
+    > **用这个静态类成员函数去创建栈上对象，需要把禁止op new 和 op delete**，即把它俩私有化，是new和delete调不到底层的op，申请不到空间。
     
     ~~~C++
     class StackOnly
@@ -10776,13 +10848,13 @@ class CopyBan
             return StackOnly();
         }
     	
-        //为什么不禁止拷贝构造？
+        //1.为什么不禁止拷贝构造？
         //静态函数返回的是值返回，会调用拷贝函数，会失败
         // StackOnly obj = StackOnly::CreateObj();
         
-        //但 StackOnly* ptr3 = new StackOnly(obj);//拷贝构造 可以在堆上创建
+        //2.但 StackOnly* ptr3 = new StackOnly(obj);//拷贝构造 可以在堆上创建
         
-        //所以需要 禁掉operator new， 可以把new 调用拷贝构造申请对象给禁掉
+        //3.所以需要 禁掉operator new， 可以把new 调用拷贝构造申请对象给禁掉
         //op new申请空间的
        
         void* operator new(size_t size) = delete;
@@ -10796,7 +10868,6 @@ class CopyBan
     };
     ~~~
     
-    
 
 #### 不能被继承
 
@@ -10805,10 +10876,9 @@ class CopyBan
 
 #### 单例模式：设计一个类，只能创建一个对象
 
-> **设计模式：** 设计模式（Design Pattern）是一套被反复使用、多数人知晓的、经过分类的、代码设计经验的总结。为什么会产生设计模式这样的东西呢？就像人类历史发展会产生兵法。最开始部落之间打仗时都是人拼人的对砍。后来春秋战国时期，七国之间经常打仗，就发现打仗也是有套路的，后来孙子就总结出了《孙子兵法》。孙子兵法也是类似。 
+> **设计模式：** 设计模式（Design Pattern）是一套被反复使用、多数人知晓的、经过分类的、代码设计经验的总结。为什么会产生设计模式这样的东西呢？就像人类历史发展会产生兵法。最开始部落之间打仗时都是人拼人的对砍。后来春秋战国时期，七国之间经常打仗，就发现打仗也是有套路的，后来孙子就总结出了《孙子兵法》。设计模式也是类似。 
 >
-> 使用设计模式的目的：为了代码可重用性、让代码更容易被他人理解、保证代码可靠性。 设计模式使代码编写真正工程化；设计模式是软件工程的基石脉络，如同大厦的结构一样。 
->
+> **使用设计模式的目的：为了代码可重用性、让代码更容易被他人理解、保证代码可靠性。 设计模式使代码编写真正工程化；设计模式是软件工程的基石脉络，如同大厦的结构一样。** 
 
 **单例模式：** 
 
@@ -10849,10 +10919,14 @@ private:
 };
 
 Singleton Singleton::m_instance;  // 在程序入口之前就完成单例对象的初始化
-//静态成员变量对象m_instance属于类，所以系统对它初始化时，调用私有的构造函数相当于调用成员函数调用私有函数
+//静态成员变量对象m_instance属于类，所以系统对它初始化时，调用私有的构造函数相当于调用成员函数(调用私有函数)
 ~~~
 
 如果这个单例对象在多线程高并发环境下频繁使用，性能要求较高，那么显然使用饿汉模式来避免资源竞争，提高响应速度更好。
+
+[更加优秀的饿汉模式](https://www.zhihu.com/question/56527586)
+
+[为什么静态成员构造时，可以调用私有构造函数](https://blog.csdn.net/a7642686a/article/details/101162287#:~:text=那么访问的构造函数是否需要用到隐形的this指针呢，不需要，因为构造函数完成之前对象还没有构造完全，还没有this指针，所以调用构造函数的唯一条件就符合public、protected、,static 赋予的作用域即可，而此时构造函数是私有的，那么只有类内部的函数可以调用，而静态成员函数也是属于类内的作用域的，也就是类的内部，所以静态成员函数中的变量是可以访问类的私有构造函数的。)
 
 ##### 懒汉模式
 
@@ -11001,7 +11075,7 @@ int main()
 void Test ()
 {
   const int a = 2;
-  int* p = const_cast< int*>(&a );
+  int* p = const_cast< int*>(&a);
   *p = 3;
   cout<<a <<endl;
 }
@@ -11076,3 +11150,284 @@ int main()
 
 ### IO流
 
+**by 2021dragon**
+
+#### 流是什么
+
+C++流是指信息从外部输入设备（如键盘）向计算机内部（如内存）输入和从计算机内部向外部输出设备（如显示器）输出的过程。这种输入输出的过程被形象的比喻为“流”。
+
+**流的特性：** 有序连续、具有方向性。
+
+为了实现这种流动，C++定义了I/O标准类库，当中的每个类都称为流/流类，用以完成某方面的功能。
+
+#### C语言IO流
+
+在C语言当中，我们使用最频繁的输入输出方式就是scanf与printf：
+
+- **scanf：** 从标准输入设备（键盘）读取数据，并将读取到的值存放到某一指定变量当中。
+- **printf：** 将指定的数据输出到标准输出设备（屏幕），使用时需要注意宽度输出和精度输出的控制。
+
+C语言借助了相应的缓冲区来进行输入与输出，如下图所示：
+
+![在这里插入图片描述](%E5%9B%BE%E7%89%87/README/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBAMjAyMWRyYWdvbg==,size_20,color_FFFFFF,t_70,g_se,x_16.png)
+
+对输入输出缓冲区的理解：
+
+1. **可以屏蔽掉低级I/O的实现。** 低级I/O的实现依赖操作系统本身内核的实现，所以如果能够屏蔽这部分的差异，可以很容易写出可移植的程序。
+2. **可以使用这部分的内容实现“行”读取的行为。** 对于计算机而言是没有“行”这个概念的，有了这部分，就可以定义“行”的概念，然后解析缓冲区的内容，返回一个“行”。
+
+##### 标准IO流
+
+C语言的scanf函数簇和printf函数簇具有非常强大的输入输出格式控制。
+
+##### 文件IO流
+
+:[
+
+#### C++IO流
+
+C++系统实现了一个庞大的类库，其中ios为基类，其他类都是直接或间接派生自ios类。
+
+![在这里插入图片描述](%E5%9B%BE%E7%89%87/README/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBAMjAyMWRyYWdvbg==,size_20,color_FFFFFF,t_70,g_se,x_16-16867463550343.png)
+
+##### 标准IO流
+
+C++标准库提供了4个全局流对象（cin、cout、cerr、clog）：
+
+1. 使用cout进行标准输出，即数据从内存流向控制台（显示器）。
+2. 使用cin进行标准输入，即数据通过键盘输入到程序中。
+3. 使用cerr进行标准错误的输出。
+4. 使用clog进行日志的输出。
+
+从上图可以看出，cout、cerr、clog都是由ostream类实例化出的三个不同的对象，因此这三个对象基本没什么区别，只是应用场景不同。
+
+**注意：**
+
+1. 在使用cin、cout时必须要包含iostream文件，并引入std标准命名空间。
+2. cin为缓冲流。**键盘输入的数据保存在缓冲区中，当要提取时，是从缓冲区中提取**。如果一次输入过多，则多余的数据会留在缓冲区以供之后提取，如果输入错了，必须在回车之前进行修改，回车键按下就无法进行修改了，只有把输入缓冲区中的数据取完后，才会要求输入新的数据。
+3. 输入数据类型必须与要提取的数据类型一致，否则出错。出错只是在流的状态字state中对应位置（置1），程序继续。
+4. 空格和回车都可以作为数据之间的分隔符，所以多个数据可以在一行输入，也可以分行输入。但如果是字符型和字符串，则空格无法用cin输入，字符串中也不能有空格，回车符也无法读入。例如，我们使用cin无法将含空格的字符串"hello world"输入到string对象中。**对于含有空格的字符串**，我们需要使用getline函数进行读取，因为getline函数只有遇到’\n’才会停止读取。
+5. cin和cout可以直接输入和输出内置类型的数据。因为标准库已经将所有内置类型的输入和输出进行了重载。
+    ![在这里插入图片描述](%E5%9B%BE%E7%89%87/README/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBAMjAyMWRyYWdvbg==,size_20,color_FFFFFF,t_70,g_se,x_16-16867465106856.png)
+    ![在这里插入图片描述](%E5%9B%BE%E7%89%87/README/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBAMjAyMWRyYWdvbg==,size_20,color_FFFFFF,t_70,g_se,x_16-16867465180139.png)
+6. 对于自定义类型，如果要支持cin和cout的标准输入输出，则需要对<<和>>进行重载。
+
+##### 文件IO流
+
+###### 文件操作
+
+C++根据文件内容的数据格式将文件分为二进制文件和文本文件，采用文件流对象操作文件的一般步骤如下：
+
+1. 定义一个文件流对象。
+    操作文件的类有以下三个：
+    ![image-20230614204321915](%E5%9B%BE%E7%89%87/README/image-20230614204321915.png)
+2. 使用文件流对象的成员函数打开一个磁盘文件，使得文件流对象和磁盘文件之间建立联系。
+    文件常见的打开方式如下：
+    ![image-20230614204351741](%E5%9B%BE%E7%89%87/README/image-20230614204351741.png)
+3. 使用提取和插入运算符对文件进行读写操作，或使用成员函数进行读写。
+    对文件进行提取和插入操作的常用成员函数：
+    ![image-20230614204412752](%E5%9B%BE%E7%89%87/README/image-20230614204412752.png)
+4. 关闭文件。
+
+###### 以二进制形式操作文件
+
+以二进制的形式对文件进行写入操作：
+
+~~~C++
+//以二进制的形式对文件进行写入
+void WriteBinary()
+{
+	ofstream ofile; //定义文件流对象
+	ofile.open("test.bin", ofstream::out | ofstream::binary); //以二进制写入的方式打开test.bin文件
+	char data[] = "2021dragon";
+	ofile.write(data, strlen(data)); //将data字符串写入文件
+	ofile.put('!'); //将字符'!'写入文件
+	ofile.close(); //关闭文件
+}
+
+~~~
+
+以二进制的形式对文件进行读取操作：
+
+~~~C++
+//以二进制的形式对文件进行读取
+void ReadBinary()
+{
+	ifstream ifile; //定义文件流对象
+	ifile.open("test.bin", ofstream::in | ofstream::binary); //以二进制读取的方式打开test.bin文件
+	ifile.seekg(0, ifile.end); //跳转到文件末尾
+	int length = ifile.tellg(); //获取当前字符在文件当中的位置，即文件的字符总数
+	ifile.seekg(0, ifile.beg); //重新回到文件开头
+	char data[100];
+	ifile.read(data, length); //将文件当中的数据全部读取到字符串data当中
+	ifile.close(); //关闭文件
+}
+
+~~~
+
+
+
+###### 以文本形式操作文件
+
+以文本的形式对文件进行写入操作：
+
+~~~C++
+//以文本的形式对文件进行写入
+void WriteTxt()
+{
+	ofstream ofile; //定义文件流对象
+	ofile.open("test.txt"); //以写入的方式打开test.txt文件
+	char data[] = "2021dragon";
+	ofile.write(data, strlen(data)); //将data字符串写入文件
+	ofile.put('!'); //将字符'!'写入文件
+	ofile.close(); //关闭文件
+}
+
+~~~
+
+以文本的形式对文件进行读取操作：
+
+~~~C++
+//以文本的形式对文件进行读取
+void ReadTxt()
+{
+	ifstream ifile; //定义文件流对象
+	ifile.open("test.txt"); //以读取的方式打开test.txt文件
+	ifile.seekg(0, ifile.end); //跳转到文件末尾
+	int length = ifile.tellg(); //获取当前字符在文件当中的位置，即文件的字符总数
+	ifile.seekg(0, ifile.beg); //重新回到文件开头
+	char data[100];
+	ifile.read(data, length); //将文件当中的数据全部读取到字符串data当中
+	cout << length << endl;
+	cout << data << endl;
+	ifile.close(); //关闭文件
+}
+
+~~~
+
+**注意：** 使用ofstream类对象的open函数时，若不指定打开方式，则默认以写的方式打开文件；使用ifstream类对象的open函数时，若不指定打开方式，则默认以读的方式打开文件；使用fstream类对象的open函数时，若不指定打开方式，则默认以写+读的方式打开文件。
+
+###### 使用<<和>>对文件进行操作
+
+使用>>和<<运算符对文件进行读写操作，会变得很简单，也很形象。
+
+对文件进行写入操作：
+
+~~~C++
+//对文件进行写入操作
+void WriteFile()
+{
+	ofstream ofs("data.txt"); //定义文件流对象，并打开文件
+	ofs << "2021dragon!"; //字符串“流入”文件
+	ofs.close(); //关闭文件
+}
+
+~~~
+
+对文件进行读取操作：
+
+~~~C++
+//对文件进行读取操作
+void ReadFile()
+{
+	ifstream ifs("data.txt"); //定义文件流对象，并打开文件
+	char data[100];
+	ifs >> data; //文件数据“流入”字符串data
+	ifs.close(); //关闭文件
+}
+
+~~~
+
+**注意：** 可以在定义文件流对象的同时指定将要打开的文件名，以及文件的打开方式。
+
+#### stringstream
+
+##### 引言
+
+在C语言中，我们若是想要将一个整型变量的数据转化为字符串格式，有以下两种方法：
+
+1. 使用itoa函数进行转化。
+    ~~~C++
+    int a = 10;
+    char arr[10];
+    itoa(a, arr, 10); //将整型的a转化为十进制字符数字存储在字符串arr当中
+    
+    ~~~
+
+    
+
+2. 使用sprintf函数进行转化。
+    ~~~C++
+    int a = 10;
+    char arr[10];
+    sprintf(arr, "%d", a); //将整型的a转化为字符串格式存储在字符串arr当中
+    
+    ~~~
+
+虽然itoa函数和sprintf函数都能完成转化，但是在两个函数在转化时，都需要先给出保存结果的空间，而空间的大小是不太好界定的，除此之外，转化格式不匹配时，可能还会得到错误的结果甚至程序崩溃。
+
+在C++中，我们可以使用stringstream类对象来避开此问题。在程序当中如果想要使用stringstream，必须要包含头文件sstream。在该头文件下，有三个类：
+
+![image-20230614204839561](%E5%9B%BE%E7%89%87/README/image-20230614204839561.png)
+
+##### 功能
+
+###### 将数值类型数据格式化为字符串
+
+~~~C++
+#include <iostream>
+#include <sstream>
+#include <string>
+using namespace std;
+int main()
+{
+	int a = 10;
+	string sa;
+	stringstream s;
+	s << a; //将int类型的a放入输入流
+	s >> sa; //从s中抽取前面插入的int类型的值，赋值给string类型（方式一）
+	cout << sa << endl;
+	s.str(""); //将stringstream底层管理的string对象设置为""。
+	s.clear(); //将上次转换状态清空掉
+	//进行下一次转换
+	double b = 3.14;
+	s << b;
+	sa = s.str(); //获取stringstream中管理的string类型（方式二）
+	cout << sa << endl;
+	return 0;
+}
+
+~~~
+
+###### 字符串拼接
+
+~~~C++
+#include <iostream>
+#include <sstream>
+#include <string>
+using namespace std;
+int main()
+{
+	string rets;
+	stringstream s;
+	s << "2021" << "dragon"; //将多个字符串放入stringstream中
+	s >> rets; //方式一获取
+	cout << rets << endl;
+	s.str(""); //将stringstream底层管理的string对象设置为空字符串
+	s.clear(); //将上次转换状态清空掉
+	s << "Thanks" << " " << "for" << " " << "reading"; //将多个字符串放入stringstream中
+	rets = s.str(); //方式二获取
+	cout << rets << endl;
+	return 0;
+}
+
+~~~
+
+##### 其他
+
+1. stringstream实际是在底层维护了一个string类型的对象用来保存结果。
+2. stringstream在转换结尾时（即最后一个转换后），会将其内部状态设置为badbit，因此在下一次转换前必须调用clear将状态重置为goodbit才可以转换，但clear不会将stringstream底层的string对象清空。
+3. 可以使用s.str("")的方式将stringstream底层的string对象设置为空字符串，否则多次转换时，会将结果全部累积在底层string对象中。
+4. 获取stringstream转换后的结果有两个方法，一是使用>>运算符之间从流当中提取，二是使用s.str( )获取stringstream底层的string对象。
+5. stringstream使用string类对象代替字符数组，可以避免缓冲区溢出的危险，而且其会对参数类型进行推演，不需要格式化控制，也不会存在格式化失败的风险，因此使用更方便，更安全。
+    

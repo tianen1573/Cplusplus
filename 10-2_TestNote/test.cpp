@@ -1786,39 +1786,816 @@
 //    return 0;
 //}
 
-// 使用举例
-#include <functional>
-int Plus(int a, int b)
-{
-    return a + b;
-}
-class Sub
-{
-public:
-    int sub(int a, int b)
-    {
-        return a - b;
-    }
-};
-int main()
-{
-    //表示绑定函数plus 参数分别由调用 func1 的第一，二个参数指定：指定
-    std::function<int(int, int)> func1 = std::bind(Plus, placeholders::_1,
-        placeholders::_2);
-    //auto func1 = std::bind(Plus, placeholders::_1, placeholders::_2);
-    //func2的类型为 function<void(int, int, int)> 与func1类型一样
-    //表示绑定函数 plus 的第一，二参数为 1，2：为
-    auto  func2 = std::bind(Plus, 1, 3);
-    cout << func1(1, 4) << endl;
-    cout << func2() << endl;
-    Sub s;
-    // 绑定成员函数
-    std::function<int(int, int)> func3 = std::bind(&Sub::sub, s,
-        placeholders::_1, placeholders::_2);
-    // 参数调换顺序
-    std::function<int(int, int)> func4 = std::bind(&Sub::sub, s,
-        placeholders::_2, placeholders::_1);
-    cout << func3(1, 2) << endl;
-    cout << func4(1, 2) << endl;
-    return 0;
-}
+//// 使用举例
+//#include <functional>
+//int Plus(int a, int b)
+//{
+//    return a + b;
+//}
+//class Sub
+//{
+//public:
+//    int sub(int a, int b)
+//    {
+//        return a - b;
+//    }
+//};
+//int main()
+//{
+//    //表示绑定函数plus 参数分别由调用 func1 的第一，二个参数指定：指定
+//    std::function<int(int, int)> func1 = std::bind(Plus, placeholders::_1,
+//        placeholders::_2);
+//    //auto func1 = std::bind(Plus, placeholders::_1, placeholders::_2);
+//    //func2的类型为 function<void(int, int, int)> 与func1类型一样
+//    //表示绑定函数 plus 的第一，二参数为 1，2：为
+//    auto  func2 = std::bind(Plus, 1, 3);
+//    cout << func1(1, 4) << endl;
+//    cout << func2() << endl;
+//    Sub s;
+//    // 绑定成员函数
+//    std::function<int(int, int)> func3 = std::bind(&Sub::sub, s,
+//        placeholders::_1, placeholders::_2);
+//    // 参数调换顺序
+//    std::function<int(int, int)> func4 = std::bind(&Sub::sub, s,
+//        placeholders::_2, placeholders::_1);
+//    cout << func3(1, 2) << endl;
+//    cout << func4(1, 2) << endl;
+//    return 0;
+//}
+
+//double Division(int a, int b)
+//{
+//    // 当b == 0时抛出异常
+//    if (b == 0)
+//        throw "Division by zero condition!";
+//    else
+//        return ((double)a / (double)b);
+//}
+//void Func()
+//{
+//    int len, time;
+//    cin >> len >> time;
+//    cout << Division(len, time) << endl;
+//}
+//int main()
+//{
+//    try
+//    {
+//        Func();
+//    }
+//    catch (const char* errmsg)
+//    {
+//        cout << errmsg << endl;   
+//    }
+//    catch (...) 
+//    {
+//        cout << "unkown exception" << endl;
+//    }
+//        
+//        
+//    return 0;
+//}
+
+//double Division(int a, int b)
+//{
+//    // 当b == 0时抛出异常
+//    if (b == 0)
+//    {
+//        throw "Division by zero condition!";
+//    }
+//    return (double)a / (double)b;
+//}
+//void Func()
+//{
+//    // 这里可以看到如果发生除0错误抛出异常，另外下面的array没有得到释放。
+//    // 所以这里捕获异常后并不处理异常，异常还是交给外面处理，这里捕获了再
+//    // 重新抛出去。
+//    int* array = new int[10];
+//    try
+//    {
+//        int len, time;
+//        cin >> len >> time;
+//        cout << Division(len, time) << endl;
+//    }
+//    catch (...)
+//    {
+//        cout << "delete []" << array << endl;
+//        delete[] array;
+//        throw;
+//    }
+//    // ...
+//    cout << "delete []" << array << endl;
+//    delete[] array;
+//}
+//int main()
+//{
+//    try
+//    {
+//        Func();
+//    }
+//    catch (const char* errmsg)
+//    {
+//        cout << errmsg << endl;
+//    }
+//    return 0;
+//}
+
+//// 服务器开发中通常使用的异常继承体系
+//class Exception
+//{
+//public:
+//    Exception(const string& errmsg, int id)
+//        :_errmsg(errmsg)
+//        , _id(id)
+//    {}
+//    virtual string what() const
+//    {
+//        return _errmsg;
+//    }
+//protected:
+//    string _errmsg;
+//    int _id;
+//};
+//class SqlException : public Exception
+//{
+//public:
+//    SqlException(const string& errmsg, int id, const string& sql)
+//        :Exception(errmsg, id)
+//        , _sql(sql)
+//    {}
+//    virtual string what() const
+//    {
+//        string str = "SqlException:";
+//        str += _errmsg;
+//        str += "->";
+//        str += _sql;
+//        return str;
+//    }
+//private:
+//    const string _sql;
+//};
+//class CacheException : public Exception
+//{
+//public:
+//    CacheException(const string& errmsg, int id)
+//        :Exception(errmsg, id)
+//    {}
+//    virtual string what() const
+//    {
+//        string str = "CacheException:";
+//        str += _errmsg;
+//        return str;
+//    }
+//};
+//class HttpServerException : public Exception
+//{
+//public:
+//    HttpServerException(const string& errmsg, int id, const string& type)
+//        :Exception(errmsg, id)
+//        , _type(type)
+//    {}
+//    virtual string what() const
+//    {
+//        string str = "HttpServerException:";
+//        str += _type;
+//        str += ":";
+//        str += _errmsg;
+//        return str;
+//    }
+//private:
+//    const string _type;
+//};
+//void SQLMgr()
+//{
+//    srand(time(0));
+//    if (rand() % 7 == 0)
+//    {
+//        throw SqlException("权限不足", 100, "select * from name = '张三'");
+//    }
+//    //throw "xxxxxx";
+//}
+//void CacheMgr()
+//{
+//    srand(time(0));
+//    if (rand() % 5 == 0)
+//    {
+//        throw CacheException("权限不足", 100);
+//    }
+//    else if (rand() % 6 == 0)
+//    {
+//        throw CacheException("数据不存在", 101);
+//    }
+//    SQLMgr();
+//}
+//void HttpServer()
+//{
+//    // ...
+//    srand(time(0));
+//    if (rand() % 3 == 0)
+//    {
+//        throw HttpServerException("请求资源不存在", 100, "get");
+//    }
+//    else if (rand() % 4 == 0)
+//    {
+//        throw HttpServerException("权限不足", 101, "post");
+//    }
+//    CacheMgr();
+//}
+//int main()
+//{
+//    while (1)
+//    {
+//        //this_thread::sleep_for(chrono::seconds(1));
+//        Sleep(1000);
+//        try
+//        {
+//            HttpServer();
+//        }
+//        catch (const Exception& e) // 这里捕获父类对象就可以
+//        {
+//            // 多态
+//            cout << e.what() << endl;
+//        }
+//        catch (...)
+//        {
+//            cout << "Unkown Exception" << endl;
+//        }
+//    }
+//    return 0;
+//}
+
+
+//// 使用RAII思想设计的SmartPtr类
+//template<class T>
+//class SmartPtr {
+//public:
+//    SmartPtr(T* ptr = nullptr)
+//        : _ptr(ptr)
+//    {}
+//    ~SmartPtr()
+//    {
+//        if (_ptr)
+//            delete _ptr;
+//    }
+//
+//private:
+//    T* _ptr;
+//};
+//int div()
+//{
+//    int a, b;
+//    cin >> a >> b;
+//    if (b == 0)
+//        throw invalid_argument("除0错误");
+//    return a / b;
+//}
+//void Func()
+//{
+//    SmartPtr<int> sp1(new int);
+//    SmartPtr<int> sp2(new int);
+//    cout << div() << endl;
+//}
+//int main()
+//{
+//    try {
+//        Func();
+//    }
+//    catch (const exception& e)
+//    {
+//        cout << e.what() << endl;
+//    }
+//    return 0;
+//}
+
+
+//template<class T>
+//class SmartPtr {
+//public:
+//    SmartPtr(T* ptr = nullptr)
+//        : _ptr(ptr)
+//    {}
+//    ~SmartPtr()
+//    {
+//        if (_ptr)
+//            delete _ptr;
+//    }
+//    T& operator*() { return *_ptr; }
+//    T* operator->() { return _ptr; }
+//private:
+//    T* _ptr;
+//};
+//struct Date
+//{
+//    int _year;
+//    int _month;
+//    int _day;
+//};
+//int main()
+//{
+//    SmartPtr<int> sp1(new int);
+//    *sp1 = 10;
+//    cout << *sp1 << endl;
+//    SmartPtr<Date> sparray(new Date);
+//    // 需要注意的是这里应该是sparray.operator->()->_year = 2018;
+//    // 本来应该是sparray->->_year这里语法（编译器）上为了可读性，省略了一个->
+//    sparray->_year = 2018;
+//    sparray->_month = 1;
+//    sparray->_day = 1;
+//}
+
+
+//// C++98 管理权转移 auto_ptr
+//namespace autoPtr
+//{
+//	template<class T>
+//	class my_auto_ptr
+//	{
+//	public:
+//		my_auto_ptr(T* ptr = nullptr)
+//			:_ptr(ptr)
+//		{}
+//		my_auto_ptr(my_auto_ptr<T>& autoPtr)
+//			:_ptr(autoPtr._ptr)
+//		{
+//			autoPtr._ptr = nullptr;//将autoPtr的资源，转移给*this
+//		}
+//		my_auto_ptr<T>& operator=(my_auto_ptr<T>& autoPtr)
+//		{
+//			//检测是否自己给自己赋值
+//			if (this != &autoPtr)
+//			{
+//				//检测当前智能指针是否有资源---1
+//				if (_ptr)
+//				{
+//					delete _ptr;
+//				}
+//				_ptr = autoPtr._ptr;
+//				autoPtr._ptr = nullptr; // --2
+//
+//				/* 如果没有检测自己给自己赋值
+//				* 第一个语句会将管理的资源释放
+//				* 第二个语句会将资源指针置空
+//				* 则原先那份资源被释放，泄露了
+//				*/
+//			}
+//		}
+//
+//		~my_auto_ptr()
+//		{
+//			if (_ptr)
+//			{
+//				cout << "delete:" << _ptr << endl;
+//				delete _ptr;
+//			}
+//		}
+//		// 像指针一样使用
+//		T& operator*()
+//		{
+//			return *_ptr;
+//		}
+//		T* operator->()
+//		{
+//			return _ptr;
+//		}
+//
+//	private:
+//		T* _ptr;
+//
+//	};
+//
+//	void func1()
+//	{
+//		my_auto_ptr<int> sp1(new int);
+//		my_auto_ptr<int> sp2(sp1); // 管理权转移
+//
+//		// sp1悬空
+//		*sp2 = 10;
+//		cout << *sp2 << endl;
+//		//cout << *sp1 << endl; //*sp1 == *nullptr
+//	}
+//}
+
+//// C++11出来之前，boost搞除了更好用的scoped_ptr/shared_ptr/weak_ptr
+//// C++11将boost库中智能指针精华部分吸收了过来
+//// C++11->unique_ptr/shared_ptr/weak_ptr
+//
+//// 原理：简单粗暴 -- 防拷贝
+//
+//namespace uniquePtr
+//{
+//	template<class T>
+//	class my_unique_ptr
+//	{
+//	public:
+//		my_unique_ptr(T* ptr)
+//			:_ptr(ptr)
+//		{}
+//		~my_unique_ptr()
+//		{
+//			if (_ptr)
+//			{
+//				cout << "delete:" << _ptr << endl;
+//				delete _ptr;
+//			}
+//		}
+//		// 像指针一样使用
+//		T& operator*()
+//		{
+//			return *_ptr;
+//		}
+//		T* operator->()
+//		{
+//			return _ptr;
+//		}
+//		my_unique_ptr(const my_unique_ptr<T>& sp) = delete;
+//		my_unique_ptr<T>& operator=(const my_unique_ptr<T>& sp) = delete;
+//	private:
+//		T* _ptr;
+//	};
+//
+//	void func1()
+//	{
+//		uniquePtr::my_unique_ptr<int> sp1(new int);
+//		//uniquePtr::my_unique_ptr<int> sp2(sp1);
+//
+//		std::unique_ptr<int> sp11(new int);
+//		//std::unique_ptr<int> sp2(sp1);
+//	}
+//}
+//
+//template<class T>
+//class A
+//{
+//public:
+//	static int cnt;
+//
+//	A()
+//	{
+//		++cnt;
+//	}
+//};
+//template<class T> int A<T>::cnt = 0;
+//
+//int main()
+//{
+//	//autoPtr::func1();
+//	//uniquePtr::func1();
+//
+//	A<int> a1;
+//	A<int> a3;
+//	A<double> a2;
+//
+//
+//	cout << a1.cnt << ' ' << a2.cnt << endl;
+//
+//	return 0;
+//}
+
+//// 引用计数支持多个拷贝管理同一个资源，最后一个析构对象释放资源
+////auto和unique，资源的使用权是唯一的，不存在线程安全问题；
+////而shared的使用权是共享的，存在线程安全，在申请和释放的过程中，需要加锁，保证 资源分配过程 的完整性
+//namespace sharedPtr
+//{
+//    template<class T>
+//    class my_shared_ptr
+//    {
+//    public:
+//        my_shared_ptr(T* ptr = nullptr)
+//            :_ptr(ptr)
+//            , _pRefCount(new int(1))//只有在构造智能指针时，才会创建引用计数变量
+//            , _pmtx(new mutex)
+//        {}
+//        my_shared_ptr(const my_shared_ptr<T>& sp)
+//            :_ptr(sp._ptr)
+//            , _pRefCount(sp._pRefCount)
+//            , _pmtx(sp._pmtx)
+//        {
+//            AddRef();
+//        }
+//        void Release()
+//        {
+//            _pmtx->lock();
+//            bool flag = false;
+//            if (--(*_pRefCount) == 0)
+//            {
+//                if (_ptr == nullptr)
+//                {
+//                    cout << "_ptr is nullptr" << endl;
+//                }
+//                else
+//                {
+//                    cout << "delete:" << _ptr << endl;
+//                    delete _ptr;
+//                    
+//                }
+//                delete _pRefCount;
+//                flag = true;
+//            }
+//            _pmtx->unlock();
+//            if (flag == true)
+//            {
+//                delete _pmtx;
+//            }
+//        }
+//        void AddRef()
+//        {
+//            _pmtx->lock();
+//            ++(*_pRefCount);
+//            _pmtx->unlock();
+//        }
+//        my_shared_ptr<T>& operator=(const my_shared_ptr<T>& sp)
+//        {
+//            //if (this != &sp) //不同的智能指针，可能指向同一份资源，用资源指针判断合理
+//            if (_ptr != sp._ptr)//如果不是同一份资源
+//            {
+//                Release();
+//                _ptr = sp._ptr;
+//                _pRefCount = sp._pRefCount;
+//                _pmtx = sp._pmtx;
+//                AddRef();
+//            }
+//            return *this;
+//        }
+//        int use_count()
+//        {
+//            return *_pRefCount;
+//        }
+//        ~my_shared_ptr()
+//        {
+//            Release();
+//        }
+//        // 像指针一样使用
+//        T& operator*()
+//        {
+//            return *_ptr;
+//        }
+//        T* operator->()
+//        {
+//            return _ptr;
+//        }
+//        T* get() const
+//        {
+//            return _ptr;
+//        }
+//    private:
+//        T* _ptr;
+//        int* _pRefCount;
+//        mutex* _pmtx;
+//    };
+//
+//    // 简化版本的weak_ptr实现
+//    template<class T>
+//    class my_weak_ptr
+//    {
+//    public:
+//        my_weak_ptr()
+//            :_ptr(nullptr)
+//        {}
+//        my_weak_ptr(const shared_ptr<T>& sp)
+//            :_ptr(sp.get())
+//        {}
+//        my_weak_ptr<T>& operator=(const my_shared_ptr<T>& sp)
+//        {
+//            _ptr = sp.get();
+//            return *this;
+//        }
+//        T& operator*()
+//        {
+//            return *_ptr;
+//        }
+//        T* operator->()
+//        {
+//            return _ptr;
+//        }
+//    private:
+//        T* _ptr;
+//    };
+//
+//
+//    void func1()
+//    {
+//
+//        my_shared_ptr<int> sp1(new int);// 语句1
+//        my_shared_ptr<int> sp2(sp1);
+//        my_shared_ptr<int> sp3(sp1);
+//
+//        cout << sp1.use_count() << ' ' << sp2.use_count() << ' ' << sp3.use_count() << endl;
+//
+//        my_shared_ptr<int> sp4(new int);// 语句2
+//        my_shared_ptr<int> sp5(sp4);
+//
+//        cout << sp4.use_count() << ' ' << sp5.use_count() << endl;
+//
+//        sp1 = sp1;
+//        cout << sp1.use_count() << ' ' << sp3.use_count() << endl;
+//        sp1 = sp2;
+//        cout << sp1.use_count() << ' ' << sp2.use_count() << ' ' << sp3.use_count() << endl;
+//
+//        sp1 = sp4;
+//        cout << sp3.use_count() << ' ' << sp4.use_count() << endl;
+//        sp2 = sp4;
+//        cout << sp1.use_count() << ' ' << sp2.use_count() << ' ' << sp3.use_count() << endl;
+//        sp3 = sp4;// 此时 语句1 生成的资源 使用者为0 触发释放条件
+//        cout << sp1.use_count() << ' ' << sp4.use_count() << ' ' << sp3.use_count() << endl;
+//
+//        *sp1 = 2;
+//        *sp2 = 3;
+//
+//        my_shared_ptr<int> ss1(new int(1));
+//        my_shared_ptr<int> ss2(nullptr);
+//        cout << "----\n";
+//
+//        // 函数结束时，智能指针全部析构了， 释放 语句2 生成的资源
+//    }
+//}
+
+//int main()
+//{
+//    sharedPtr::func1();
+//
+//    return 0;
+//}
+
+//// 1.演示引用计数线程安全问题，就把AddRefCount和SubRefCount中的锁去掉
+//// 2.演示可能不会出现线程安全问题，因为线程安全问题是偶现性问题，main函数的n改大一些概率就变大了，就容易出现了。
+//// 3.下面代码我们使用SharedPtr演示，是为了方便演示引用计数的线程安全问题，将代码中的SharedPtr换成shared_ptr进行测试，可以验证库的shared_ptr，发现结论是一样的。
+//struct Date
+//{
+//    int _year = 0;
+//    int _month = 0;
+//    int _day = 0;
+//};
+//void SharePtrFunc(sharedPtr::my_shared_ptr<Date>& sp, size_t n, mutex& mtx)
+//{
+//    cout << sp.get() << endl;
+//    for (size_t i = 0; i < n; ++i)
+//    {
+//        // 这里智能指针拷贝会++计数，智能指针析构会--计数，这里是线程安全的。
+//        sharedPtr::my_shared_ptr<Date> copy(sp);
+//        // 这里智能指针访问管理的资源，不是线程安全的。所以我们看看这些值两个线程++了2n次，但是最终看到的结果，并不一定是加了2n
+//        {
+//            unique_lock<mutex> lk(mtx);//{} + mtx锁，保证了访问资源是线程安全的
+//            copy->_year++;
+//            copy->_month++;
+//            copy->_day++;
+//        }
+//    }
+//}
+//int main()
+//{
+//    sharedPtr::my_shared_ptr<Date> p(new Date);
+//    cout << p.get() << endl;
+//    const size_t n = 100000;
+//    mutex mtx;
+//    thread t1(SharePtrFunc, std::ref(p), n, std::ref(mtx));
+//    thread t2(SharePtrFunc, std::ref(p), n, std::ref(mtx));
+//    t1.join();
+//    t2.join();
+//    cout << p->_year << endl;
+//    cout << p->_month << endl;
+//    cout << p->_day << endl;
+//    cout << p.use_count() << endl;
+//    return 0;
+//}
+
+//using namespace sharedPtr;
+//
+//struct ListNode
+//{
+//    int _data;
+//    my_shared_ptr<ListNode> _prev;
+//    my_shared_ptr<ListNode> _next;
+//    ~ListNode() { cout << "~ListNode()" << endl; }
+//};
+//int main()
+//{
+//    my_shared_ptr<ListNode> node1(new ListNode);
+//    my_shared_ptr<ListNode> node2(new ListNode);
+//    cout << node1.use_count() << endl;
+//    cout << node2.use_count() << endl;
+//    node1->_next = node2;
+//    node2->_prev = node1;
+//    cout << node1.use_count() << endl;
+//    cout << node2.use_count() << endl;
+//    return 0;
+//}
+
+//// 解决方案：在引用计数的场景下，把节点中的_prev和_next改成weak_ptr就可以了
+//// 原理就是，node1->_next = node2;和node2->_prev = node1;时weak_ptr的_next和_prev不会增加node1和node2的引用计数。
+//
+//struct ListNode
+//{
+//    int _data;
+//    my_weak_ptr<ListNode> _prev;
+//    my_weak_ptr<ListNode> _next;
+//    ~ListNode() { cout << "~ListNode()" << endl; }
+//};
+//int main()
+//{
+//    my_shared_ptr<ListNode> node1(new ListNode);
+//    my_shared_ptr<ListNode> node2(new ListNode);
+//    cout << node1.use_count() << endl;
+//    cout << node2.use_count() << endl;
+//    node1->_next = node2;
+//    node2->_prev = node1;
+//    cout << node1.use_count() << endl;
+//    cout << node2.use_count() << endl;
+//    return 0;
+//}
+
+
+//// 饿汉模式
+//// 优点：简单，没有线程安全
+//// 缺点：可能会导致进程启动慢，且如果有多个单例类对象实例启动顺序不确定。
+//class Singleton
+//{
+//public:
+//    static Singleton* GetInstance()
+//    {
+//        return m_instance;
+//    }
+//
+//private:
+//    // 构造函数私有
+//    Singleton() 
+//    {
+//        cout << "Singleton" << endl;
+//    };
+//
+//    //// C++98 防拷贝
+//    //Singleton(Singleton const&);
+//    //Singleton& operator=(Singleton const&);
+//    // or
+//    // C++11
+//    Singleton(Singleton const&) = delete;
+//    Singleton& operator=(Singleton const&) = delete;
+//
+//    static Singleton* m_instance;
+//};
+//
+//Singleton* Singleton::m_instance = new Singleton();  // 在程序入口之前就完成单例对象的初始化
+////静态成员变量对象m_instance属于类，所以系统对它初始化时，调用私有的构造函数相当于调用成员函数(调用私有函数)
+//
+//int main()
+//{
+//    cout << "main" << endl;
+//
+//    return 0;
+//}
+
+//// 懒汉
+//// 优点：第一次使用实例对象时，创建对象。进程启动无负载。多个单例实例启动顺序自由控制。
+//// 缺点：复杂
+//#include <mutex>
+//#include <thread>
+//using namespace std;
+//class Singleton
+//{
+//public:
+//	static Singleton* GetInstance() {
+//		// 注意这里一定要使用Double-Check的方式加锁，才能保证效率和线程安全
+//		if (nullptr == m_pInstance) {
+//			m_mtx.lock();
+//			if (nullptr == m_pInstance) {
+//				m_pInstance = new Singleton();
+//			}
+//			m_mtx.unlock();
+//		}
+//		return m_pInstance;
+//	}
+//	// 实现一个内嵌垃圾回收类  -- 内部类 -- 友元类
+//	class CGarbo {
+//	public:
+//		~CGarbo() {
+//			if (Singleton::m_pInstance)
+//				delete Singleton::m_pInstance;
+//		}
+//	};
+//	// 定义一个静态成员变量，程序结束时，系统会自动调用它的析构函数从而释放单例对象
+//	static CGarbo Garbo;//声明
+//private:
+//	// 构造函数私有
+//	Singleton() {};
+//	// 防拷贝
+//	Singleton(Singleton const&);
+//	Singleton& operator=(Singleton const&);
+//
+//	static Singleton* m_pInstance; // 单例对象指针 声明
+//	static mutex m_mtx;   //互斥锁 声明
+//};
+//Singleton* Singleton::m_pInstance = nullptr;
+//Singleton::CGarbo Singleton::Garbo;
+//mutex Singleton::m_mtx;
+//
+//
+//int main()
+//{
+//	thread t1([] {cout << Singleton::GetInstance() << endl; });
+//	thread t2([] {cout << Singleton::GetInstance() << endl; });
+//	t1.join();
+//	t2.join();
+//	cout << Singleton::GetInstance() << endl;
+//	cout << Singleton::GetInstance() << endl;
+//	return 0;
+//}
+
