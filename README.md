@@ -6989,7 +6989,7 @@ return 0;
 >         Derive* p3 = &d;
 >         return 0;
 >     }
->                                                                                                                                                                                                                                                                                                             
+>                                                                                                                                                                                                                                                                                                                 
 >     ~~~
 >
 >     A：p1 == p2 == p3 B：p1 < p2 < p3 C：p1 == p3 != p2 D：p1 != p2 != p3
@@ -7004,13 +7004,13 @@ return 0;
 >         virtual void func(int val = 1){ std::cout<<"A->"<< val <<std::endl;}
 >         virtual void test(){ func();}
 >     };
->                                                                                                                                                                                                                                                                                                             
+>                                                                                                                                                                                                                                                                                                                 
 >     class B : public A
 >     {
 >         public:
 >         void func(int val=0){ std::cout<<"B->"<< val <<std::endl; }
 >     };
->                                                                                                                                                                                                                                                                                                             
+>                                                                                                                                                                                                                                                                                                                 
 >     int main(int argc ,char* argv[])
 >     {
 >         B*p = new B;
@@ -8553,7 +8553,7 @@ eg：数据集合{1，7，6，4，5，9}；
     >                 if(_ht[i]._state == EXIST)
     >                     newHt.Insert(_ht[i]._val);
     >            }
-    >                                                                                             
+    >                                                                                                 
     >             Swap(newHt);
     >        }
     >     ~~~
@@ -9228,7 +9228,7 @@ eg：数据集合{1，7，6，4，5，9}；
     >     				50331653, 100663319, 201326611, 402653189, 805306457,
     >     				1610612741, 3221225473, 4294967291
     >     			};
-    >                                                                                     
+    >                                                                                         
     >     			for (size_t i = 0; i < __stl_num_primes; ++i)
     >     			{
     >     				if (__stl_prime_list[i] > n)
@@ -9236,7 +9236,7 @@ eg：数据集合{1，7，6，4，5，9}；
     >     					return __stl_prime_list[i];
     >     				}
     >     			}
-    >                                                                                     
+    >                                                                                         
     >     			return -1;
     >     		}
     >     ~~~
@@ -11430,4 +11430,3 @@ int main()
 3. 可以使用s.str("")的方式将stringstream底层的string对象设置为空字符串，否则多次转换时，会将结果全部累积在底层string对象中。
 4. 获取stringstream转换后的结果有两个方法，一是使用>>运算符之间从流当中提取，二是使用s.str( )获取stringstream底层的string对象。
 5. stringstream使用string类对象代替字符数组，可以避免缓冲区溢出的危险，而且其会对参数类型进行推演，不需要格式化控制，也不会存在格式化失败的风险，因此使用更方便，更安全。
-    
