@@ -6527,7 +6527,7 @@ int main()
 
 勘误：**重写：除了协变和虚函数的重写，返回值类型必须相同**
 
-![image-20230612173550370](%E5%9B%BE%E7%89%87/README/image-20230612173550370.png)
+![image-20230726090356796](%E5%9B%BE%E7%89%87/README/image-20230726090356796.png)
 
 ------
 
@@ -7000,7 +7000,7 @@ return 0;
 >         Derive* p3 = &d;
 >         return 0;
 >     }
->                                                                                                                                                                                                                                                                                                                     
+>                                                                                                                                                                                                                                                                                                                         
 >     ~~~
 >
 >     A：p1 == p2 == p3 B：p1 < p2 < p3 C：p1 == p3 != p2 D：p1 != p2 != p3
@@ -7015,13 +7015,13 @@ return 0;
 >         virtual void func(int val = 1){ std::cout<<"A->"<< val <<std::endl;}
 >         virtual void test(){ func();}
 >     };
->                                                                                                                                                                                                                                                                                                                     
+>                                                                                                                                                                                                                                                                                                                         
 >     class B : public A
 >     {
 >         public:
 >         void func(int val=0){ std::cout<<"B->"<< val <<std::endl; }
 >     };
->                                                                                                                                                                                                                                                                                                                     
+>                                                                                                                                                                                                                                                                                                                         
 >     int main(int argc ,char* argv[])
 >     {
 >         B*p = new B;
@@ -8568,7 +8568,7 @@ eg：数据集合{1，7，6，4，5，9}；
     >                 if(_ht[i]._state == EXIST)
     >                     newHt.Insert(_ht[i]._val);
     >            }
-    >                                                                                                     
+    >                                                                                                         
     >             Swap(newHt);
     >        }
     >     ~~~
@@ -9243,7 +9243,7 @@ eg：数据集合{1，7，6，4，5，9}；
     >     				50331653, 100663319, 201326611, 402653189, 805306457,
     >     				1610612741, 3221225473, 4294967291
     >     			};
-    >                                                                                             
+    >                                                                                                 
     >     			for (size_t i = 0; i < __stl_num_primes; ++i)
     >     			{
     >     				if (__stl_prime_list[i] > n)
@@ -9251,7 +9251,7 @@ eg：数据集合{1，7，6，4，5，9}；
     >     					return __stl_prime_list[i];
     >     				}
     >     			}
-    >                                                                                             
+    >                                                                                                 
     >     			return -1;
     >     		}
     >     ~~~
