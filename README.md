@@ -7093,7 +7093,7 @@ return 0;
 >         Derive* p3 = &d;
 >         return 0;
 >     }
->                                                                                                                                                                                                                                                                                                                                 
+>                                                                                                                                                                                                                                                                                                                                         
 >     ~~~
 >
 >     A：p1 == p2 == p3 B：p1 < p2 < p3 C：p1 == p3 != p2 D：p1 != p2 != p3
@@ -7108,13 +7108,13 @@ return 0;
 >         virtual void func(int val = 1){ std::cout<<"A->"<< val <<std::endl;}
 >         virtual void test(){ func();}
 >     };
->                                                                                                                                                                                                                                                                                                                                 
+>                                                                                                                                                                                                                                                                                                                                         
 >     class B : public A
 >     {
 >         public:
 >         void func(int val=0){ std::cout<<"B->"<< val <<std::endl; }
 >     };
->                                                                                                                                                                                                                                                                                                                                 
+>                                                                                                                                                                                                                                                                                                                                         
 >     int main(int argc ,char* argv[])
 >     {
 >         B*p = new B;
@@ -8663,7 +8663,7 @@ eg：数据集合{1，7，6，4，5，9}；
     >                 if(_ht[i]._state == EXIST)
     >                     newHt.Insert(_ht[i]._val);
     >            }
-    >                                                                                                                 
+    >                                                                                                                         
     >             Swap(newHt);
     >        }
     >     ~~~
@@ -9338,7 +9338,7 @@ eg：数据集合{1，7，6，4，5，9}；
     >     				50331653, 100663319, 201326611, 402653189, 805306457,
     >     				1610612741, 3221225473, 4294967291
     >     			};
-    >                                                                                                         
+    >                                                                                                                 
     >     			for (size_t i = 0; i < __stl_num_primes; ++i)
     >     			{
     >     				if (__stl_prime_list[i] > n)
@@ -9346,7 +9346,7 @@ eg：数据集合{1，7，6，4，5，9}；
     >     					return __stl_prime_list[i];
     >     				}
     >     			}
-    >                                                                                                         
+    >                                                                                                                 
     >     			return -1;
     >     		}
     >     ~~~
@@ -11255,8 +11255,18 @@ int main()
 > C++通过以下方式来支持RTTI： 
 >
 > 1. typeid运算符 
+>
 > 2. dynamic_cast运算符 
+>
 > 3. decltype
+>
+>     > - auto，用于通过一个表达式在编译时确定待定义的变量类型，auto 所修饰 的变量必须被初始化，编译器需要通过初始化来确定auto 所代表的类型，即必须要定义变 量。
+>     >
+>     > - 若仅希望得到类型，而不需要（或不能）定义变量的时候应该怎么办呢？ C++11 新增了decltype 关键字，用来在编译时推导出一个表达式的类型。它的语法格式 如下：
+>     >     ~~~C++
+>     >     auto func = [](int a, int b){return a + b;};
+>     >     decltype(cmp); // 得到的就是类型
+>     >     ~~~
 
 ### IO流
 
